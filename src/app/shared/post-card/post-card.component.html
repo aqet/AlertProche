@@ -1,0 +1,50 @@
+<article class="post-card" [routerLink]="['/posts', post._id]">
+  <!-- Disabled banner -->
+  <div class="post-disabled-banner" *ngIf="post.isActive === false">
+    <i class="fas fa-eye-slash"></i> Publication désactivée par un modérateur
+  </div>
+  <!-- Type Badge -->
+  <div class="card-header">
+    <span class="badge" [ngClass]="getBadgeClass()">
+      <i class="fas" [ngClass]="getBadgeIcon()"></i>
+      {{ post.type }}
+    </span>
+    <span class="card-time">
+      <i class="fas fa-clock"></i>
+      {{ getTimeAgo(post.createdAt) }}
+    </span>
+  </div>
+
+  <!-- Image -->
+  <div class="card-image" *ngIf="post.image_url">
+    <img [src]="post.image_url | mediaUrl" [alt]="post.title" loading="lazy" class="card-img">
+    <div class="image-overlay"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="card-body">
+    <h3 class="card-title">{{ post.title }}</h3>
+    <p class="card-excerpt">{{ post.content | slice:0:150 }}{{ post.content.length > 150 ? '...' : '' }}</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <div class="card-meta">
+      <span class="meta-item">
+        <i class="fas fa-location-dot"></i>
+        {{ post.location }}
+      </span>
+      <span class="meta-item">
+        <i class="fas fa-user"></i>
+        {{ post.isAnonymous ? 'Anonyme' : (post.authorPseudo || 'Inconnu') }}
+      </span>
+    </div>
+    <div class="card-comments" *ngIf="post.commentCount !== undefined">
+      <i class="fas fa-comment"></i>
+      {{ post.commentCount }}
+    </div>
+  </div>
+
+  <!-- Active Alert Pulse for Disparition -->
+  <div class="alert-pulse" *ngIf="post.type === 'Disparition'"></div>
+</article>

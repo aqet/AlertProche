@@ -1,0 +1,182 @@
+<div class="home-page">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+      <div class="hero-grid"></div>
+    </div>
+    <div class="container hero-content">
+      <div class="hero-badge animate-fade-in">
+        <i class="fas fa-shield-heart"></i> Plateforme Citoyenne Sécurisée
+      </div>
+      <h1 class="hero-title animate-fade-in stagger-1">
+        Protéger les <span class="text-accent">mineurs</span>,<br>
+        c'est l'affaire de <span class="text-alert">tous</span>.
+      </h1>
+      <p class="hero-subtitle animate-fade-in stagger-2">
+        Signalez, recherchez et soutenez. Une communauté citoyenne unie pour la protection des enfants au Cameroun.
+      </p>
+      <div class="hero-actions animate-fade-in stagger-3">
+        <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger btn-lg">
+          <i class="fas fa-triangle-exclamation"></i> Publier un Cas
+        </a>
+        <a routerLink="/auth" *ngIf="!isAuth()" class="btn btn-danger btn-lg">
+          <i class="fas fa-triangle-exclamation"></i> Signaler un Cas
+        </a>
+        <a href="#flux" class="btn btn-ghost btn-lg">
+          <i class="fas fa-arrow-down"></i> Voir les Alertes
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="hero-stats animate-fade-in stagger-4">
+        <div class="stat-item">
+          <span class="stat-value text-alert">{{ stats().disparitions }}</span>
+          <span class="stat-label">Disparitions actives</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value text-warning">{{ stats().abus }}</span>
+          <span class="stat-label">Cas d'abus signalés</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value text-accent">{{ stats().prevention }}</span>
+          <span class="stat-label">Publications prévention</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Urgent Alerts Banner -->
+  <section class="urgent-banner" *ngIf="urgentPosts().length > 0">
+    <div class="container">
+      <div class="urgent-inner">
+        <div class="urgent-label">
+          <div class="urgent-dot"></div>
+          <span>ALERTES ACTIVES</span>
+        </div>
+        <div class="urgent-scroll">
+          <div class="urgent-track">
+            <span *ngFor="let p of urgentPosts()" class="urgent-item">
+              <i class="fas fa-triangle-exclamation"></i>
+              {{ p.title }} — {{ p.location }}
+            </span>
+            <!-- Duplicate for infinite scroll -->
+            <span *ngFor="let p of urgentPosts()" class="urgent-item" aria-hidden="true">
+              <i class="fas fa-triangle-exclamation"></i>
+              {{ p.title }} — {{ p.location }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="page-wrapper" id="flux">
+    <div class="container">
+      <div class="flux-layout">
+
+        <!-- Filters Sidebar -->
+        <aside class="filters-sidebar">
+          <div class="filters-card">
+            <h3 class="filters-title"><i class="fas fa-sliders"></i> Filtres</h3>
+
+            <!-- Search -->
+            <div class="form-group">
+              <label class="form-label">Rechercher</label>
+              <div class="search-input-wrap">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="form-control search-input"
+                  placeholder="Mot-clé, nom..."
+                  [(ngModel)]="searchQuery"
+                  [ngModel]="searchQuery()"
+                  (ngModelChange)="searchQuery.set($event)">
+              </div>
+            </div>
+
+            <!-- Type Filter -->
+            <div class="form-group">
+              <label class="form-label">Type de cas</label>
+              <div class="filter-chips">
+                <button class="chip chip-disparition" [class.active]="filterType() === 'Disparition'"
+                  (click)="setFilter('Disparition')">
+                  <i class="fas fa-triangle-exclamation"></i> Disparition
+                </button>
+                <button class="chip chip-abus" [class.active]="filterType() === 'Abus'"
+                  (click)="setFilter('Abus')">
+                  <i class="fas fa-shield-exclamation"></i> Abus
+                </button>
+                <button class="chip chip-prevention" [class.active]="filterType() === 'Prevention'"
+                  (click)="setFilter('Prevention')">
+                  <i class="fas fa-circle-info"></i> Prévention
+                </button>
+              </div>
+            </div>
+
+            <!-- Location Filter -->
+            <div class="form-group">
+              <label class="form-label">Région / Ville</label>
+              <input type="text" class="form-control"
+                placeholder="ex: Yaoundé, Douala..."
+                [ngModel]="filterLocation()"
+                (ngModelChange)="filterLocation.set($event)">
+            </div>
+
+            <button class="btn btn-ghost w-full btn-sm" (click)="clearFilters()"
+              *ngIf="filterType() || filterLocation() || searchQuery()">
+              <i class="fas fa-x"></i> Réinitialiser
+            </button>
+
+            <!-- Info Box -->
+            <div class="info-box">
+              <i class="fas fa-lock"></i>
+              <p>Vos données sont protégées. La plateforme respecte votre anonymat.</p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Posts Feed -->
+        <section class="posts-feed">
+          <div class="feed-header">
+            <div>
+              <h2 class="section-title">Flux des Publications</h2>
+              <p class="section-subtitle">
+                {{ filteredPosts().length }} publication{{ filteredPosts().length > 1 ? 's' : '' }} trouvée{{ filteredPosts().length > 1 ? 's' : '' }}
+              </p>
+            </div>
+            <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger btn-sm">
+              <i class="fas fa-plus"></i> Nouveau cas
+            </a>
+          </div>
+
+          <!-- Loading skeletons -->
+          <div class="posts-grid" *ngIf="loading()">
+            <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]">
+              <div class="skeleton" style="height:24px; width:80px; margin-bottom:16px"></div>
+              <div class="skeleton" style="height:20px; width:100%; margin-bottom:8px"></div>
+              <div class="skeleton" style="height:16px; width:70%; margin-bottom:24px"></div>
+              <div class="skeleton" style="height:14px; width:50%"></div>
+            </div>
+          </div>
+
+          <!-- Posts Grid -->
+          <div class="posts-grid" *ngIf="!loading() && filteredPosts().length > 0">
+            <app-post-card *ngFor="let post of filteredPosts(); trackBy: trackByPost" [post]="post"></app-post-card>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="!loading() && filteredPosts().length === 0">
+            <div class="empty-icon"><i class="fas fa-search"></i></div>
+            <h3>Aucune publication trouvée</h3>
+            <p>Aucun résultat ne correspond à vos critères de recherche.</p>
+            <button class="btn btn-outline btn-sm" (click)="clearFilters()">Réinitialiser les filtres</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>

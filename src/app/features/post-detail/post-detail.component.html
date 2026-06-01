@@ -1,0 +1,287 @@
+<!-- Error state -->
+<div class="page-wrapper" *ngIf="error()">
+  <div class="container">
+    <div class="error-state">
+      <i class="fas fa-circle-exclamation"></i>
+      <h2>{{ error() }}</h2>
+      <a routerLink="/" class="btn btn-outline btn-sm">Retour à l'accueil</a>
+    </div>
+  </div>
+</div>
+
+<div class="detail-page page-wrapper" *ngIf="!loading() && !error() && post()">
+  <div class="container">
+    <div class="detail-layout">
+
+      <!-- MAIN CONTENT -->
+      <article class="detail-main animate-fade-in">
+
+        <!-- Back + Actions -->
+        <div class="detail-topbar">
+          <a routerLink="/" class="back-link"><i class="fas fa-arrow-left"></i> Retour au flux</a>
+          <div class="topbar-actions">
+            <!-- Share button with feedback -->
+            <button class="btn btn-ghost btn-sm" (click)="sharePost()" [class.btn-success]="shareSuccess()">
+              <i class="fas" [ngClass]="shareSuccess() ? 'fa-check' : 'fa-share-nodes'"></i>
+              {{ shareSuccess() ? 'Lien copié !' : 'Partager' }}
+            </button>
+            <!-- Report button -->
+            <button class="btn btn-ghost btn-sm btn-report"
+              (click)="openReportModal()"
+              [disabled]="isAlreadyReported()"
+              [title]="isAlreadyReported() ? 'Déjà signalé' : 'Signaler cette publication'">
+              <i class="fas fa-flag"></i>
+              {{ isAlreadyReported() ? 'Signalé' : 'Signaler' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Badge + Meta -->
+        <div class="detail-meta">
+          <span class="badge" [ngClass]="getBadgeClass()">
+            <i class="fas" [ngClass]="getBadgeIcon()"></i> {{ post()!.type }}
+          </span>
+          <div class="pulse-indicator" *ngIf="post()!.type === 'Disparition'">
+            <span class="pulse-dot"></span> Alerte active
+          </div>
+        </div>
+
+        <!-- Title -->
+        <h1 class="detail-title">{{ post()!.title }}</h1>
+
+        <!-- Info Bar -->
+        <div class="detail-infobar">
+          <span class="info-item">
+            <i class="fas fa-user"></i>
+            {{ post()!.isAnonymous ? 'Anonyme' : post()!.authorPseudo }}
+          </span>
+          <span class="info-item">
+            <i class="fas fa-location-dot"></i> {{ post()!.location }}
+          </span>
+          <span class="info-item">
+            <i class="fas fa-clock"></i> {{ getTimeAgo(post()!.createdAt) }}
+          </span>
+          <span class="info-item">
+            <i class="fas fa-comment"></i> {{ post()!.commentCount || comments().length }} commentaires
+          </span>
+        </div>
+
+        <!-- Image -->
+        <div class="detail-image" *ngIf="post()!.image_url" (click)="openImageModal()">
+          <img [src]="post()!.image_url | mediaUrl" [alt]="post()!.title" class="detail-img">
+          <div class="image-zoom-hint"><i class="fas fa-magnifying-glass-plus"></i> Agrandir</div>
+        </div>
+
+        <!-- Content -->
+        <div class="detail-content">
+          <p *ngFor="let para of post()!.content.split('\n\n')">{{ para }}</p>
+        </div>
+
+        <!-- Alert CTA for Disparition -->
+        <div class="detail-cta" *ngIf="post()!.type === 'Disparition'">
+          <div class="cta-icon"><i class="fas fa-phone-volume"></i></div>
+          <div class="cta-body">
+            <strong>Vous avez une information ?</strong>
+            <p>Contactez les forces de l'ordre ou laissez un commentaire ci-dessous. Chaque information compte.</p>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Comments Section -->
+        <section class="comments-section">
+          <h2 class="comments-title">
+            <i class="fas fa-comments"></i>
+            Espace d'Échange
+            <span class="comments-count">{{ comments().length }}</span>
+          </h2>
+
+          <!-- Comment Form -->
+          <div class="comment-form-wrap" *ngIf="isAuth(); else loginPrompt">
+            <div class="alert-banner success" *ngIf="commentSuccess()">
+              <i class="fas fa-circle-check"></i> Commentaire publié avec succès.
+            </div>
+            <div class="alert-banner error" *ngIf="commentError()">
+              <i class="fas fa-circle-exclamation"></i> {{ commentError() }}
+            </div>
+
+            <form [formGroup]="commentForm" (ngSubmit)="submitComment()">
+              <div class="comment-input-wrap">
+                <div class="commenter-avatar">
+                  {{ currentUser()?.pseudo?.charAt(0)?.toUpperCase() }}
+                </div>
+                <div class="comment-input-body">
+                  <textarea class="form-control comment-textarea" rows="3"
+                    formControlName="content"
+                    placeholder="Partagez une information, un soutien ou un conseil..."></textarea>
+                  <span class="form-error" *ngIf="commentForm.get('content')?.touched && commentForm.get('content')?.invalid">
+                    <i class="fas fa-circle-exclamation"></i> 10 caractères minimum
+                  </span>
+                  <div class="comment-form-actions">
+                    <label class="anon-check">
+                      <input type="checkbox" formControlName="isAnonymous">
+                      <span>Anonyme</span>
+                    </label>
+                    <button type="submit" class="btn btn-primary btn-sm" [disabled]="submittingComment()">
+                      <span class="spinner" *ngIf="submittingComment()"></span>
+                      <span *ngIf="!submittingComment()"><i class="fas fa-paper-plane"></i> Envoyer</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <ng-template #loginPrompt>
+            <div class="login-prompt">
+              <i class="fas fa-lock"></i>
+              <p>Connectez-vous pour participer à l'espace d'échange.</p>
+              <a routerLink="/auth" class="btn btn-outline btn-sm">Se connecter</a>
+            </div>
+          </ng-template>
+
+          <!-- Comments Loading -->
+          <div class="comments-loading" *ngIf="commentsLoading()">
+            <div class="spinner"></div> Chargement des commentaires...
+          </div>
+
+          <!-- Comments List -->
+          <div class="comments-list" *ngIf="!commentsLoading()">
+            <div class="comment-item animate-fade-in" *ngFor="let c of comments(); trackBy: trackByComment">
+              <div class="comment-avatar">
+                {{ (c.isAnonymous ? 'A' : c.authorPseudo?.charAt(0)?.toUpperCase()) }}
+              </div>
+              <div class="comment-body">
+                <div class="comment-header">
+                  <span class="comment-author">{{ c.isAnonymous ? 'Anonyme' : c.authorPseudo }}</span>
+                  <span class="comment-time">{{ getTimeAgo(c.createdAt) }}</span>
+                  <button class="comment-delete" *ngIf="canDeleteComment(c)" (click)="deleteComment(c._id)" title="Supprimer">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+                <p class="comment-text">{{ c.content }}</p>
+              </div>
+            </div>
+
+            <div class="no-comments" *ngIf="comments().length === 0">
+              <i class="fas fa-comment-slash"></i>
+              <p>Aucun commentaire pour l'instant. Soyez le premier à réagir.</p>
+            </div>
+          </div>
+        </section>
+      </article>
+
+      <!-- SIDEBAR -->
+      <aside class="detail-sidebar">
+        <!-- Report Info -->
+        <div class="sidebar-card">
+          <h3 class="sidebar-title"><i class="fas fa-circle-info"></i> Informations</h3>
+          <div class="info-list">
+            <div class="info-row">
+              <span class="info-key">Type</span>
+              <span class="badge" [ngClass]="getBadgeClass()">{{ post()!.type }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Lieu</span>
+              <span class="info-val">{{ post()!.location }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Publié</span>
+              <span class="info-val">{{ getTimeAgo(post()!.createdAt) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Auteur</span>
+              <span class="info-val">{{ post()!.isAnonymous ? 'Anonyme' : post()!.authorPseudo }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safety Tips -->
+        <div class="sidebar-card safety-card">
+          <h3 class="sidebar-title"><i class="fas fa-shield-heart"></i> Conseils de Sécurité</h3>
+          <ul class="safety-list">
+            <li><i class="fas fa-check-circle"></i> Contactez les forces de l'ordre en priorité</li>
+            <li><i class="fas fa-check-circle"></i> Ne divulguez pas d'informations personnelles</li>
+            <li><i class="fas fa-check-circle"></i> Signalez tout contenu suspect</li>
+            <li><i class="fas fa-check-circle"></i> Respectez la présomption d'innocence</li>
+          </ul>
+        </div>
+
+        <!-- Actions -->
+        <button class="btn btn-outline w-full" (click)="sharePost()" [class.btn-success-outline]="shareSuccess()">
+          <i class="fas" [ngClass]="shareSuccess() ? 'fa-check' : 'fa-share-nodes'"></i>
+          {{ shareSuccess() ? 'Lien copié !' : 'Partager cette alerte' }}
+        </button>
+
+        <button class="btn btn-ghost w-full btn-report-sidebar"
+          (click)="openReportModal()"
+          [disabled]="isAlreadyReported()"
+          style="margin-top:8px">
+          <i class="fas fa-flag"></i>
+          {{ isAlreadyReported() ? 'Publication signalée' : 'Signaler cette publication' }}
+        </button>
+
+        <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger w-full" style="margin-top:8px">
+          <i class="fas fa-plus"></i> Publier un cas
+        </a>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<div class="page-wrapper" *ngIf="loading()">
+  <div class="container">
+    <div class="detail-layout">
+      <div class="detail-main">
+        <div class="skeleton" style="height:32px;width:200px;margin-bottom:24px"></div>
+        <div class="skeleton" style="height:48px;width:100%;margin-bottom:16px"></div>
+        <div class="skeleton" style="height:24px;width:60%;margin-bottom:32px"></div>
+        <div class="skeleton" style="height:300px;width:100%;margin-bottom:24px"></div>
+        <div class="skeleton" style="height:16px;width:100%;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:16px;width:80%;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:16px;width:90%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div class="image-modal" *ngIf="imageModalOpen()" (click)="imageModalOpen.set(false)">
+  <button class="modal-close" (click)="imageModalOpen.set(false)"><i class="fas fa-xmark"></i></button>
+  <img *ngIf="post()!.image_url" [src]="post()!.image_url | mediaUrl" [alt]="post()!.title" (click)="$event.stopPropagation()">
+</div>
+
+<!-- Report Modal -->
+<div class="report-modal-overlay" *ngIf="reportModalOpen()" (click)="closeReportModal()">
+  <div class="report-modal" (click)="$event.stopPropagation()">
+    <div class="report-modal-header">
+      <h3><i class="fas fa-flag"></i> Signaler cette publication</h3>
+      <button class="modal-close-btn" (click)="closeReportModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+
+    <div *ngIf="!reportSubmitted()">
+      <p class="report-desc">Indiquez la raison du signalement. Notre équipe examinera votre demande.</p>
+      <div class="report-reasons">
+        <label class="report-reason-item" *ngFor="let r of ['Contenu haineux ou offensant', 'Doxxing / informations personnelles', 'Fausse information', 'Contenu inapproprié pour des mineurs', 'Autre']">
+          <input type="radio" name="reason" [value]="r" (change)="reportReason.set(r)" [checked]="reportReason() === r">
+          <span class="reason-custom"></span>
+          <span>{{ r }}</span>
+        </label>
+      </div>
+      <div class="report-actions">
+        <button class="btn btn-ghost btn-sm" (click)="closeReportModal()">Annuler</button>
+        <button class="btn btn-danger btn-sm" (click)="submitReport()"
+          [disabled]="!reportReason() || reportLoading()">
+          <span class="spinner" *ngIf="reportLoading()"></span>
+          <span *ngIf="!reportLoading()"><i class="fas fa-flag"></i> Envoyer le signalement</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="report-success" *ngIf="reportSubmitted()">
+      <i class="fas fa-circle-check"></i>
+      <p>Signalement envoyé. Merci pour votre vigilance.</p>
+    </div>
+  </div>
+</div>

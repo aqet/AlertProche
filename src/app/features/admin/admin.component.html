@@ -1,0 +1,443 @@
+<div class="admin-page page-wrapper">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="admin-header animate-fade-in">
+      <div class="admin-header-left">
+        <div class="admin-icon"><i class="fas fa-crown"></i></div>
+        <div>
+          <h1 class="admin-title">Panneau d'Administration</h1>
+          <p class="admin-subtitle">
+            Connecté en tant que
+            <span class="admin-role-chip"><i class="fas fa-crown"></i> {{ currentUser()?.pseudo }} — Admin</span>
+          </p>
+        </div>
+      </div>
+      <div class="admin-header-actions">
+        <a routerLink="/moderation" class="btn btn-ghost btn-sm">
+          <i class="fas fa-shield-halved"></i> Modération
+        </a>
+        <button class="btn btn-ghost btn-sm" (click)="loadStats()">
+          <i class="fas fa-rotate-right"></i> Actualiser
+        </button>
+      </div>
+    </div>
+
+    <!-- Feedback banners -->
+    <div class="alert-banner success animate-fade-in" *ngIf="actionSuccess()">
+      <i class="fas fa-circle-check"></i> {{ actionSuccess() }}
+    </div>
+    <div class="alert-banner error animate-fade-in" *ngIf="actionError()">
+      <i class="fas fa-circle-exclamation"></i> {{ actionError() }}
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs animate-fade-in stagger-1">
+      <button class="admin-tab" [class.active]="activeTab() === 'stats'" (click)="setTab('stats')">
+        <i class="fas fa-chart-line"></i> Statistiques
+      </button>
+      <button class="admin-tab" [class.active]="activeTab() === 'users'" (click)="setTab('users')">
+        <i class="fas fa-users"></i> Utilisateurs
+        <span class="tab-count" *ngIf="usersTotal() > 0">{{ usersTotal() }}</span>
+      </button>
+      <button class="admin-tab" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
+        <i class="fas fa-file-lines"></i> Publications
+        <span class="tab-count" *ngIf="postsTotal() > 0">{{ postsTotal() }}</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB STATS                                                          -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="activeTab() === 'stats'" class="animate-fade-in">
+
+      <div class="loading-state" *ngIf="statsLoading()">
+        <div class="spinner"></div> Chargement des statistiques...
+      </div>
+
+      <ng-container *ngIf="!statsLoading() && stats()">
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-users">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ stats()!.users.total }}</div>
+              <div class="kpi-label">Utilisateurs inscrits</div>
+              <div class="kpi-sub">+{{ stats()!.users.newThisWeek }} cette semaine</div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-posts">
+            <div class="kpi-icon"><i class="fas fa-file-lines"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ stats()!.posts.total }}</div>
+              <div class="kpi-label">Publications totales</div>
+              <div class="kpi-sub">+{{ stats()!.posts.newThisWeek }} cette semaine</div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-comments">
+            <div class="kpi-icon"><i class="fas fa-comments"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ stats()!.comments.total }}</div>
+              <div class="kpi-label">Commentaires</div>
+              <div class="kpi-sub">Total plateforme</div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-alert">
+            <div class="kpi-icon"><i class="fas fa-flag"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-value text-alert">{{ stats()!.posts.reported }}</div>
+              <div class="kpi-label">Posts signalés</div>
+              <div class="kpi-sub">En attente de modération</div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-warning">
+            <div class="kpi-icon"><i class="fas fa-eye-slash"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-value text-warning">{{ stats()!.posts.disabled }}</div>
+              <div class="kpi-label">Posts désactivés</div>
+              <div class="kpi-sub">Par les modérateurs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Répartition en 2 colonnes -->
+        <div class="stats-grid">
+
+          <!-- Répartition utilisateurs -->
+          <div class="stats-card">
+            <h3 class="stats-card-title"><i class="fas fa-users"></i> Répartition des rôles</h3>
+            <div class="role-bars">
+              <div class="role-bar-item">
+                <div class="role-bar-label">
+                  <span class="role-dot role-dot-standard"></span>
+                  <span>Standard</span>
+                  <span class="role-bar-count">{{ stats()!.users.standard }}</span>
+                </div>
+                <div class="role-bar-track">
+                  <div class="role-bar-fill role-fill-standard"
+                    [style.width.%]="stats()!.users.total > 0 ? (stats()!.users.standard / stats()!.users.total * 100) : 0">
+                  </div>
+                </div>
+              </div>
+              <div class="role-bar-item">
+                <div class="role-bar-label">
+                  <span class="role-dot role-dot-mod"></span>
+                  <span>Modérateur</span>
+                  <span class="role-bar-count">{{ stats()!.users.moderateur }}</span>
+                </div>
+                <div class="role-bar-track">
+                  <div class="role-bar-fill role-fill-mod"
+                    [style.width.%]="stats()!.users.total > 0 ? (stats()!.users.moderateur / stats()!.users.total * 100) : 0">
+                  </div>
+                </div>
+              </div>
+              <div class="role-bar-item">
+                <div class="role-bar-label">
+                  <span class="role-dot role-dot-admin"></span>
+                  <span>Admin</span>
+                  <span class="role-bar-count">{{ stats()!.users.admin }}</span>
+                </div>
+                <div class="role-bar-track">
+                  <div class="role-bar-fill role-fill-admin"
+                    [style.width.%]="stats()!.users.total > 0 ? (stats()!.users.admin / stats()!.users.total * 100) : 0">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Répartition posts par type -->
+          <div class="stats-card">
+            <h3 class="stats-card-title"><i class="fas fa-chart-pie"></i> Publications par type</h3>
+            <div class="type-stats">
+              <div class="type-stat-item">
+                <div class="type-stat-header">
+                  <span class="badge badge-disparition"><i class="fas fa-triangle-exclamation"></i> Disparition</span>
+                  <span class="type-stat-num">{{ stats()!.posts.disparitions }}</span>
+                </div>
+                <div class="type-bar-track">
+                  <div class="type-bar-fill type-fill-disparition"
+                    [style.width.%]="stats()!.posts.total > 0 ? (stats()!.posts.disparitions / stats()!.posts.total * 100) : 0">
+                  </div>
+                </div>
+              </div>
+              <div class="type-stat-item">
+                <div class="type-stat-header">
+                  <span class="badge badge-abus"><i class="fas fa-shield-exclamation"></i> Abus</span>
+                  <span class="type-stat-num">{{ stats()!.posts.abus }}</span>
+                </div>
+                <div class="type-bar-track">
+                  <div class="type-bar-fill type-fill-abus"
+                    [style.width.%]="stats()!.posts.total > 0 ? (stats()!.posts.abus / stats()!.posts.total * 100) : 0">
+                  </div>
+                </div>
+              </div>
+              <div class="type-stat-item">
+                <div class="type-stat-header">
+                  <span class="badge badge-prevention"><i class="fas fa-circle-info"></i> Prévention</span>
+                  <span class="type-stat-num">{{ stats()!.posts.prevention }}</span>
+                </div>
+                <div class="type-bar-track">
+                  <div class="type-bar-fill type-fill-prevention"
+                    [style.width.%]="stats()!.posts.total > 0 ? (stats()!.posts.prevention / stats()!.posts.total * 100) : 0">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activité 30 jours -->
+          <div class="stats-card stats-card-wide">
+            <h3 class="stats-card-title"><i class="fas fa-chart-bar"></i> Activité — 30 derniers jours</h3>
+            <div class="activity-chart" *ngIf="stats()!.activityByDay.length > 0; else noActivity">
+              <div class="activity-bars">
+                <div class="activity-bar-wrap" *ngFor="let day of stats()!.activityByDay">
+                  <div class="activity-bar"
+                    [style.height.%]="getMaxActivity() > 0 ? (day.count / getMaxActivity() * 100) : 0"
+                    [title]="day._id + ' : ' + day.count + ' post(s)'">
+                  </div>
+                  <span class="activity-bar-label">{{ formatDayLabel(day._id) }}</span>
+                </div>
+              </div>
+            </div>
+            <ng-template #noActivity>
+              <div class="no-activity">
+                <i class="fas fa-chart-bar"></i>
+                <p>Aucune activité sur les 30 derniers jours.</p>
+              </div>
+            </ng-template>
+          </div>
+
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB USERS                                                          -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="activeTab() === 'users'" class="animate-fade-in">
+
+      <!-- Toolbar -->
+      <div class="table-toolbar">
+        <div class="search-wrap">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" class="form-control search-input"
+            placeholder="Rechercher par pseudo ou email..."
+            [(ngModel)]="userSearch"
+            [ngModel]="userSearch()"
+            (ngModelChange)="userSearch.set($event); onSearchChange()">
+        </div>
+        <span class="table-count">{{ usersTotal() }} utilisateur(s)</span>
+      </div>
+
+      <div class="loading-state" *ngIf="usersLoading()">
+        <div class="spinner"></div> Chargement...
+      </div>
+
+      <div class="admin-table-wrap" *ngIf="!usersLoading()">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Posts</th>
+              <th>Commentaires</th>
+              <th>Inscrit le</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users(); trackBy: trackById"
+              [class.row-self]="user._id === currentUser()?._id">
+              <td>
+                <div class="user-cell">
+                  <div class="user-cell-avatar">{{ user.pseudo.charAt(0).toUpperCase() }}</div>
+                  <span class="user-cell-pseudo">{{ user.pseudo }}</span>
+                  <span class="self-badge" *ngIf="user._id === currentUser()?._id">Vous</span>
+                </div>
+              </td>
+              <td class="email-cell">{{ user.email }}</td>
+              <td>
+                <!-- Inline role editor -->
+                <div *ngIf="roleChangeUserId() !== user._id">
+                  <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role)">{{ user.role }}</span>
+                </div>
+                <div class="role-editor" *ngIf="roleChangeUserId() === user._id">
+                  <select class="form-control form-control-sm"
+                    [ngModel]="roleChangeValue()"
+                    (ngModelChange)="roleChangeValue.set($event)">
+                    <option *ngFor="let r of ROLES" [value]="r">{{ r }}</option>
+                  </select>
+                  <button class="btn btn-sm btn-accent" (click)="saveRoleChange(user._id)" [disabled]="actionLoading()">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button class="btn btn-sm btn-ghost" (click)="cancelRoleChange()">
+                    <i class="fas fa-xmark"></i>
+                  </button>
+                </div>
+              </td>
+              <td class="num-cell">{{ user.postCount }}</td>
+              <td class="num-cell">{{ user.commentCount }}</td>
+              <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
+              <td>
+                <div class="row-actions" *ngIf="user._id !== currentUser()?._id">
+                  <button class="btn btn-sm btn-ghost-icon" (click)="startRoleChange(user)"
+                    title="Changer le rôle" *ngIf="roleChangeUserId() !== user._id">
+                    <i class="fas fa-user-pen"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger-icon" (click)="confirmDeleteUser(user._id)"
+                    title="Supprimer le compte" *ngIf="confirmDeleteUserId() !== user._id">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <!-- Confirm delete -->
+                  <div class="confirm-inline" *ngIf="confirmDeleteUserId() === user._id">
+                    <span>Supprimer ?</span>
+                    <button class="btn btn-danger btn-sm" (click)="deleteUser(user._id)" [disabled]="actionLoading()">
+                      <span class="spinner" *ngIf="actionLoading()"></span>
+                      <span *ngIf="!actionLoading()">Oui</span>
+                    </button>
+                    <button class="btn btn-ghost btn-sm" (click)="cancelDeleteUser()">Non</button>
+                  </div>
+                </div>
+                <span class="text-muted" *ngIf="user._id === currentUser()?._id" style="font-size:0.75rem">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty-table" *ngIf="users().length === 0">
+          <i class="fas fa-users-slash"></i>
+          <p>Aucun utilisateur trouvé.</p>
+        </div>
+      </div>
+
+      <!-- Pagination users -->
+      <div class="pagination" *ngIf="usersPages() > 1">
+        <button class="page-btn" [disabled]="usersPage() === 1" (click)="loadUsers(usersPage() - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="page-btn" *ngFor="let p of pagesArray(usersPages())"
+          [class.active]="p === usersPage()" (click)="loadUsers(p)">{{ p }}</button>
+        <button class="page-btn" [disabled]="usersPage() === usersPages()" (click)="loadUsers(usersPage() + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB POSTS                                                          -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="activeTab() === 'posts'" class="animate-fade-in">
+
+      <!-- Toolbar -->
+      <div class="table-toolbar">
+        <div class="filter-chips-row">
+          <button *ngFor="let f of POST_FILTERS"
+            class="filter-chip"
+            [class.active]="postsFilter() === f.value"
+            (click)="postsFilter.set(f.value); onPostsFilterChange()">
+            {{ f.label }}
+          </button>
+        </div>
+        <span class="table-count">{{ postsTotal() }} publication(s)</span>
+      </div>
+
+      <div class="loading-state" *ngIf="postsLoading()">
+        <div class="spinner"></div> Chargement...
+      </div>
+
+      <div class="admin-table-wrap" *ngIf="!postsLoading()">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Publication</th>
+              <th>Type</th>
+              <th>Auteur</th>
+              <th>Lieu</th>
+              <th>Statut</th>
+              <th>Commentaires</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let post of posts(); trackBy: trackById"
+              [class.row-reported]="post.isReported"
+              [class.row-disabled]="!post.isActive">
+              <td>
+                <div class="post-cell">
+                  <a [routerLink]="['/posts', post._id]" target="_blank" class="post-cell-title">
+                    {{ post.title | slice:0:60 }}{{ post.title.length > 60 ? '...' : '' }}
+                  </a>
+                  <div class="post-cell-flags">
+                    <span class="flag-chip flag-reported" *ngIf="post.isReported">
+                      <i class="fas fa-flag"></i> Signalé
+                    </span>
+                    <span class="flag-chip flag-disabled" *ngIf="!post.isActive">
+                      <i class="fas fa-eye-slash"></i> Désactivé
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge" [ngClass]="getBadgeClass(post.type)">{{ post.type }}</span></td>
+              <td>
+                <div class="author-cell">
+                  <span>{{ post.isAnonymous ? 'Anonyme' : post.authorPseudo }}</span>
+                  <span class="author-email" *ngIf="!post.isAnonymous">{{ post.authorEmail }}</span>
+                </div>
+              </td>
+              <td class="location-cell">{{ post.location }}</td>
+              <td>
+                <span class="status-dot" [class.status-active]="post.isActive" [class.status-off]="!post.isActive">
+                  {{ post.isActive ? 'Actif' : 'Désactivé' }}
+                </span>
+              </td>
+              <td class="num-cell">{{ post.commentCount }}</td>
+              <td class="date-cell">{{ formatDate(post.createdAt) }}</td>
+              <td>
+                <div class="row-actions">
+                  <a [routerLink]="['/posts', post._id]" target="_blank"
+                    class="btn btn-sm btn-ghost-icon" title="Voir la publication">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <button class="btn btn-sm btn-danger-icon" (click)="confirmDeletePost(post._id)"
+                    title="Supprimer définitivement" *ngIf="confirmDeletePostId() !== post._id">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <div class="confirm-inline" *ngIf="confirmDeletePostId() === post._id">
+                    <span>Supprimer ?</span>
+                    <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)" [disabled]="actionLoading()">
+                      <span class="spinner" *ngIf="actionLoading()"></span>
+                      <span *ngIf="!actionLoading()">Oui</span>
+                    </button>
+                    <button class="btn btn-ghost btn-sm" (click)="cancelDeletePost()">Non</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty-table" *ngIf="posts().length === 0">
+          <i class="fas fa-file-circle-xmark"></i>
+          <p>Aucune publication trouvée.</p>
+        </div>
+      </div>
+
+      <!-- Pagination posts -->
+      <div class="pagination" *ngIf="postsPages() > 1">
+        <button class="page-btn" [disabled]="postsPage() === 1" (click)="loadPosts(postsPage() - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="page-btn" *ngFor="let p of pagesArray(postsPages())"
+          [class.active]="p === postsPage()" (click)="loadPosts(p)">{{ p }}</button>
+        <button class="page-btn" [disabled]="postsPage() === postsPages()" (click)="loadPosts(postsPage() + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,188 @@
+<div class="post-form-page page-wrapper">
+  <div class="container">
+    <div class="form-layout">
+
+      <!-- Header -->
+      <div class="form-header animate-fade-in">
+        <a routerLink="/" class="back-link">
+          <i class="fas fa-arrow-left"></i> Retour
+        </a>
+        <div class="form-title-block">
+          <h1 class="section-title">Publier un Cas</h1>
+          <p class="section-subtitle">Votre témoignage sera relu et modéré automatiquement pour protéger la communauté.</p>
+        </div>
+      </div>
+
+      <div class="form-body animate-fade-in stagger-1">
+        <!-- Error -->
+        <div class="alert-banner error" *ngIf="error()">
+          <i class="fas fa-circle-exclamation"></i> {{ error() }}
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-grid">
+
+            <!-- LEFT COLUMN -->
+            <div class="form-col-main">
+
+              <!-- Type Selection -->
+              <div class="type-selector form-group">
+                <label class="form-label">Type de publication <span class="required">*</span></label>
+                <div class="type-cards">
+                  <label *ngFor="let t of postTypes" class="type-card"
+                    [class.selected]="form.get('type')?.value === t"
+                    [class.type-disparition]="t === 'Disparition'"
+                    [class.type-abus]="t === 'Abus'"
+                    [class.type-prevention]="t === 'Prevention'">
+                    <input type="radio" formControlName="type" [value]="t" hidden>
+                    <i class="fas" [ngClass]="{
+                      'fa-triangle-exclamation': t === 'Disparition',
+                      'fa-shield-exclamation': t === 'Abus',
+                      'fa-circle-info': t === 'Prevention'
+                    }"></i>
+                    <span>{{ t }}</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Title -->
+              <div class="form-group">
+                <label class="form-label" for="post-title">
+                  Titre de l'alerte <span class="required">*</span>
+                  <span class="char-count">{{ form.get('title')?.value?.length || 0 }}/150</span>
+                </label>
+                <input id="post-title" type="text" class="form-control"
+                  formControlName="title"
+                  placeholder="ex: URGENT – Disparition de Kalinda, 7 ans – Yaoundé Centre">
+                <span class="form-error" *ngIf="hasError('title', 'required')">
+                  <i class="fas fa-circle-exclamation"></i> Titre requis
+                </span>
+                <span class="form-error" *ngIf="hasError('title', 'minlength')">
+                  <i class="fas fa-circle-exclamation"></i> 10 caractères minimum
+                </span>
+              </div>
+
+              <!-- Content -->
+              <div class="form-group">
+                <label class="form-label" for="post-content">
+                  Description détaillée <span class="required">*</span>
+                  <span class="char-count">{{ form.get('content')?.value?.length || 0 }} car.</span>
+                </label>
+                <textarea id="post-content" class="form-control" rows="8"
+                  formControlName="content"
+                  placeholder="Décrivez la situation en détail : date, heure, lieu précis, description physique, circonstances... Plus votre description est précise, plus la communauté peut aider."></textarea>
+                <span class="form-error" *ngIf="hasError('content', 'required')">
+                  <i class="fas fa-circle-exclamation"></i> Description requise
+                </span>
+                <span class="form-error" *ngIf="hasError('content', 'minlength')">
+                  <i class="fas fa-circle-exclamation"></i> 30 caractères minimum
+                </span>
+              </div>
+
+              <!-- Location -->
+              <div class="form-group">
+                <label class="form-label" for="post-location">
+                  Localisation <span class="required">*</span>
+                </label>
+                <div class="input-icon-wrap">
+                  <i class="fas fa-location-dot input-icon"></i>
+                  <select id="post-location" class="form-control input-with-icon" formControlName="location">
+                    <option value="">-- Sélectionnez une ville --</option>
+                    <option *ngFor="let city of camerounCities" [value]="city">{{ city }}</option>
+                  </select>
+                </div>
+                <span class="form-error" *ngIf="hasError('location', 'required')">
+                  <i class="fas fa-circle-exclamation"></i> Localisation requise
+                </span>
+              </div>
+
+              <!-- Anonymous Toggle -->
+              <div class="form-group">
+                <label class="anon-toggle">
+                  <div class="toggle-switch">
+                    <input type="checkbox" formControlName="isAnonymous" id="anon-toggle">
+                    <span class="toggle-track"></span>
+                  </div>
+                  <div class="anon-label">
+                    <strong>Publier anonymement</strong>
+                    <span>Votre pseudo ne sera pas affiché publiquement</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="form-col-side">
+
+              <!-- Image Upload -->
+              <div class="form-group">
+                <label class="form-label">Photo associée (optionnel)</label>
+
+                <!-- Drop Zone -->
+                <div class="drop-zone"
+                  *ngIf="!previewUrl()"
+                  [class.dragover]="dragOver()"
+                  (dragover)="onDragOver($event)"
+                  (dragleave)="onDragLeave()"
+                  (drop)="onDrop($event)"
+                  (click)="fileInput.click()">
+                  <input #fileInput type="file" accept=".jpg,.jpeg,.png" hidden (change)="onFileSelect($event)">
+                  <div class="drop-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                  <p class="drop-title">Glissez une photo ici</p>
+                  <p class="drop-sub">ou <span class="drop-link">cliquez pour sélectionner</span></p>
+                  <p class="drop-hint">JPG, PNG — Max 5 Mo</p>
+                </div>
+
+                <!-- Preview -->
+                <div class="image-preview" *ngIf="previewUrl()">
+                  <img [src]="previewUrl()" alt="Aperçu" class="preview-img">
+                  <div class="preview-overlay">
+                    <div class="preview-info">
+                      <i class="fas fa-image"></i>
+                      <span>{{ selectedFile()?.name }}</span>
+                      <span class="preview-size">{{ getFileSizeLabel() }}</span>
+                    </div>
+                    <button type="button" class="preview-remove" (click)="removeImage()">
+                      <i class="fas fa-trash"></i> Supprimer
+                    </button>
+                  </div>
+                </div>
+
+                <div class="alert-banner error" *ngIf="imageError()">
+                  <i class="fas fa-circle-exclamation"></i> {{ imageError() }}
+                </div>
+              </div>
+
+              <!-- Moderation Info -->
+              <div class="moderation-card">
+                <div class="mod-header">
+                  <i class="fas fa-robot"></i>
+                  <strong>Modération automatique</strong>
+                </div>
+                <ul class="mod-rules">
+                  <li><i class="fas fa-check"></i> Filtre anti-discours haineux</li>
+                  <li><i class="fas fa-check"></i> Protection anti-doxxing</li>
+                  <li><i class="fas fa-check"></i> Blocage des numéros de téléphone</li>
+                  <li><i class="fas fa-check"></i> Modération en temps réel</li>
+                </ul>
+                <p class="mod-note">Votre publication sera analysée automatiquement avant d'être publiée.</p>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-danger w-full btn-lg" [disabled]="loading()">
+                <span class="spinner" *ngIf="loading()"></span>
+                <ng-container *ngIf="!loading()">
+                  <i class="fas fa-paper-plane"></i> Publier le Cas
+                </ng-container>
+              </button>
+
+              <a routerLink="/" class="btn btn-ghost w-full" style="text-align:center; margin-top:8px">
+                Annuler
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
