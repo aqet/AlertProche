@@ -16,6 +16,11 @@
           <i class="fas fa-house"></i> Accueil
         </a>
       </li>
+      <li>
+        <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">
+          <i class="fas fa-circle-info"></i> À propos
+        </a>
+      </li>
       <li *ngIf="isAuth()">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
           <i class="fas fa-gauge"></i> Mon Espace
@@ -77,6 +82,9 @@
   <div class="mobile-menu" [class.open]="menuOpen()">
     <ul>
       <li><a routerLink="/" (click)="closeMenu()"><i class="fas fa-house"></i> Accueil</a></li>
+      <li>
+        <a routerLink="/a-propos" (click)="closeMenu()"><i class="fas fa-circle-info"></i> À propos</a>
+      </li>
       <li *ngIf="isAuth()">
         <a routerLink="/dashboard" (click)="closeMenu()"><i class="fas fa-gauge"></i> Mon Espace</a>
       </li>

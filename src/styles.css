@@ -376,6 +376,18 @@ select.form-control option {
   border: 1px solid rgba(91, 140, 245, 0.25);
 }
 
+.badge-appel {
+  background: rgba(236, 72, 153, 0.12);
+  color: #ec4899;
+  border: 1px solid rgba(236, 72, 153, 0.25);
+  animation: pulse-pink 2s infinite;
+}
+
+@keyframes pulse-pink {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.12); }
+}
+
 /* --- Spinner --- */
 .spinner {
   display: inline-block;

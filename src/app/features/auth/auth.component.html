@@ -146,7 +146,9 @@
           <div class="privacy-icon"><i class="fas fa-shield-halved"></i></div>
           <div class="privacy-text">
             <strong>Charte de confidentialité</strong>
-            <p>Vos données personnelles (email, identité) ne seront jamais rendues publiques. Vous pouvez publier en mode anonyme à tout moment.</p>
+            <p>Vos données personnelles (email, identité) ne seront jamais rendues publiques. Vous pouvez publier en mode anonyme à tout moment.
+              <a routerLink="/confidentialite" target="_blank" class="privacy-link">Lire la politique complète →</a>
+            </p>
           </div>
         </div>
 
@@ -154,7 +156,7 @@
           <label class="checkbox-label" for="reg-terms">
             <input type="checkbox" id="reg-terms" formControlName="acceptTerms">
             <span class="checkbox-custom"></span>
-            J'accepte la charte de confidentialité et les conditions d'utilisation
+            <span>J'accepte la <a routerLink="/confidentialite" target="_blank" class="privacy-link">politique de confidentialité</a> et les conditions d'utilisation</span>
           </label>
           <span class="form-error" *ngIf="hasError(registerForm, 'acceptTerms', 'required')">
             <i class="fas fa-circle-exclamation"></i> Vous devez accepter la charte

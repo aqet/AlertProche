@@ -1,5 +1,5 @@
 // Post model
-export type PostType = 'Disparition' | 'Abus' | 'Prevention';
+export type PostType = 'Disparition' | 'Abus' | 'Prevention' | 'Appel à l\'aide';
 
 export interface Post {
   _id: string;

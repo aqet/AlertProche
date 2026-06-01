@@ -696,3 +696,14 @@
 .detail-image:hover :host ::ng-deep .detail-img {
   transform: scale(1.02);
 }
+
+/* CTA Appel à l'aide */
+.detail-cta-appel {
+  background: rgba(236, 72, 153, 0.08);
+  border-color: rgba(236, 72, 153, 0.25);
+}
+
+.cta-icon-appel {
+  background: rgba(236, 72, 153, 0.15);
+  color: #ec4899;
+}

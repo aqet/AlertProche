@@ -78,14 +78,20 @@ export class PostDetailComponent implements OnInit {
 
   getBadgeClass(): string {
     const map: Record<string, string> = {
-      'Disparition': 'badge-disparition', 'Abus': 'badge-abus', 'Prevention': 'badge-prevention'
+      'Disparition': 'badge-disparition',
+      'Abus': 'badge-abus',
+      'Prevention': 'badge-prevention',
+      'Appel à l\'aide': 'badge-appel'
     };
     return map[this.post()?.type || ''] || '';
   }
 
   getBadgeIcon(): string {
     const map: Record<string, string> = {
-      'Disparition': 'fa-triangle-exclamation', 'Abus': 'fa-shield-exclamation', 'Prevention': 'fa-circle-info'
+      'Disparition': 'fa-triangle-exclamation',
+      'Abus': 'fa-shield-exclamation',
+      'Prevention': 'fa-circle-info',
+      'Appel à l\'aide': 'fa-hand-holding-heart'
     };
     return map[this.post()?.type || ''] || 'fa-circle';
   }

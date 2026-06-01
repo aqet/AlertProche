@@ -37,6 +37,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent)
   },
   {
+    path: 'confidentialite',
+    loadComponent: () => import('./features/privacy/privacy.component').then(m => m.PrivacyComponent)
+  },
+  {
+    path: 'a-propos',
+    loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

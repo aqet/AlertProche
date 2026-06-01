@@ -33,15 +33,22 @@
                     [class.selected]="form.get('type')?.value === t"
                     [class.type-disparition]="t === 'Disparition'"
                     [class.type-abus]="t === 'Abus'"
-                    [class.type-prevention]="t === 'Prevention'">
+                    [class.type-prevention]="t === 'Prevention'"
+                    [class.type-appel]="t === 'Appel à l\'aide'">
                     <input type="radio" formControlName="type" [value]="t" hidden>
                     <i class="fas" [ngClass]="{
                       'fa-triangle-exclamation': t === 'Disparition',
                       'fa-shield-exclamation': t === 'Abus',
-                      'fa-circle-info': t === 'Prevention'
+                      'fa-circle-info': t === 'Prevention',
+                      'fa-hand-holding-heart': t === 'Appel à l\'aide'
                     }"></i>
                     <span>{{ t }}</span>
                   </label>
+                </div>
+                <!-- Description contextuelle selon le type sélectionné -->
+                <div class="type-hint" *ngIf="form.get('type')?.value">
+                  <i class="fas fa-circle-info"></i>
+                  {{ postTypeDescriptions[form.get('type')?.value] }}
                 </div>
               </div>
 

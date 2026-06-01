@@ -27,7 +27,14 @@ export class PostFormComponent {
   readonly MAX_SIZE = 5 * 1024 * 1024; // 5MB
   readonly ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
-  postTypes: PostType[] = ['Disparition', 'Abus', 'Prevention'];
+  postTypes: PostType[] = ['Disparition', 'Abus', 'Prevention', 'Appel à l\'aide'];
+
+  postTypeDescriptions: Record<string, string> = {
+    'Disparition': 'Personne disparue — enfant, adulte, personne âgée',
+    'Abus': 'Maltraitance, exploitation, violence sur mineur ou personne vulnérable',
+    'Prevention': 'Sensibilisation, guide, information utile à la communauté',
+    'Appel à l\'aide': 'Personne à l\'hôpital sans famille identifiée, personne en détresse, famille introuvable'
+  };
 
   camerounCities = [
     'Yaoundé', 'Douala', 'Bamenda', 'Bafoussam', 'Garoua',

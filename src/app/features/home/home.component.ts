@@ -82,13 +82,14 @@ export class HomeComponent implements OnInit {
     return result;
   });
 
-  urgentPosts = computed(() => this.posts().filter(p => p.type === 'Disparition'));
+  urgentPosts = computed(() => this.posts().filter(p => p.type === 'Disparition' || p.type === 'Appel à l\'aide'));
 
   stats = computed(() => ({
     total: this.posts().length,
     disparitions: this.posts().filter(p => p.type === 'Disparition').length,
     abus: this.posts().filter(p => p.type === 'Abus').length,
-    prevention: this.posts().filter(p => p.type === 'Prevention').length
+    prevention: this.posts().filter(p => p.type === 'Prevention').length,
+    appels: this.posts().filter(p => p.type === 'Appel à l\'aide').length
   }));
 
   constructor(private postService: PostService, public auth: AuthService) {}

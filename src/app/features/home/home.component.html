@@ -43,12 +43,136 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
+          <span class="stat-value" style="color:#ec4899">{{ stats().appels }}</span>
+          <span class="stat-label">Appels à l'aide</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
           <span class="stat-value text-accent">{{ stats().prevention }}</span>
           <span class="stat-label">Publications prévention</span>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION : POURQUOI CETTE PLATEFORME (visiteurs non connectés) -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="!isAuth()">
+
+  <section class="why-section">
+    <div class="container">
+      <div class="why-header">
+        <div class="why-badge">
+          <i class="fas fa-circle-question"></i> Pourquoi AlertProche ?
+        </div>
+        <h2 class="why-title">
+          Face à la recrudescence des abus et disparitions d'enfants au Cameroun,<br>
+          <span class="text-accent">chaque citoyen peut faire la différence.</span>
+        </h2>
+        <p class="why-desc">
+          AlertProche est un espace numérique citoyen, sécurisé et indépendant. Contrairement aux réseaux sociaux non modérés,
+          notre plateforme centralise les alertes légitimes, protège l'anonymat des témoins et structure l'entraide communautaire
+          — sans doxxing, sans diffamation, sans lynchage médiatique.
+        </p>
+      </div>
+
+      <!-- Piliers -->
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon pillar-icon-alert">
+            <i class="fas fa-triangle-exclamation"></i>
+          </div>
+          <h3>Signaler</h3>
+          <p>Publiez un avis de disparition, un témoignage d'abus ou un contenu de prévention. Chaque signalement est modéré automatiquement avant publication.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon pillar-icon-search">
+            <i class="fas fa-magnifying-glass"></i>
+          </div>
+          <h3>Rechercher</h3>
+          <p>Consultez le flux des alertes actives, filtrez par ville ou type de cas. Retrouvez rapidement les avis de recherche en cours dans votre région.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon pillar-icon-community">
+            <i class="fas fa-people-group"></i>
+          </div>
+          <h3>Soutenir</h3>
+          <p>Commentez, partagez des informations utiles, apportez un soutien moral ou un conseil juridique. La communauté agit ensemble.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon pillar-icon-shield">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+          <h3>Protéger</h3>
+          <p>Votre anonymat est garanti. Un système de modération automatique bloque les contenus haineux, le doxxing et les appels à la violence.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION : COMMENT ÇA MARCHE                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="how-section">
+    <div class="container">
+      <div class="how-header">
+        <div class="why-badge">
+          <i class="fas fa-list-ol"></i> Comment ça marche ?
+        </div>
+        <h2 class="why-title">Simple, rapide, sécurisé.</h2>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h4>Créez un compte</h4>
+            <p>Inscription gratuite avec un pseudo unique. Votre email reste confidentiel et n'est jamais affiché publiquement.</p>
+          </div>
+        </div>
+        <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h4>Publiez un cas</h4>
+            <p>Remplissez le formulaire structuré : titre, description, localisation, type de cas. Ajoutez une photo si disponible.</p>
+          </div>
+        </div>
+        <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h4>La communauté réagit</h4>
+            <p>Les membres, psychologues et conseillers juridiques peuvent commenter et apporter leur aide directement sur votre publication.</p>
+          </div>
+        </div>
+        <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <h4>Ensemble on agit</h4>
+            <p>Partagez l'alerte, contactez les autorités, mobilisez votre réseau. Chaque information partagée peut sauver une vie.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="how-cta">
+        <a routerLink="/auth" *ngIf="!isAuth()" class="btn btn-primary btn-lg">
+          <i class="fas fa-user-plus"></i> Rejoindre la communauté
+        </a>
+        <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger btn-lg">
+          <i class="fas fa-triangle-exclamation"></i> Publier un cas maintenant
+        </a>
+        <a href="#flux" class="btn btn-ghost btn-lg">
+          <i class="fas fa-arrow-down"></i> Voir les alertes en cours
+        </a>
+      </div>
+    </div>
+  </section>
+
+  </ng-container>
 
   <!-- Urgent Alerts Banner -->
   <section class="urgent-banner" *ngIf="urgentPosts().length > 0">
@@ -113,6 +237,10 @@
                 <button class="chip chip-prevention" [class.active]="filterType() === 'Prevention'"
                   (click)="setFilter('Prevention')">
                   <i class="fas fa-circle-info"></i> Prévention
+                </button>
+                <button class="chip chip-appel" [class.active]="filterType() === 'Appel à l\'aide'"
+                  (click)="setFilter('Appel à l\'aide')">
+                  <i class="fas fa-hand-holding-heart"></i> Appel à l'aide
                 </button>
               </div>
             </div>
