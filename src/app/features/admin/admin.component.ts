@@ -13,7 +13,7 @@ type AdminTab = 'stats' | 'users' | 'posts';
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule, MediaUrlPipe],
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css']
+  styleUrl: './admin.component.css'
 })
 export class AdminComponent implements OnInit {
   activeTab = signal<AdminTab>('stats');
