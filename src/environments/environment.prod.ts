@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.alertproche.cm',
+  apiUrl: 'https://alert-proche-api.vercel.app',
 };
