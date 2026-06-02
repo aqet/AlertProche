@@ -43,8 +43,7 @@ export class AuthService {
   register(pseudo: string, password: string, verifyToken: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
       `${this.API}/register`,
-      { pseudo, password },
-      { headers: { 'x-verify-token': verifyToken } }
+      { pseudo, password, verifyToken }  // token dans le body, pas dans le header
     ).pipe(tap(res => this.saveSession(res)));
   }
 
