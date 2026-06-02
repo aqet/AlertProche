@@ -1,37 +1,66 @@
 <div class="home-page">
 
-  <!-- Hero Section -->
+  <!-- Hero Slider -->
   <section class="hero">
     <div class="hero-bg">
       <div class="hero-orb orb-1"></div>
       <div class="hero-orb orb-2"></div>
       <div class="hero-grid"></div>
     </div>
-    <div class="container hero-content">
-      <div class="hero-badge animate-fade-in">
-        <i class="fas fa-shield-heart"></i> Plateforme Citoyenne Sécurisée
-      </div>
-      <h1 class="hero-title animate-fade-in stagger-1">
-        Protéger les <span class="text-accent">mineurs</span>,<br>
-        c'est l'affaire de <span class="text-alert">tous</span>.
-      </h1>
-      <p class="hero-subtitle animate-fade-in stagger-2">
-        Signalez, recherchez et soutenez. Une communauté citoyenne unie pour la protection des enfants au Cameroun.
-      </p>
-      <div class="hero-actions animate-fade-in stagger-3">
-        <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger btn-lg">
-          <i class="fas fa-triangle-exclamation"></i> Publier un Cas
-        </a>
-        <a routerLink="/auth" *ngIf="!isAuth()" class="btn btn-danger btn-lg">
-          <i class="fas fa-triangle-exclamation"></i> Signaler un Cas
-        </a>
-        <a href="#flux" class="btn btn-ghost btn-lg">
-          <i class="fas fa-arrow-down"></i> Voir les Alertes
-        </a>
-      </div>
 
-      <!-- Stats -->
-      <div class="hero-stats animate-fade-in stagger-4">
+    <!-- Slides -->
+    <div class="hero-slider">
+      <div class="hero-slide"
+        *ngFor="let slide of heroSlides; let i = index"
+        [class.active]="currentSlide() === i"
+        [class.prev]="currentSlide() === (i + 1) % heroSlides.length">
+
+        <div class="container hero-content">
+          <!-- Badge type -->
+          <div class="hero-badge animate-fade-in" [ngClass]="slide.color + '-badge'">
+            <i class="fas" [ngClass]="slide.icon"></i> {{ slide.type }}
+          </div>
+
+          <!-- Titre -->
+          <h1 class="hero-title">{{ slide.title }}</h1>
+
+          <!-- Sous-titre -->
+          <p class="hero-subtitle">{{ slide.subtitle }}</p>
+
+          <!-- Actions -->
+          <div class="hero-actions">
+            <a [routerLink]="slide.ctaRoute"
+              [queryParams]="isAuth() ? {type: slide.type} : null"
+              *ngIf="isAuth()"
+              class="btn btn-lg hero-cta-btn" [ngClass]="slide.color + '-btn'">
+              <i class="fas" [ngClass]="slide.ctaIcon"></i> {{ slide.cta }}
+            </a>
+            <a routerLink="/auth" *ngIf="!isAuth()"
+              class="btn btn-lg hero-cta-btn" [ngClass]="slide.color + '-btn'">
+              <i class="fas" [ngClass]="slide.ctaIcon"></i> {{ slide.cta }}
+            </a>
+            <a href="#flux" class="btn btn-ghost btn-lg">
+              <i class="fas fa-arrow-down"></i> Voir les alertes
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicateurs de slide -->
+    <div class="slide-indicators">
+      <button *ngFor="let slide of heroSlides; let i = index"
+        class="slide-dot"
+        [class.active]="currentSlide() === i"
+        [ngClass]="slide.color + '-dot'"
+        (click)="goToSlide(i)"
+        [title]="slide.type">
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="container" style="display: flex; justify-content: center;">
+      <div class="hero-stats">
         <div class="stat-item">
           <span class="stat-value text-alert">{{ stats().disparitions }}</span>
           <span class="stat-label">Disparitions actives</span>

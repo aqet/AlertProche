@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   posts = signal<Post[]>([]);
   loading = signal(true);
   error = signal('');
@@ -92,10 +92,73 @@ export class HomeComponent implements OnInit {
     appels: this.posts().filter(p => p.type === 'Appel à l\'aide').length
   }));
 
+  // ── HERO SLIDER ────────────────────────────────────────────────────
+  currentSlide = signal(0);
+  private slideInterval: any;
+
+  readonly heroSlides = [
+    {
+      type: 'Disparition',
+      icon: 'fa-triangle-exclamation',
+      color: 'slide-disparition',
+      title: 'Chaque disparition mérite une réponse.',
+      subtitle: 'Publiez un avis de recherche, mobilisez la communauté et retrouvez les personnes disparues.',
+      cta: 'Signaler une disparition',
+      ctaRoute: '/posts/new',
+      ctaIcon: 'fa-triangle-exclamation',
+    },
+    {
+      type: 'Abus',
+      icon: 'fa-shield-exclamation',
+      color: 'slide-abus',
+      title: 'Ensemble contre les abus et l\'exploitation.',
+      subtitle: 'Témoignez, signalez et protégez les enfants et personnes vulnérables contre toute forme de maltraitance.',
+      cta: 'Signaler un abus',
+      ctaRoute: '/posts/new',
+      ctaIcon: 'fa-shield-exclamation',
+    },
+    {
+      type: 'Appel à l\'aide',
+      icon: 'fa-hand-holding-heart',
+      color: 'slide-appel',
+      title: 'Une personne a besoin de vous.',
+      subtitle: 'Personne hospitalisée sans famille identifiée, individu en détresse — votre aide peut changer une vie.',
+      cta: 'Lancer un appel à l\'aide',
+      ctaRoute: '/posts/new',
+      ctaIcon: 'fa-hand-holding-heart',
+    },
+    {
+      type: 'Prévention',
+      icon: 'fa-circle-info',
+      color: 'slide-prevention',
+      title: 'Informer, c\'est aussi protéger.',
+      subtitle: 'Partagez des guides, des conseils juridiques et des ressources pour sensibiliser la communauté.',
+      cta: 'Publier une prévention',
+      ctaRoute: '/posts/new',
+      ctaIcon: 'fa-circle-info',
+    },
+  ];
+
+  startSlider(): void {
+    this.slideInterval = setInterval(() => {
+      this.currentSlide.update(i => (i + 1) % this.heroSlides.length);
+    }, 4000);
+  }
+
+  stopSlider(): void {
+    if (this.slideInterval) clearInterval(this.slideInterval);
+  }
+
+  goToSlide(index: number): void {
+    this.stopSlider();
+    this.currentSlide.set(index);
+    this.startSlider();
+  }
+
   constructor(private postService: PostService, public auth: AuthService) {}
 
   ngOnInit(): void {
-    // Try API, fallback to mock data
+    this.startSlider();
     this.postService.getAllPosts().subscribe({
       next: (posts) => { this.posts.set(posts); this.loading.set(false); },
       error: () => {
@@ -103,6 +166,10 @@ export class HomeComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.stopSlider();
   }
 
   setFilter(type: string) {

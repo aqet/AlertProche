@@ -282,3 +282,167 @@
 @media (max-width: 480px) {
   .auth-card { padding: 24px 20px; }
 }
+
+/* ── INDICATEUR ÉTAPES ────────────────────────────────────────── */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  transition: all var(--transition-normal);
+}
+
+.step-item.active .step-circle {
+  border-color: var(--color-accent);
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+}
+
+.step-item.done .step-circle {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.step-name {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.step-item.active .step-name { color: var(--color-accent); }
+.step-item.done .step-name   { color: var(--color-accent); }
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  margin: 0 6px;
+  margin-bottom: 18px;
+  transition: background var(--transition-normal);
+}
+
+.step-line.done { background: var(--color-accent); }
+
+/* ── DESCRIPTION ÉTAPE ────────────────────────────────────────── */
+.step-desc {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.step-desc i { color: var(--color-accent); flex-shrink: 0; margin-top: 1px; }
+
+/* ── INPUT OTP ────────────────────────────────────────────────── */
+.otp-input {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 12px;
+  font-family: 'Courier New', monospace;
+  color: var(--color-text-primary);
+  padding: 16px;
+  border-color: var(--color-border-accent);
+}
+
+.otp-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-dim);
+}
+
+/* ── INFO BOX OTP ────────────────────────────────────────────── */
+.otp-info-box {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px;
+  background: var(--color-accent-dim);
+  border: 1px solid var(--color-border-accent);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.otp-info-box i {
+  font-size: 1.3rem;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.otp-info-box strong {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.otp-info-box p {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.otp-info-success {
+  background: rgba(0,212,170,0.08);
+  border-color: rgba(0,212,170,0.3);
+}
+
+.otp-info-success i { color: var(--color-accent); }
+
+/* ── RESEND ───────────────────────────────────────────────────── */
+.resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.resend-text {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ── PRIVACY LINK ────────────────────────────────────────────── */
+.privacy-link {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: inherit;
+}
+
+.privacy-link:hover { color: var(--color-accent-hover); }

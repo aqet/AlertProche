@@ -17,18 +17,16 @@
 
       <!-- Tabs -->
       <div class="auth-tabs">
-        <button class="auth-tab" [class.active]="mode() === 'login'"
-          (click)="switchMode('login')" id="tab-login">
+        <button class="auth-tab" [class.active]="mode() === 'login'" (click)="switchMode('login')">
           Se connecter
         </button>
-        <button class="auth-tab" [class.active]="mode() === 'register'"
-          (click)="switchMode('register')" id="tab-register">
+        <button class="auth-tab" [class.active]="mode() === 'register'" (click)="switchMode('register')">
           S'inscrire
         </button>
         <div class="tab-slider" [class.right]="mode() === 'register'"></div>
       </div>
 
-      <!-- Error / Success -->
+      <!-- Feedback -->
       <div class="alert-banner error" *ngIf="error()">
         <i class="fas fa-circle-exclamation"></i> {{ error() }}
       </div>
@@ -36,7 +34,9 @@
         <i class="fas fa-circle-check"></i> {{ success() }}
       </div>
 
-      <!-- LOGIN FORM -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- LOGIN                                                      -->
+      <!-- ══════════════════════════════════════════════════════════ -->
       <form *ngIf="mode() === 'login'" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form animate-fade-in">
         <div class="form-group">
           <label class="form-label" for="login-email">Adresse Email</label>
@@ -80,100 +80,192 @@
         </p>
       </form>
 
-      <!-- REGISTER FORM -->
-      <form *ngIf="mode() === 'register'" [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form animate-fade-in">
-        <div class="form-group">
-          <label class="form-label" for="reg-pseudo">Pseudo unique</label>
-          <div class="input-icon-wrap">
-            <i class="fas fa-user input-icon"></i>
-            <input id="reg-pseudo" type="text" class="form-control input-with-icon"
-              formControlName="pseudo" placeholder="VotrePseudo">
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- INSCRIPTION — 3 ÉTAPES                                    -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <div *ngIf="mode() === 'register'" class="animate-fade-in">
+
+        <!-- Indicateur d'étape -->
+        <div class="step-indicator">
+          <div class="step-item" [class.active]="registerStep() === 'info'" [class.done]="registerStep() === 'otp' || registerStep() === 'password'">
+            <div class="step-circle">
+              <i class="fas fa-check" *ngIf="registerStep() === 'otp' || registerStep() === 'password'"></i>
+              <span *ngIf="registerStep() === 'info'">1</span>
+            </div>
+            <span class="step-name">Infos</span>
           </div>
-          <span class="form-error" *ngIf="hasError(registerForm, 'pseudo', 'required')">
-            <i class="fas fa-circle-exclamation"></i> Pseudo requis
-          </span>
-          <span class="form-error" *ngIf="hasError(registerForm, 'pseudo', 'minlength')">
-            <i class="fas fa-circle-exclamation"></i> 3 caractères minimum
-          </span>
+          <div class="step-line" [class.done]="registerStep() === 'otp' || registerStep() === 'password'"></div>
+          <div class="step-item" [class.active]="registerStep() === 'otp'" [class.done]="registerStep() === 'password'">
+            <div class="step-circle">
+              <i class="fas fa-check" *ngIf="registerStep() === 'password'"></i>
+              <span *ngIf="registerStep() !== 'password'">2</span>
+            </div>
+            <span class="step-name">Vérif.</span>
+          </div>
+          <div class="step-line" [class.done]="registerStep() === 'password'"></div>
+          <div class="step-item" [class.active]="registerStep() === 'password'">
+            <div class="step-circle">3</div>
+            <span class="step-name">Mot de passe</span>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-email">Adresse Email</label>
-          <div class="input-icon-wrap">
-            <i class="fas fa-envelope input-icon"></i>
-            <input id="reg-email" type="email" class="form-control input-with-icon"
-              formControlName="email" placeholder="votre@email.com">
-          </div>
-          <span class="form-error" *ngIf="hasError(registerForm, 'email', 'required')">
-            <i class="fas fa-circle-exclamation"></i> Email requis
-          </span>
-          <span class="form-error" *ngIf="hasError(registerForm, 'email', 'email')">
-            <i class="fas fa-circle-exclamation"></i> Email invalide
-          </span>
-        </div>
+        <!-- ── ÉTAPE 1 : Email + Pseudo ── -->
+        <form *ngIf="registerStep() === 'info'" [formGroup]="infoForm" (ngSubmit)="onSendOtp()" class="auth-form">
+          <p class="step-desc">
+            <i class="fas fa-envelope"></i>
+            Renseignez votre email et choisissez un pseudo. Nous enverrons un code de vérification.
+          </p>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-pass">Mot de passe</label>
-          <div class="input-icon-wrap">
-            <i class="fas fa-lock input-icon"></i>
-            <input id="reg-pass" [type]="showPassword() ? 'text' : 'password'"
-              class="form-control input-with-icon input-with-icon-right"
-              formControlName="password" placeholder="••••••••">
-            <button type="button" class="toggle-pass" (click)="togglePassword()">
-              <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
+          <div class="form-group">
+            <label class="form-label" for="reg-pseudo">Pseudo unique</label>
+            <div class="input-icon-wrap">
+              <i class="fas fa-user input-icon"></i>
+              <input id="reg-pseudo" type="text" class="form-control input-with-icon"
+                formControlName="pseudo" placeholder="VotrePseudo">
+            </div>
+            <span class="form-error" *ngIf="hasError(infoForm, 'pseudo', 'required')">
+              <i class="fas fa-circle-exclamation"></i> Pseudo requis
+            </span>
+            <span class="form-error" *ngIf="hasError(infoForm, 'pseudo', 'minlength')">
+              <i class="fas fa-circle-exclamation"></i> 3 caractères minimum
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Adresse Email</label>
+            <div class="input-icon-wrap">
+              <i class="fas fa-envelope input-icon"></i>
+              <input id="reg-email" type="email" class="form-control input-with-icon"
+                formControlName="email" placeholder="votre@email.com">
+            </div>
+            <span class="form-error" *ngIf="hasError(infoForm, 'email', 'required')">
+              <i class="fas fa-circle-exclamation"></i> Email requis
+            </span>
+            <span class="form-error" *ngIf="hasError(infoForm, 'email', 'email')">
+              <i class="fas fa-circle-exclamation"></i> Email invalide
+            </span>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full" [disabled]="loading()">
+            <span class="spinner" *ngIf="loading()"></span>
+            <span *ngIf="!loading()"><i class="fas fa-paper-plane"></i> Envoyer le code de vérification</span>
+          </button>
+        </form>
+
+        <!-- ── ÉTAPE 2 : Code OTP ── -->
+        <form *ngIf="registerStep() === 'otp'" [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="auth-form">
+          <div class="otp-info-box">
+            <i class="fas fa-envelope-open-text"></i>
+            <div>
+              <strong>Code envoyé à votre adresse email</strong>
+              <p>Vérifiez votre boîte de réception et saisissez le code à 5 chiffres reçu. Valable 10 minutes.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="otp-code">Code de vérification</label>
+            <input id="otp-code" type="text" inputmode="numeric" maxlength="5"
+              class="form-control otp-input"
+              formControlName="code"
+              placeholder="_ _ _ _ _"
+              autocomplete="one-time-code">
+            <span class="form-error" *ngIf="hasError(otpForm, 'code', 'pattern')">
+              <i class="fas fa-circle-exclamation"></i> Le code doit contenir 5 chiffres
+            </span>
+            <span class="form-error" *ngIf="hasError(otpForm, 'code', 'required')">
+              <i class="fas fa-circle-exclamation"></i> Code requis
+            </span>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full" [disabled]="loading()">
+            <span class="spinner" *ngIf="loading()"></span>
+            <span *ngIf="!loading()"><i class="fas fa-shield-check"></i> Vérifier le code</span>
+          </button>
+
+          <!-- Renvoyer le code -->
+          <div class="resend-row">
+            <span class="resend-text">Vous n'avez pas reçu le code ?</span>
+            <button type="button" class="link-btn" (click)="onResendOtp()"
+              [disabled]="resendCountdown() > 0">
+              <span *ngIf="resendCountdown() === 0">Renvoyer</span>
+              <span *ngIf="resendCountdown() > 0">Renvoyer dans {{ resendCountdown() }}s</span>
             </button>
           </div>
-          <span class="form-error" *ngIf="hasError(registerForm, 'password', 'minlength')">
-            <i class="fas fa-circle-exclamation"></i> 6 caractères minimum
-          </span>
-        </div>
+        </form>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-confirm">Confirmer le mot de passe</label>
-          <div class="input-icon-wrap">
-            <i class="fas fa-lock input-icon"></i>
-            <input id="reg-confirm" type="password"
-              class="form-control input-with-icon"
-              formControlName="confirmPassword" placeholder="••••••••">
+        <!-- ── ÉTAPE 3 : Mot de passe ── -->
+        <form *ngIf="registerStep() === 'password'" [formGroup]="passwordForm" (ngSubmit)="onRegister()" class="auth-form">
+          <div class="otp-info-box otp-info-success">
+            <i class="fas fa-circle-check"></i>
+            <div>
+              <strong>Email vérifié avec succès !</strong>
+              <p>Choisissez maintenant un mot de passe sécurisé pour finaliser votre inscription.</p>
+            </div>
           </div>
-          <span class="form-error" *ngIf="registerForm.touched && registerForm.hasError('passwordMismatch')">
-            <i class="fas fa-circle-exclamation"></i> Les mots de passe ne correspondent pas
-          </span>
-        </div>
 
-        <!-- Privacy Charter -->
-        <div class="privacy-block">
-          <div class="privacy-icon"><i class="fas fa-shield-halved"></i></div>
-          <div class="privacy-text">
-            <strong>Charte de confidentialité</strong>
-            <p>Vos données personnelles (email, identité) ne seront jamais rendues publiques. Vous pouvez publier en mode anonyme à tout moment.
-              <a routerLink="/confidentialite" target="_blank" class="privacy-link">Lire la politique complète →</a>
-            </p>
+          <div class="form-group">
+            <label class="form-label" for="reg-pass">Mot de passe</label>
+            <div class="input-icon-wrap">
+              <i class="fas fa-lock input-icon"></i>
+              <input id="reg-pass" [type]="showPassword() ? 'text' : 'password'"
+                class="form-control input-with-icon input-with-icon-right"
+                formControlName="password" placeholder="••••••••">
+              <button type="button" class="toggle-pass" (click)="togglePassword()">
+                <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
+              </button>
+            </div>
+            <span class="form-error" *ngIf="hasError(passwordForm, 'password', 'minlength')">
+              <i class="fas fa-circle-exclamation"></i> 6 caractères minimum
+            </span>
           </div>
-        </div>
 
-        <div class="form-group terms-group">
-          <label class="checkbox-label" for="reg-terms">
-            <input type="checkbox" id="reg-terms" formControlName="acceptTerms">
-            <span class="checkbox-custom"></span>
-            <span>J'accepte la <a routerLink="/confidentialite" target="_blank" class="privacy-link">politique de confidentialité</a> et les conditions d'utilisation</span>
-          </label>
-          <span class="form-error" *ngIf="hasError(registerForm, 'acceptTerms', 'required')">
-            <i class="fas fa-circle-exclamation"></i> Vous devez accepter la charte
-          </span>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-confirm">Confirmer le mot de passe</label>
+            <div class="input-icon-wrap">
+              <i class="fas fa-lock input-icon"></i>
+              <input id="reg-confirm" type="password" class="form-control input-with-icon"
+                formControlName="confirmPassword" placeholder="••••••••">
+            </div>
+            <span class="form-error" *ngIf="passwordForm.touched && passwordForm.hasError('passwordMismatch')">
+              <i class="fas fa-circle-exclamation"></i> Les mots de passe ne correspondent pas
+            </span>
+          </div>
 
-        <button type="submit" class="btn btn-primary w-full" [disabled]="loading()">
-          <span class="spinner" *ngIf="loading()"></span>
-          <span *ngIf="!loading()"><i class="fas fa-user-plus"></i> Créer mon compte</span>
-        </button>
+          <!-- Charte -->
+          <div class="privacy-block">
+            <div class="privacy-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="privacy-text">
+              <strong>Charte de confidentialité</strong>
+              <p>Vos données sont protégées. Vous pouvez publier anonymement à tout moment.
+                <a routerLink="/confidentialite" target="_blank" class="privacy-link">Lire →</a>
+              </p>
+            </div>
+          </div>
 
-        <p class="auth-switch">
+          <div class="form-group terms-group">
+            <label class="checkbox-label" for="reg-terms">
+              <input type="checkbox" id="reg-terms" formControlName="acceptTerms">
+              <span class="checkbox-custom"></span>
+              J'accepte la <a routerLink="/confidentialite" target="_blank" class="privacy-link">politique de confidentialité</a>
+            </label>
+            <span class="form-error" *ngIf="hasError(passwordForm, 'acceptTerms', 'required')">
+              <i class="fas fa-circle-exclamation"></i> Vous devez accepter la charte
+            </span>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full" [disabled]="loading()">
+            <span class="spinner" *ngIf="loading()"></span>
+            <span *ngIf="!loading()"><i class="fas fa-user-plus"></i> Créer mon compte</span>
+          </button>
+        </form>
+
+        <p class="auth-switch" *ngIf="registerStep() === 'info'">
           Déjà un compte ?
           <button type="button" class="link-btn" (click)="switchMode('login')">Se connecter</button>
         </p>
-      </form>
-    </div>
+      </div>
+
+    </div><!-- .auth-card -->
 
     <p class="auth-footer">
       <i class="fas fa-lock"></i> Plateforme sécurisée SSL — Données protégées

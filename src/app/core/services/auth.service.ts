@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { User, AuthResponse, LoginDto, RegisterDto } from '../models/user.model';
+import { User, AuthResponse, LoginDto } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
 const SESSION_KEY = 'ap_session';
@@ -29,14 +29,28 @@ export class AuthService {
     } catch { /* ignore */ }
   }
 
-  login(dto: LoginDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/login`, dto).pipe(
-      tap(res => this.saveSession(res))
-    );
+  // ── ÉTAPE 1 : Envoyer OTP ────────────────────────────────────────
+  sendOtp(email: string, pseudo: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API}/otp/send`, { email, pseudo });
   }
 
-  register(dto: RegisterDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/register`, dto).pipe(
+  // ── ÉTAPE 2 : Vérifier OTP ───────────────────────────────────────
+  verifyOtp(email: string, code: string): Observable<{ verified: boolean; token: string }> {
+    return this.http.post<{ verified: boolean; token: string }>(`${this.API}/otp/verify`, { email, code });
+  }
+
+  // ── ÉTAPE 3 : Finaliser inscription ──────────────────────────────
+  register(pseudo: string, password: string, verifyToken: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${this.API}/register`,
+      { pseudo, password },
+      { headers: { 'x-verify-token': verifyToken } }
+    ).pipe(tap(res => this.saveSession(res)));
+  }
+
+  // ── LOGIN ─────────────────────────────────────────────────────────
+  login(dto: LoginDto): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API}/login`, dto).pipe(
       tap(res => this.saveSession(res))
     );
   }
@@ -45,7 +59,6 @@ export class AuthService {
     return this.http.patch<User>(`${this.API}/profile/pseudo`, { pseudo }).pipe(
       tap(user => {
         this.currentUser.set(user);
-        // Mettre à jour la session stockée
         const session = localStorage.getItem(SESSION_KEY);
         if (session) {
           const parsed = JSON.parse(session);
@@ -54,10 +67,6 @@ export class AuthService {
         }
       })
     );
-  }
-
-  getProfile(): Observable<User> {
-    return this.http.get<User>(`${this.API}/profile`);
   }
 
   logout(): void {
