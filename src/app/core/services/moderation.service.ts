@@ -25,13 +25,13 @@ export class ModerationService {
   ];
 
   // Regex anti-doxxing — numéros de téléphone camerounais et identifiants
-  private readonly PHONE_PATTERNS = [
-    /\b(6[5-9]\d{7})\b/g,           // Mobile Cameroun (65x à 69x, 8 chiffres)
-    /\b(2[23]\d{7})\b/g,             // Fixe Cameroun
-    /\b(\+237\s?\d{8,9})\b/g,        // Format international +237
-    /\b(00237\s?\d{8,9})\b/g,        // Format 00237
-    /\b(\d{3}[\s\-\.]\d{3}[\s\-\.]\d{3,4})\b/g, // Format xxx-xxx-xxxx
-  ];
+  // private readonly PHONE_PATTERNS = [
+  //   /\b(6[5-9]\d{7})\b/g,           // Mobile Cameroun (65x à 69x, 8 chiffres)
+  //   /\b(2[23]\d{7})\b/g,             // Fixe Cameroun
+  //   /\b(\+237\s?\d{8,9})\b/g,        // Format international +237
+  //   /\b(00237\s?\d{8,9})\b/g,        // Format 00237
+  //   /\b(\d{3}[\s\-\.]\d{3}[\s\-\.]\d{3,4})\b/g, // Format xxx-xxx-xxxx
+  // ];
 
   private readonly ID_PATTERNS = [
     /\b([A-Z]{1,3}\d{6,10}[A-Z]?)\b/g,  // CNI camerounaise
@@ -58,17 +58,17 @@ export class ModerationService {
       }
     }
 
-    // 2. Filtre anti-doxxing — téléphones
-    for (const pattern of this.PHONE_PATTERNS) {
-      pattern.lastIndex = 0;
-      if (pattern.test(text)) {
-        return {
-          isClean: false,
-          reason: 'phone',
-          flaggedWord: 'numéro de téléphone'
-        };
-      }
-    }
+    // // 2. Filtre anti-doxxing — téléphones
+    // for (const pattern of this.PHONE_PATTERNS) {
+    //   pattern.lastIndex = 0;
+    //   if (pattern.test(text)) {
+    //     return {
+    //       isClean: false,
+    //       reason: 'phone',
+    //       flaggedWord: 'numéro de téléphone'
+    //     };
+    //   }
+    // }
 
     // 3. Filtre anti-doxxing — identifiants officiels
     for (const pattern of this.ID_PATTERNS) {
