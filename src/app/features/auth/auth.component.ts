@@ -110,7 +110,11 @@ export class AuthComponent {
       },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(err?.error?.message || 'Erreur lors de l\'envoi du code.');
+        const msg = err?.error?.message;
+        this.error.set(
+          Array.isArray(msg) ? msg[0] :
+          (msg || 'Adresse email introuvable ou invalide. Vérifiez et réessayez.')
+        );
       }
     });
   }
