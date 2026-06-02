@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 export class PostService {
   private readonly API = `${environment.apiUrl}/posts`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAllPosts(filters?: { type?: string; location?: string }): Observable<Post[]> {
     let params = new HttpParams();
@@ -31,13 +31,15 @@ export class PostService {
 
   createPost(dto: CreatePostDto, imageFile?: File): Observable<Post> {
     const formData = new FormData();
+    console.log(String(dto.isAnonymous));
+
     formData.append('title', dto.title);
     formData.append('content', dto.content);
     formData.append('location', dto.location);
     formData.append('type', dto.type);
-    if (dto.isAnonymous !== undefined) {
-      formData.append('isAnonymous', String(dto.isAnonymous));
-    }
+    // if (dto.isAnonymous !== undefined) {
+    formData.append('isAnonymous', String(dto.isAnonymous));
+    // }
     if (imageFile) {
       formData.append('image', imageFile);
     }
