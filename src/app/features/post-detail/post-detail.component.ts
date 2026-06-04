@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { Post } from '../../core/models/post.model';
 import { Comment } from '../../core/models/comment.model';
 import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-post-detail',
@@ -184,35 +185,26 @@ export class PostDetailComponent implements OnInit, OnDestroy {
 
   sharePost(): void {
     const p = this.post();
-    const url = window.location.href;
+    const postId  = p?._id;
+    // Le lien de partage pointe vers l'endpoint /share qui sert les meta OG
+    // aux crawlers (WhatsApp, Facebook, Telegram…) et redirige les humains vers l'app
+    const apiBase  = environment.apiUrl;
+      const shareUrl = postId
+      ? `${apiBase}/share/posts/${postId}`
+      : window.location.href;
+
     const text = p
-      ? `🚨 ${p.type} — ${p.title}\n📍 ${p.location}\n\nVia AlertProche :`
-      : 'Alerte via AlertProche :';
+      ? `🚨 ${p.type} — ${p.title}\n📍 ${p.location}`
+      : 'Alerte via AlertProche';
 
     if (navigator.share) {
-      const shareData: ShareData = { title: p?.title || 'AlertProche', text, url };
-
-      // Web Share API niveau 2 : partage du fichier image si dispo et supporté
-      const imageUrl = (p as any)?.image_url;
-      if (imageUrl && navigator.canShare) {
-        fetch(imageUrl)
-          .then(r => r.blob())
-          .then(blob => {
-            const ext = blob.type.includes('png') ? 'png' : 'jpg';
-            const file = new File([blob], `alerte.${ext}`, { type: blob.type });
-            const dataWithFile: ShareData = { ...shareData, files: [file] };
-            if (navigator.canShare(dataWithFile)) {
-              navigator.share(dataWithFile).catch(() => navigator.share(shareData).catch(() => this.copyToClipboard(url)));
-            } else {
-              navigator.share(shareData).catch(() => this.copyToClipboard(url));
-            }
-          })
-          .catch(() => navigator.share(shareData).catch(() => this.copyToClipboard(url)));
-      } else {
-        navigator.share(shareData).catch(() => this.copyToClipboard(url));
-      }
+      navigator.share({
+        title: p?.title || 'AlertProche',
+        text,
+        url: shareUrl,
+      }).catch(() => this.copyToClipboard(shareUrl));
     } else {
-      this.copyToClipboard(url);
+      this.copyToClipboard(shareUrl);
     }
   }
 
