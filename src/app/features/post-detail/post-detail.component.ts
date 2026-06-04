@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Meta, Title } from '@angular/platform-browser';
 import { PostService } from '../../core/services/post.service';
 import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -16,7 +17,7 @@ import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.css']
 })
-export class PostDetailComponent implements OnInit {
+export class PostDetailComponent implements OnInit, OnDestroy {
   post = signal<Post | null>(null);
   comments = signal<Comment[]>([]);
   loading = signal(true);
@@ -44,7 +45,9 @@ export class PostDetailComponent implements OnInit {
     private postService: PostService,
     private commentService: CommentService,
     public auth: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private meta: Meta,
+    private titleService: Title
   ) {
     this.commentForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(10)]],
@@ -59,8 +62,8 @@ export class PostDetailComponent implements OnInit {
       next: (p) => {
         this.post.set(p);
         this.loading.set(false);
-        // isReported vient directement du backend dans le champ du post
         this.isAlreadyReported.set(!!(p as any).isReported);
+        this.updateMetaTags(p);
       },
       error: () => {
         this.error.set('Publication introuvable.');
@@ -72,6 +75,41 @@ export class PostDetailComponent implements OnInit {
       next: (c) => { this.comments.set(c); this.commentsLoading.set(false); },
       error: () => { this.commentsLoading.set(false); }
     });
+  }
+
+  ngOnDestroy(): void {
+    // Remettre les meta tags par défaut quand on quitte la page
+    this.titleService.setTitle('AlertProche – Protection des Mineurs au Cameroun');
+    this.meta.removeTag('property="og:title"');
+    this.meta.removeTag('property="og:description"');
+    this.meta.removeTag('property="og:image"');
+    this.meta.removeTag('property="og:url"');
+    this.meta.removeTag('property="og:type"');
+    this.meta.removeTag('name="twitter:card"');
+    this.meta.removeTag('name="twitter:title"');
+    this.meta.removeTag('name="twitter:description"');
+    this.meta.removeTag('name="twitter:image"');
+  }
+
+  private updateMetaTags(post: Post): void {
+    const url = window.location.href;
+    const description = `${post.type} — ${post.location} | ${post.content.slice(0, 160)}`;
+    const image = (post as any).image_url || 'https://alert-proche.vercel.app/favicon1.ico';
+
+    this.titleService.setTitle(`${post.title} — AlertProche`);
+
+    // Open Graph (Facebook, WhatsApp, Telegram, LinkedIn)
+    this.meta.updateTag({ property: 'og:title',       content: post.title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:image',       content: image });
+    this.meta.updateTag({ property: 'og:url',         content: url });
+    this.meta.updateTag({ property: 'og:type',        content: 'article' });
+
+    // Twitter Card
+    this.meta.updateTag({ name: 'twitter:card',        content: (post as any).image_url ? 'summary_large_image' : 'summary' });
+    this.meta.updateTag({ name: 'twitter:title',       content: post.title });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+    this.meta.updateTag({ name: 'twitter:image',       content: image });
   }
 
   openImageModal(): void { this.imageModalOpen.set(true); }
@@ -145,10 +183,34 @@ export class PostDetailComponent implements OnInit {
   }
 
   sharePost(): void {
+    const p = this.post();
     const url = window.location.href;
+    const text = p
+      ? `🚨 ${p.type} — ${p.title}\n📍 ${p.location}\n\nVia AlertProche :`
+      : 'Alerte via AlertProche :';
+
     if (navigator.share) {
-      navigator.share({ title: this.post()?.title || 'AlertProche', url })
-        .catch(() => this.copyToClipboard(url));
+      const shareData: ShareData = { title: p?.title || 'AlertProche', text, url };
+
+      // Web Share API niveau 2 : partage du fichier image si dispo et supporté
+      const imageUrl = (p as any)?.image_url;
+      if (imageUrl && navigator.canShare) {
+        fetch(imageUrl)
+          .then(r => r.blob())
+          .then(blob => {
+            const ext = blob.type.includes('png') ? 'png' : 'jpg';
+            const file = new File([blob], `alerte.${ext}`, { type: blob.type });
+            const dataWithFile: ShareData = { ...shareData, files: [file] };
+            if (navigator.canShare(dataWithFile)) {
+              navigator.share(dataWithFile).catch(() => navigator.share(shareData).catch(() => this.copyToClipboard(url)));
+            } else {
+              navigator.share(shareData).catch(() => this.copyToClipboard(url));
+            }
+          })
+          .catch(() => navigator.share(shareData).catch(() => this.copyToClipboard(url)));
+      } else {
+        navigator.share(shareData).catch(() => this.copyToClipboard(url));
+      }
     } else {
       this.copyToClipboard(url);
     }
