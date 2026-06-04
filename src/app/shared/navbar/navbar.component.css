@@ -73,7 +73,7 @@
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 4px;
+  gap: 2px;
   flex: 1;
 }
 
@@ -81,13 +81,14 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   font-size: 0.8rem;
   font-weight: 500;
   text-decoration: none;
   transition: all var(--transition-normal);
+  white-space: nowrap;
 }
 
 .nav-link:hover {
