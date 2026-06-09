@@ -78,13 +78,13 @@
     </div>
 
     <!-- Mobile Hamburger -->
-    <button class="hamburger" (click)="toggleMenu()" [class.open]="menuOpen()" aria-label="Menu">
+    <button class="hamburger" (click)="toggleMenu()" [class.open]="this.isOpen" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 
   <!-- Mobile Menu -->
-  <div class="mobile-menu" [class.open]="menuOpen()">
+  <div class="mobile-menu" *ngIf="isOpen" >
     <ul>
       <li><a routerLink="/" (click)="closeMenu()"><i class="fas fa-house"></i> Accueil</a></li>
       <li>

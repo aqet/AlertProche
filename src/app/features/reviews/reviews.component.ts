@@ -118,7 +118,7 @@ export class ReviewsComponent implements OnInit {
     this.reviewService.createReview({
       rating: this.formRating(),
       message: this.formMessage.trim(),
-      isAnonymous: this.formAnonymous,
+      isAnonymous: this.isAuth()===true ? true : this.formAnonymous,
     }).subscribe({
       next: () => {
         this.formLoading.set(false);

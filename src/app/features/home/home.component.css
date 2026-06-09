@@ -9,10 +9,13 @@
   padding: 120px 0 60px;
 }
 
+@media (min-width: 769px) {
 .filters-sidebar{
   position: sticky;
   top: calc(var(--nav-height) + 16px);
 }
+}
+
 
 .hero-bg {
   position: absolute;
@@ -216,8 +219,8 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 24px;
-  position: sticky;
-  top: calc(var(--nav-height) + 16px);
+  /* position: sticky;
+  top: calc(var(--nav-height) + 16px); */
 }
 
 .filters-title {
@@ -364,6 +367,7 @@
   .hero-stats { gap: 20px; padding: 16px 20px; }
   .stat-value { font-size: 1.5rem; }
   .hero-actions { flex-direction: column; }
+  
 }
 
 @media (max-width: 480px) {

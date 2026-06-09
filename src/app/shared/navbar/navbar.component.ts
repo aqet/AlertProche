@@ -12,6 +12,7 @@ import { ThemeService } from '../../core/services/theme.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
+  isOpen=false;
   menuOpen = signal(false);
   scrolled = signal(false);
 
@@ -30,7 +31,7 @@ export class NavbarComponent {
     this.scrolled.set(window.scrollY > 20);
   }
 
-  toggleMenu() { this.menuOpen.update(v => !v); }
-  closeMenu() { this.menuOpen.set(false); }
+  toggleMenu() { this.isOpen=!this.isOpen }
+  closeMenu() { this.isOpen=false }
   logout() { this.auth.logout(); this.closeMenu(); }
 }

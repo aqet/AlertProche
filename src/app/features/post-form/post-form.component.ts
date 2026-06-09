@@ -1,4 +1,4 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -12,7 +12,19 @@ import { PostType } from '../../core/models/post.model';
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.css']
 })
-export class PostFormComponent {
+export class PostFormComponent implements OnInit {
+  IsScreenShort= false;
+  ngOnInit(){
+    this.tailler()
+    
+    // this.IsScreenShort=windows.
+  }
+
+  
+    @HostListener('window:resize', ['$event'])
+    tailler(){      
+      window.innerWidth>900 ? this.IsScreenShort=false : this.IsScreenShort=true
+    }
   form: FormGroup;
   loading = signal(false);
   error = signal('');

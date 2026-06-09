@@ -116,6 +116,18 @@
                   </div>
                 </label>
               </div>
+              <ng-container *ngIf="this.IsScreenShort">
+                <button type="submit" class="btn btn-danger w-full btn-lg" [disabled]="loading()">
+                  <span class="spinner" *ngIf="loading()"></span>
+                  <ng-container *ngIf="!loading()">
+                    <i class="fas fa-paper-plane"></i> Publier le Cas
+                  </ng-container>
+                </button>
+
+                <a routerLink="/" class="btn btn-ghost w-full" style="text-align:center; margin-top:8px">
+                  Annuler
+                </a>
+              </ng-container>
             </div>
 
             <!-- RIGHT COLUMN -->
@@ -176,16 +188,18 @@
               </div>
 
               <!-- Submit Button -->
-              <button type="submit" class="btn btn-danger w-full btn-lg" [disabled]="loading()">
-                <span class="spinner" *ngIf="loading()"></span>
-                <ng-container *ngIf="!loading()">
-                  <i class="fas fa-paper-plane"></i> Publier le Cas
-                </ng-container>
-              </button>
+              <ng-container *ngIf="!this.IsScreenShort">
+                <button type="submit" class="btn btn-danger w-full btn-lg" [disabled]="loading()">
+                  <span class="spinner" *ngIf="loading()"></span>
+                  <ng-container *ngIf="!loading()">
+                    <i class="fas fa-paper-plane"></i> Publier le Cas
+                  </ng-container>
+                </button>
 
-              <a routerLink="/" class="btn btn-ghost w-full" style="text-align:center; margin-top:8px">
-                Annuler
-              </a>
+                <a routerLink="/" class="btn btn-ghost w-full" style="text-align:center; margin-top:8px">
+                  Annuler
+                </a>
+              </ng-container>
             </div>
           </div>
         </form>

@@ -10,7 +10,7 @@
 }
 
 .navbar.scrolled {
-  background: rgba(10, 15, 30, 0.92);
+  background: var(--color-bg-primary);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--color-border);
@@ -194,12 +194,12 @@
   background: rgba(10, 15, 30, 0.98);
   border-top: 1px solid var(--color-border);
   overflow: hidden;
-  max-height: 0;
+  /* max-height: 0; */
   transition: max-height var(--transition-normal);
 }
 
 .mobile-menu.open {
-  max-height: 400px;
+  /* max-height: 400px; */
 }
 
 .mobile-menu ul {
@@ -208,6 +208,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  background-color: var(--color-bg-primary)
 }
 
 .mobile-menu a {

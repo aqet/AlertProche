@@ -59,17 +59,17 @@
 
           <!-- CTA Donner un avis -->
           <div class="stats-cta">
-            <ng-container *ngIf="isAuth(); else authCta">
+            <!-- <ng-container> -->
               <button class="btn btn-primary" (click)="toggleForm()">
                 <i class="fas fa-pen-to-square"></i>
                 {{ showForm() ? 'Annuler' : 'Donner mon avis' }}
               </button>
-            </ng-container>
-            <ng-template #authCta>
+            <!-- </ng-container> -->
+            <!-- <ng-template #authCta>
               <p class="stats-cta-hint">
                 <a routerLink="/auth">Connectez-vous</a> pour laisser un avis
               </p>
-            </ng-template>
+            </ng-template> -->
           </div>
 
         </ng-container>
@@ -85,7 +85,7 @@
     </section>
 
     <!-- ── FORMULAIRE ─────────────────────────────────────────────── -->
-    <section class="form-section" *ngIf="showForm() && isAuth()">
+    <section class="form-section" *ngIf="showForm()">
       <div class="form-card animate-fade-in">
         <div class="form-header">
           <div class="rv-badge"><i class="fas fa-pen-to-square"></i> Votre avis</div>
