@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 type AuthMode = 'login' | 'register';
 type RegisterStep = 'info' | 'otp' | 'password';
@@ -14,8 +15,19 @@ type RegisterStep = 'info' | 'otp' | 'password';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent {
-  mode = signal<AuthMode>('login');
+export class AuthComponent implements OnInit {
+
+  private route = inject(ActivatedRoute)
+  mode = signal<AuthMode>('register');
+  ngOnInit(){
+    this.route.queryParams.subscribe(params=>{
+      if (params['mode']==='register') {
+        this.mode = signal<AuthMode>('register');
+      } else {
+        this.mode = signal<AuthMode>('login')
+      }
+    })
+  }
   registerStep = signal<RegisterStep>('info');
 
   loading = signal(false);

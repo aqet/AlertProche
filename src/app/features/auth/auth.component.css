@@ -5,6 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  padding-top: calc(var(--nav-height) - 10px);
   position: relative;
   overflow: hidden;
 }

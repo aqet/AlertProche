@@ -72,8 +72,8 @@
         </div>
       </ng-container>
       <ng-template #guestActions>
-        <a routerLink="/auth" class="btn btn-outline btn-sm">Se connecter</a>
-        <a routerLink="/auth" class="btn btn-primary btn-sm">S'inscrire</a>
+        <a routerLink="/auth" [queryParams]="{mode: 'login'}" class="btn btn-outline btn-sm">Se connecter</a>
+        <a routerLink="/auth" [queryParams]="{mode: 'register'}" class="btn btn-primary btn-sm">S'inscrire</a>
       </ng-template>
     </div>
 
