@@ -45,7 +45,7 @@ export class ModerationComponent implements OnInit {
     // Charger les posts signalés depuis le backend
     this.postService.getReportedPosts().subscribe({
       next: (posts) => {
-        this.reportedPosts.set(posts);
+        this.reportedPosts.set(posts);        
         this.loading.set(false);
       },
       error: () => { this.loading.set(false); }

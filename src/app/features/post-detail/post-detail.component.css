@@ -647,6 +647,16 @@
   background: var(--color-warning);
 }
 
+.report-reason-item textarea {
+  background: transparent;
+  border: none;
+  width: 100%;
+  color: var(--color-text-primary);
+  outline: none;
+  /* border: 1px solid black */
+}
+
+
 .report-reason-item input:checked ~ .reason-custom::after {
   content: '';
   position: absolute;

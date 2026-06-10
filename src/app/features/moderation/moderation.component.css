@@ -373,6 +373,52 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* reason */
+.mod-post-reason {
+  background-color: var(--color-warning-dim);
+  border-top: 1px solid var(--color-warning);
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.actions-title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary); /* Rouge foncé professionnel */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.reasons-list {
+  list-style: none; /* On enlève les puces par défaut */
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reason-item {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+
+/* Petit point rouge personnalisé devant chaque motif */
+.reason-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-warning);
+  border-radius: 50%;
+}
 
 /* Actions */
 .mod-post-actions {

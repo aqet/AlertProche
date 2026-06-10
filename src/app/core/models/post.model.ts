@@ -14,6 +14,7 @@ export interface Post {
   isActive?: boolean;
   createdAt: string;
   commentCount?: number;
+  reportReasons?: any
 }
 
 export interface CreatePostDto {

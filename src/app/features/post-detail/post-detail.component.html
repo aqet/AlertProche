@@ -273,9 +273,12 @@
       <p class="report-desc">Indiquez la raison du signalement. Notre équipe examinera votre demande.</p>
       <div class="report-reasons">
         <label class="report-reason-item" *ngFor="let r of ['Contenu haineux ou offensant', 'Doxxing / informations personnelles', 'Fausse information', 'Contenu inapproprié pour des mineurs', 'Autre']">
-          <input type="radio" name="reason" [value]="r" (change)="reportReason.set(r)" [checked]="reportReason() === r">
+          <input type="radio" name="reason" [value]="r" (change)="setReportReason(r)" [checked]="reportReason() === r">
           <span class="reason-custom"></span>
           <span>{{ r }}</span>
+        </label>
+        <label for="mytextarea" *ngIf="this.textReportReason()" class="report-reason-item"> <span>Renseigner votre raison</span>
+          <textarea id="mytextarea" row="4" name="reason" #moi (input)="setReportReason('Autre', moi.value)"></textarea>
         </label>
       </div>
       <div class="report-actions">

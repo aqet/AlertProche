@@ -40,6 +40,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
   isAuth = computed(() => this.auth.isAuthenticated());
   currentUser = computed(() => this.auth.currentUser());
 
+  textReportReason = signal(false)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -76,6 +77,20 @@ export class PostDetailComponent implements OnInit, OnDestroy {
       next: (c) => { this.comments.set(c); this.commentsLoading.set(false); },
       error: () => { this.commentsLoading.set(false); }
     });
+        
+  }
+
+  setReportReason(params: string, text?: string){
+    if (params!='Autre') {
+      this.textReportReason.set(false)
+      this.reportReason.set(params)      
+    } else {
+      this.textReportReason.set(true)
+      text ? this.reportReason.set(text) : this.reportReason.set('')
+    }
+
+    console.log(this.textReportReason(), this.reportReason());
+    
   }
 
   ngOnDestroy(): void {

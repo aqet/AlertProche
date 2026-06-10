@@ -120,6 +120,15 @@
             </div>
           </div>
 
+          <div class="mod-post-reason">
+            <span class="actions-title">Motifs de signalement :</span>
+
+            <ul class="reasons-list">
+              <li *ngFor="let reason of post.reportReasons" class="reason-item">
+                {{ reason }}
+              </li>
+            </ul>
+          </div>
           <div class="mod-post-actions">
             <div class="mod-actions-left">
               <a [routerLink]="['/posts', post._id]" class="btn btn-ghost btn-sm" target="_blank">
