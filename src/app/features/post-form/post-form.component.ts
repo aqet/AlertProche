@@ -16,12 +16,8 @@ export class PostFormComponent implements OnInit {
   IsScreenShort= false;
   ngOnInit(){
     this.tailler()
-    
-    // this.IsScreenShort=windows.
   }
-
-  
-    @HostListener('window:resize', ['$event'])
+    @HostListener('window:resize', [])
     tailler(){      
       window.innerWidth>900 ? this.IsScreenShort=false : this.IsScreenShort=true
     }
@@ -79,7 +75,7 @@ export class PostFormComponent implements OnInit {
     if (file) this.processFile(file);
   }
 
-  processFile(file: File) {
+  async processFile(file: File) {
     this.imageError.set('');
     if (!this.ALLOWED_TYPES.includes(file.type)) {
       this.imageError.set('Format non supporté. Utilisez JPG ou PNG uniquement.');
@@ -93,6 +89,16 @@ export class PostFormComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = () => this.previewUrl.set(reader.result as string);
     reader.readAsDataURL(file);
+    const airesponse = await this.postService.analyzeImage(file)
+    console.log(airesponse);
+    this.form.patchValue({
+      publicationType: airesponse.completion.publicationType,
+        title: airesponse.completion.alertTitle,
+        content: airesponse.completion.detailedDescription,
+        location: airesponse.completion.cityName,
+        type: airesponse.completion.publicationType
+    })
+    
   }
 
   removeImage() {
