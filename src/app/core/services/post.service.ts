@@ -41,8 +41,6 @@ export class PostService {
     if (!image) return null;
 
     try {
-      console.log(`Taille d'origine : ${(image.size / 1024).toFixed(2)} Ko`);
-
       // 1. On compresse l'image directement dans le navigateur
       const compressed = await this.compressAndConvertToBase64(
         image,
@@ -54,8 +52,6 @@ export class PostService {
         image: compressed.base64, // Base64 ultra-léger
         mimeType: compressed.type,
       };
-
-      console.log("Image compressée prête pour l'envoi.");
 
       // 2. Envoi rapide vers le backend
       const aiResponse = await firstValueFrom(

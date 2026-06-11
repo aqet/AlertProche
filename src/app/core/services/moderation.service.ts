@@ -21,7 +21,7 @@ export class ModerationService {
     // Termes haineux contextuels
     'justice populaire', 'faites lui la peau', 'règlement de compte',
     // Insultes en langues locales courantes
-    'con', 'abruti', 'crétin'
+    'abruti', 'crétin'
   ];
 
   // Regex anti-doxxing — numéros de téléphone camerounais et identifiants
