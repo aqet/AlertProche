@@ -85,7 +85,11 @@ export class ModerationService {
     return { isClean: true };
   }
 
-  getModerationMessage(result: ModerationResult): string {
+  getModerationMessage(text: string): string {
+    
+    const result: ModerationResult = this.checkText(text) 
+
+
     if (result.isClean) return '';
     switch (result.reason) {
       case 'lexical':

@@ -210,7 +210,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
         error: (err) => {
           this.submittingComment.set(false);
           this.commentError.set(
-            err?.error?.message ||
+            err ||
               'Erreur lors de la publication du commentaire.',
           );
         },
