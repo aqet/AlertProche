@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Post, CreatePostDto } from '../models/post.model';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
+import { ModerationService } from './moderation.service';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
   private readonly API = `${environment.apiUrl}/posts`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private moderateService: ModerationService,
+  ) {}
 
   getAllPosts(filters?: {
     type?: string;
@@ -113,8 +117,10 @@ export class PostService {
 
   createPost(dto: CreatePostDto, imageFile?: File): Observable<Post> {
     const formData = new FormData();
-    console.log(String(dto.isAnonymous));
-
+    let ModerationResult = this.moderateService.getModerationMessage(dto.title);
+    if (ModerationResult) return throwError(() => new Error(ModerationResult));
+    ModerationResult = this.moderateService.getModerationMessage(dto.content);
+    if (ModerationResult) return throwError(() => new Error(ModerationResult));
     formData.append('title', dto.title);
     formData.append('content', dto.content);
     formData.append('location', dto.location);
