@@ -247,7 +247,7 @@
                   placeholder="Mot-clé, nom..."
                   [(ngModel)]="searchQuery"
                   [ngModel]="searchQuery()"
-                  (ngModelChange)="searchQuery.set($event)">
+                  (ngModelChange)="onSearchQueryChange($event)">
               </div>
             </div>
 
@@ -280,11 +280,34 @@
               <input type="text" class="form-control"
                 placeholder="ex: Yaoundé, Douala..."
                 [ngModel]="filterLocation()"
-                (ngModelChange)="filterLocation.set($event)">
+                (ngModelChange)="onLocationChange($event)">
+            </div>
+
+            <!-- Image Search -->
+            <div class="form-group">
+              <label class="form-label">Recherche par image</label>
+              <input type="file" class="form-control" accept="image/*"
+                (change)="onImageSearchUpload($event)">
+              <small *ngIf="imageSearchFile()" class="text-sm text-muted">
+                Fichier sélectionné : {{ imageSearchFile()?.name }}
+              </small>
+
+              <div class="image-preview" *ngIf="imageSearchPreview()">
+                <img [src]="imageSearchPreview()" alt="Aperçu de l'image" class="preview-img">
+                <div class="preview-overlay">
+                  <div class="preview-info">
+                    <i class="fas fa-image"></i>
+                    <span>{{ imageSearchFile()?.name }}</span>
+                  </div>
+                  <button type="button" class="preview-remove" (click)="removeImageSearch()">
+                    <i class="fas fa-trash"></i> Supprimer
+                  </button>
+                </div>
+              </div>
             </div>
 
             <button class="btn btn-ghost w-full btn-sm" (click)="clearFilters()"
-              *ngIf="filterType() || filterLocation() || searchQuery()">
+              *ngIf="filterType() || filterLocation() || searchQuery() || imageSearchFile() || imageSearchPreview()">
               <i class="fas fa-x"></i> Réinitialiser
             </button>
 
@@ -320,8 +343,14 @@
             </div>
           </div>
 
+          <!-- Search loader -->
+          <div class="posts-loader" *ngIf="!loading() && searching()">
+            <span class="spinner"></span>
+            <span>Recherche en cours...</span>
+          </div>
+
           <!-- Posts Grid -->
-          <div class="posts-grid" *ngIf="!loading() && filteredPosts().length > 0">
+          <div class="posts-grid" *ngIf="!loading() && !searching() && filteredPosts().length > 0">
             <app-post-card *ngFor="let post of filteredPosts(); trackBy: trackByPost" [post]="post"></app-post-card>
           </div>
 

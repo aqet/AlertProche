@@ -97,8 +97,6 @@ export class PostDetailComponent implements OnInit, OnDestroy {
       this.textReportReason.set(true);
       text ? this.reportReason.set(text) : this.reportReason.set('');
     }
-
-    console.log(this.textReportReason(), this.reportReason());
   }
 
   ngOnDestroy(): void {

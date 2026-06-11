@@ -136,7 +136,6 @@ export class PostFormComponent implements OnInit {
     reader.onload = () => this.previewUrl.set(reader.result as string);
     reader.readAsDataURL(file);
     const airesponse = await this.postService.analyzeImage(file);
-    console.log(airesponse);
     this.form.patchValue({
       publicationType: airesponse.completion.publicationType,
       title: airesponse.completion.alertTitle,
@@ -170,7 +169,6 @@ export class PostFormComponent implements OnInit {
       .createPost(this.form.value, this.selectedFile() || undefined)
       .subscribe({
         next: (post: any) => {
-          console.log(post);
           if (post.decision == 'BAN' && post.confidence >= 0.9) {
             this.error.set(post.reasoning);
           } else {
