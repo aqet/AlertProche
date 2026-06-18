@@ -38,6 +38,7 @@ export class PostFormComponent implements OnInit {
   previewUrl = signal<string | null>(null);
   dragOver = signal(false);
   imageError = signal('');
+  analysisStatus = signal<'idle' | 'analyzing' | 'done'>('idle');
 
   readonly MAX_SIZE = 5 * 1024 * 1024; // 5MB
   readonly ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -132,23 +133,32 @@ export class PostFormComponent implements OnInit {
       return;
     }
     this.selectedFile.set(file);
+    this.analysisStatus.set('analyzing');
     const reader = new FileReader();
     reader.onload = () => this.previewUrl.set(reader.result as string);
     reader.readAsDataURL(file);
-    const airesponse = await this.postService.analyzeImage(file);
-    this.form.patchValue({
-      publicationType: airesponse.completion.publicationType,
-      title: airesponse.completion.alertTitle,
-      content: airesponse.completion.detailedDescription,
-      location: airesponse.completion.cityName,
-      type: airesponse.completion.publicationType,
-    });
+
+    try {
+      const airesponse = await this.postService.analyzeImage(file);
+      this.form.patchValue({
+        publicationType: airesponse.completion.publicationType,
+        title: airesponse.completion.alertTitle,
+        content: airesponse.completion.detailedDescription,
+        location: airesponse.completion.cityName,
+        type: airesponse.completion.publicationType,
+      });
+      this.analysisStatus.set('done');
+    } catch (error) {
+      console.error('Erreur pendant l’analyse IA de l’image :', error);
+      this.analysisStatus.set('idle');
+    }
   }
 
   removeImage() {
     this.selectedFile.set(null);
     this.previewUrl.set(null);
     this.imageError.set('');
+    this.analysisStatus.set('idle');
   }
 
   getFileSizeLabel(): string {

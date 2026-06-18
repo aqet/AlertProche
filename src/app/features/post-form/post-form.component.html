@@ -166,6 +166,15 @@
                   </div>
                 </div>
 
+                <div class="image-analysis-banner" *ngIf="analysisStatus() === 'analyzing'">
+                  <span class="spinner"></span>
+                  <span>L'IA analyse votre image pour en extraire les informations et remplir votre formulaire automatiquement...</span>
+                </div>
+                <div class="image-analysis-banner image-analysis-done" *ngIf="analysisStatus() === 'done'">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Analyse terminée.</span>
+                </div>
+
                 <div class="alert-banner error" *ngIf="imageError()">
                   <i class="fas fa-circle-exclamation"></i> {{ imageError() }}
                 </div>
