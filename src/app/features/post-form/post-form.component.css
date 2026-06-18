@@ -278,6 +278,27 @@
   border: 1px solid rgba(255,74,74,0.2);
   border-radius: var(--radius-sm);
   color: var(--color-alert);
+}
+
+.image-analysis-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+}
+
+.image-analysis-done {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.18);
+  color: var(--color-text-primary);
+}
+
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
