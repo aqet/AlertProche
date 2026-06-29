@@ -88,7 +88,8 @@
             <div class="form-group">
               <label class="form-label">Description</label>
               <textarea class="form-control" rows="5" formControlName="content"></textarea>
-              <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">30 caractères minimum</span>
+              <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">30 caractères
+                minimum</span>
             </div>
             <div class="form-group">
               <label class="form-label">Localisation</label>
@@ -131,11 +132,8 @@
               <button class="btn btn-ghost btn-sm" (click)="startEditPost(post)">
                 <i class="fas fa-pen"></i> Modifier
               </button>
-              <button class="btn btn-sm"
-                [class.btn-warning]="post.isActive !== false"
-                [class.btn-success-sm]="post.isActive === false"
-                (click)="togglePostActive(post)"
-                *ngIf="canModerate()"
+              <button class="btn btn-sm" [class.btn-warning]="post.isActive !== false"
+                [class.btn-success-sm]="post.isActive === false" (click)="togglePostActive(post)" *ngIf="canModerate()"
                 [title]="post.isActive === false ? 'Réactiver' : 'Désactiver'">
                 <i class="fas" [ngClass]="post.isActive === false ? 'fa-eye' : 'fa-eye-slash'"></i>
               </button>
@@ -215,8 +213,7 @@
                 <div>
                   <h2 class="profile-name">{{ user()?.pseudo }}</h2>
                   <p class="profile-email">{{ user()?.email }}</p>
-                  <span class="badge"
-                    [class.badge-prevention]="user()?.role === 'Standard'"
+                  <span class="badge" [class.badge-prevention]="user()?.role === 'Standard'"
                     [class.badge-abus]="user()?.role === 'Moderateur'"
                     [class.badge-disparition]="user()?.role === 'Admin'">
                     {{ user()?.role }}
@@ -238,8 +235,8 @@
                   <label class="form-label">Pseudo public</label>
                   <div class="input-icon-wrap">
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-control input-with-icon"
-                      formControlName="pseudo" placeholder="Votre pseudo">
+                    <input type="text" class="form-control input-with-icon" formControlName="pseudo"
+                      placeholder="Votre pseudo">
                   </div>
                   <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'required')">
                     <i class="fas fa-circle-exclamation"></i> Pseudo requis
@@ -253,15 +250,29 @@
                   <label class="form-label">Adresse email</label>
                   <div class="input-icon-wrap">
                     <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" class="form-control input-with-icon"
-                      [value]="user()?.email" disabled>
+                    <input type="email" class="form-control input-with-icon" [value]="user()?.email" disabled>
                   </div>
                   <span class="form-hint">L'email ne peut pas être modifié.</span>
                 </div>
 
+                <!-- Location -->
+                <div class="form-group">
+                  <label class="form-label" for="post-location">
+                    Localisation <span class="required"></span>
+                  </label>
+                  <div class="input-icon-wrap">
+                    <i class="fas fa-location-dot input-icon"></i>
+                    <select id="post-location" class="form-control input-with-icon" formControlName="location">
+                      <option value="">{{user()?.location}}</option>
+                      <option *ngFor="let city of camerounCities" [value]="city">{{ city }}</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div class="privacy-notice">
                   <i class="fas fa-shield-halved"></i>
-                  <p>Vos informations personnelles sont protégées et ne sont jamais affichées publiquement sans votre consentement.</p>
+                  <p>Vos informations personnelles sont protégées et ne sont jamais affichées publiquement sans votre
+                    consentement.</p>
                 </div>
 
                 <button type="submit" class="btn btn-primary" [disabled]="profileLoading()">
@@ -282,12 +293,9 @@
                 <span>Mon rôle actuel</span>
               </div>
               <div class="my-role-body">
-                <div class="my-role-badge"
-                  [class.my-role-standard]="user()?.role === 'Standard'"
-                  [class.my-role-mod]="user()?.role === 'Moderateur'"
-                  [class.my-role-admin]="user()?.role === 'Admin'">
-                  <i class="fas"
-                    [class.fa-user]="user()?.role === 'Standard'"
+                <div class="my-role-badge" [class.my-role-standard]="user()?.role === 'Standard'"
+                  [class.my-role-mod]="user()?.role === 'Moderateur'" [class.my-role-admin]="user()?.role === 'Admin'">
+                  <i class="fas" [class.fa-user]="user()?.role === 'Standard'"
                     [class.fa-shield-halved]="user()?.role === 'Moderateur'"
                     [class.fa-crown]="user()?.role === 'Admin'"></i>
                   {{ user()?.role }}
@@ -311,7 +319,7 @@
             </div>
 
             <!-- Tableau des rôles -->
-            <div class="roles-card">
+            <!-- <div class="roles-card">
               <h3 class="roles-title"><i class="fas fa-shield-halved"></i> Rôles & Permissions</h3>
 
               <div class="role-item">
@@ -355,7 +363,7 @@
                   </ul>
                 </div>
               </div>
-            </div>
+            </div> -->
 
           </div>
         </div>

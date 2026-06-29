@@ -4,7 +4,7 @@
     <div class="auth-orb orb-2"></div>
   </div>
 
-  <div  class="auth-container animate-fade-in">
+  <div class="auth-container animate-fade-in">
 
     <!-- Logo -->
     <!-- <a routerLink="/" class="auth-logo">
@@ -42,8 +42,8 @@
           <label class="form-label" for="login-email">Adresse Email</label>
           <div class="input-icon-wrap">
             <i class="fas fa-envelope input-icon"></i>
-            <input id="login-email" type="email" class="form-control input-with-icon"
-              formControlName="email" placeholder="votre@email.com">
+            <input id="login-email" type="email" class="form-control input-with-icon" formControlName="email"
+              placeholder="votre@email.com">
           </div>
           <span class="form-error" *ngIf="hasError(loginForm, 'email', 'required')">
             <i class="fas fa-circle-exclamation"></i> Email requis
@@ -58,8 +58,8 @@
           <div class="input-icon-wrap">
             <i class="fas fa-lock input-icon"></i>
             <input id="login-pass" [type]="showPassword() ? 'text' : 'password'"
-              class="form-control input-with-icon input-with-icon-right"
-              formControlName="password" placeholder="••••••••">
+              class="form-control input-with-icon input-with-icon-right" formControlName="password"
+              placeholder="••••••••">
             <button type="button" class="toggle-pass" (click)="togglePassword()">
               <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
@@ -87,7 +87,8 @@
 
         <!-- Indicateur d'étape -->
         <div class="step-indicator">
-          <div class="step-item" [class.active]="registerStep() === 'info'" [class.done]="registerStep() === 'otp' || registerStep() === 'password'">
+          <div class="step-item" [class.active]="registerStep() === 'info'"
+            [class.done]="registerStep() === 'otp' || registerStep() === 'password'">
             <div class="step-circle">
               <i class="fas fa-check" *ngIf="registerStep() === 'otp' || registerStep() === 'password'"></i>
               <span *ngIf="registerStep() === 'info'">1</span>
@@ -120,8 +121,8 @@
             <label class="form-label" for="reg-pseudo">Pseudo unique</label>
             <div class="input-icon-wrap">
               <i class="fas fa-user input-icon"></i>
-              <input id="reg-pseudo" type="text" class="form-control input-with-icon"
-                formControlName="pseudo" placeholder="VotrePseudo">
+              <input id="reg-pseudo" type="text" class="form-control input-with-icon" formControlName="pseudo"
+                placeholder="VotrePseudo">
             </div>
             <span class="form-error" *ngIf="hasError(infoForm, 'pseudo', 'required')">
               <i class="fas fa-circle-exclamation"></i> Pseudo requis
@@ -135,8 +136,8 @@
             <label class="form-label" for="reg-email">Adresse Email</label>
             <div class="input-icon-wrap">
               <i class="fas fa-envelope input-icon"></i>
-              <input id="reg-email" type="email" class="form-control input-with-icon"
-                formControlName="email" placeholder="votre@email.com">
+              <input id="reg-email" type="email" class="form-control input-with-icon" formControlName="email"
+                placeholder="votre@email.com">
             </div>
             <span class="form-error" *ngIf="hasError(infoForm, 'email', 'required')">
               <i class="fas fa-circle-exclamation"></i> Email requis
@@ -165,11 +166,8 @@
 
           <div class="form-group">
             <label class="form-label" for="otp-code">Code de vérification</label>
-            <input id="otp-code" type="text" inputmode="numeric" maxlength="5"
-              class="form-control otp-input"
-              formControlName="code"
-              placeholder="_ _ _ _ _"
-              autocomplete="one-time-code">
+            <input id="otp-code" type="text" inputmode="numeric" maxlength="5" class="form-control otp-input"
+              formControlName="code" placeholder="_ _ _ _ _" autocomplete="one-time-code">
             <span class="form-error" *ngIf="hasError(otpForm, 'code', 'pattern')">
               <i class="fas fa-circle-exclamation"></i> Le code doit contenir 5 chiffres
             </span>
@@ -186,8 +184,7 @@
           <!-- Renvoyer le code -->
           <div class="resend-row">
             <span class="resend-text">Vous n'avez pas reçu le code ?</span>
-            <button type="button" class="link-btn" (click)="onResendOtp()"
-              [disabled]="resendCountdown() > 0">
+            <button type="button" class="link-btn" (click)="onResendOtp()" [disabled]="resendCountdown() > 0">
               <span *ngIf="resendCountdown() === 0">Renvoyer</span>
               <span *ngIf="resendCountdown() > 0">Renvoyer dans {{ resendCountdown() }}s</span>
             </button>
@@ -209,8 +206,8 @@
             <div class="input-icon-wrap">
               <i class="fas fa-lock input-icon"></i>
               <input id="reg-pass" [type]="showPassword() ? 'text' : 'password'"
-                class="form-control input-with-icon input-with-icon-right"
-                formControlName="password" placeholder="••••••••">
+                class="form-control input-with-icon input-with-icon-right" formControlName="password"
+                placeholder="••••••••">
               <button type="button" class="toggle-pass" (click)="togglePassword()">
                 <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
               </button>
@@ -232,6 +229,20 @@
             </span>
           </div>
 
+          <!-- Location -->
+          <div class="form-group">
+            <label class="form-label" for="post-location">
+              Localisation <span class="required">*</span>
+            </label>
+            <div class="input-icon-wrap">
+              <i class="fas fa-location-dot input-icon"></i>
+              <select id="post-location" class="form-control input-with-icon" formControlName="location">
+                <option value="">-- Sélectionnez une ville --</option>
+                <option *ngFor="let city of camerounCities" [value]="city">{{ city }}</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Charte -->
           <div class="privacy-block">
             <div class="privacy-icon"><i class="fas fa-shield-halved"></i></div>
@@ -247,7 +258,8 @@
             <label class="checkbox-label" for="reg-terms">
               <input type="checkbox" id="reg-terms" formControlName="acceptTerms">
               <span class="checkbox-custom"></span>
-              J'accepte la <a routerLink="/confidentialite" target="_blank" class="privacy-link">politique de confidentialité</a>
+              J'accepte la <a routerLink="/confidentialite" target="_blank" class="privacy-link">politique de
+                confidentialité</a>
             </label>
             <span class="form-error" *ngIf="hasError(passwordForm, 'acceptTerms', 'required')">
               <i class="fas fa-circle-exclamation"></i> Vous devez accepter la charte

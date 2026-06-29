@@ -50,6 +50,106 @@ export class DashboardComponent implements OnInit {
     comments: this.myComments().length,
   }));
 
+  camerounCities = [
+    'abong mbang',
+    'aiyomojok',
+    'akom ii',
+    'akono',
+    'akonolinga',
+    'ambam',
+    'ayos',
+    'baba i',
+    'bafang',
+    'bafanji',
+    'bafia',
+    'bafou',
+    'bafoussam',
+    'bafut',
+    'baham',
+    'balikumbat',
+    'bambalang',
+    'bamenda',
+    'bamendjou',
+    'bamessi',
+    'bamessing',
+    'bamukumbit',
+    'bamumkumbit',
+    'bangangté',
+    'bangolan',
+    'barnaké',
+    'batcha',
+    'batouri',
+    'bertoua',
+    'bibémi',
+    'biwong',
+    'bogo',
+    'bokito',
+    'buea',
+    'bélabo',
+    'diang',
+    'douala',
+    'dschang',
+    'edéa',
+    'eséka',
+    'figuil',
+    'foumban',
+    'foumbot',
+    'garoua',
+    'garoua boulaï',
+    'guider',
+    'kaelé',
+    'kalfou',
+    'kekem',
+    'kontcha',
+    'kousséri',
+    'kribi',
+    'kumba',
+    'kumbo',
+    'lagdo',
+    'limbe',
+    'loum',
+    'maga',
+    'mamfe',
+    'manjo',
+    'maroua',
+    'mbalmayo',
+    'mbandjok',
+    'mbanga',
+    'mbouda',
+    'melong',
+    'messaména',
+    'meïganga',
+    'mfou',
+    'mokolo',
+    'monatélé',
+    'mora',
+    'nanga eboko',
+    'ndom',
+    'ngaoundal',
+    'ngaoundéré',
+    'ngok mapoubi',
+    'ngou',
+    'ngoulemakong',
+    'nguti',
+    'nkongsamba',
+    'nkoteng',
+    'obala',
+    'olamzé',
+    'pitoa',
+    'sangmélima',
+    'tefam',
+    'tibati',
+    'tiko',
+    'touboro',
+    'widekum',
+    'wum',
+    'yagoua',
+    'yaoundé',
+    'yokadouma',
+    'yoko',
+    'ébolowa',
+  ];
+
   constructor(
     private postService: PostService,
     private commentService: CommentService,
@@ -57,7 +157,8 @@ export class DashboardComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.profileForm = this.fb.group({
-      pseudo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]]
+      pseudo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
+      location: ['']
     });
 
     this.postEditForm = this.fb.group({
@@ -68,6 +169,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     const u = this.user();
     if (u) {
       this.profileForm.patchValue({ pseudo: u.pseudo });
@@ -175,7 +277,7 @@ export class DashboardComponent implements OnInit {
     this.profileLoading.set(true);
     this.profileError.set('');
     this.profileSuccess.set('');
-    this.auth.updatePseudo(this.profileForm.value.pseudo).subscribe({
+    this.auth.updateAccount(this.profileForm.value.pseudo, this.profileForm.value.location).subscribe({
       next: () => {
         this.profileLoading.set(false);
         this.profileSuccess.set('Profil mis à jour avec succès.');

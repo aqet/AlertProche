@@ -40,10 +40,10 @@ export class AuthService {
   }
 
   // ── ÉTAPE 3 : Finaliser inscription ──────────────────────────────
-  register(pseudo: string, password: string, verifyToken: string): Observable<AuthResponse> {
+  register(pseudo: string, password: string, verifyToken: string, location: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
       `${this.API}/register`,
-      { pseudo, password, verifyToken }  // token dans le body, pas dans le header
+      { pseudo, password, verifyToken, location }  // token dans le body, pas dans le header
     ).pipe(tap(res => this.saveSession(res)));
   }
 
@@ -54,8 +54,8 @@ export class AuthService {
     );
   }
 
-  updatePseudo(pseudo: string): Observable<User> {
-    return this.http.patch<User>(`${this.API}/profile/pseudo`, { pseudo }).pipe(
+  updateAccount(pseudo: string, location: string): Observable<User> {
+    return this.http.patch<User>(`${this.API}/profile/Account`, { pseudo, location }).pipe(
       tap(user => {
         this.currentUser.set(user);
         const session = localStorage.getItem(SESSION_KEY);

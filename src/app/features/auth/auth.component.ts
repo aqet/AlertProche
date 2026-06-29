@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { PostFormComponent } from '../post-form/post-form.component';
 
 type AuthMode = 'login' | 'register';
 type RegisterStep = 'info' | 'otp' | 'password';
@@ -34,7 +35,7 @@ export class AuthComponent implements OnInit {
   error = signal('');
   success = signal('');
   showPassword = signal(false);
-
+  
   // Stockage inter-étapes
   private verifyToken = '';
   private pendingEmail = '';
@@ -48,11 +49,111 @@ export class AuthComponent implements OnInit {
   infoForm: FormGroup;    // Étape 1 : email + pseudo
   otpForm: FormGroup;     // Étape 2 : code OTP
   passwordForm: FormGroup; // Étape 3 : mot de passe
+  camerounCities = [
+    'abong mbang',
+    'aiyomojok',
+    'akom ii',
+    'akono',
+    'akonolinga',
+    'ambam',
+    'ayos',
+    'baba i',
+    'bafang',
+    'bafanji',
+    'bafia',
+    'bafou',
+    'bafoussam',
+    'bafut',
+    'baham',
+    'balikumbat',
+    'bambalang',
+    'bamenda',
+    'bamendjou',
+    'bamessi',
+    'bamessing',
+    'bamukumbit',
+    'bamumkumbit',
+    'bangangté',
+    'bangolan',
+    'barnaké',
+    'batcha',
+    'batouri',
+    'bertoua',
+    'bibémi',
+    'biwong',
+    'bogo',
+    'bokito',
+    'buea',
+    'bélabo',
+    'diang',
+    'douala',
+    'dschang',
+    'edéa',
+    'eséka',
+    'figuil',
+    'foumban',
+    'foumbot',
+    'garoua',
+    'garoua boulaï',
+    'guider',
+    'kaelé',
+    'kalfou',
+    'kekem',
+    'kontcha',
+    'kousséri',
+    'kribi',
+    'kumba',
+    'kumbo',
+    'lagdo',
+    'limbe',
+    'loum',
+    'maga',
+    'mamfe',
+    'manjo',
+    'maroua',
+    'mbalmayo',
+    'mbandjok',
+    'mbanga',
+    'mbouda',
+    'melong',
+    'messaména',
+    'meïganga',
+    'mfou',
+    'mokolo',
+    'monatélé',
+    'mora',
+    'nanga eboko',
+    'ndom',
+    'ngaoundal',
+    'ngaoundéré',
+    'ngok mapoubi',
+    'ngou',
+    'ngoulemakong',
+    'nguti',
+    'nkongsamba',
+    'nkoteng',
+    'obala',
+    'olamzé',
+    'pitoa',
+    'sangmélima',
+    'tefam',
+    'tibati',
+    'tiko',
+    'touboro',
+    'widekum',
+    'wum',
+    'yagoua',
+    'yaoundé',
+    'yokadouma',
+    'yoko',
+    'ébolowa',
+  ];
+
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -71,10 +172,11 @@ export class AuthComponent implements OnInit {
     this.passwordForm = this.fb.group({
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
+      location: [''],
       acceptTerms: [false, Validators.requiredTrue]
     }, { validators: this.passwordMatchValidator });
   }
-
+    
   passwordMatchValidator(g: FormGroup) {
     const p = g.get('password')?.value;
     const c = g.get('confirmPassword')?.value;
@@ -180,7 +282,7 @@ export class AuthComponent implements OnInit {
     if (this.passwordForm.invalid) { this.passwordForm.markAllAsTouched(); return; }
     this.loading.set(true); this.error.set('');
 
-    this.auth.register(this.pendingPseudo, this.passwordForm.value.password, this.verifyToken).subscribe({
+    this.auth.register(this.pendingPseudo, this.passwordForm.value.password, this.verifyToken, this.passwordForm.value.location).subscribe({
       next: () => { this.loading.set(false); this.router.navigate(['/']); },
       error: (err) => {
         this.loading.set(false);
