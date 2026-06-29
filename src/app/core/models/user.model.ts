@@ -5,6 +5,7 @@ export interface User {
   pseudo: string;
   role: 'Standard' | 'Moderateur' | 'Admin';
   createdAt?: string;
+  location?: string
 }
 
 export interface AuthResponse {
