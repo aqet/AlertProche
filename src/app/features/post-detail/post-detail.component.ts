@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -15,6 +15,7 @@ import { Post } from '../../core/models/post.model';
 import { Comment } from '../../core/models/comment.model';
 import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 import { environment } from '../../../environments/environment';
+import { TrackingService } from '../../core/services/tracking.service';
 
 @Component({
   selector: 'app-post-detail',
@@ -55,6 +56,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private meta: Meta,
     private titleService: Title,
+    private tracking: TrackingService,
   ) {
     this.commentForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(10)]],
@@ -196,6 +198,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
             this.commentForm.reset({ content: '', isAnonymous: false });
             this.submittingComment.set(false);
             this.commentSuccess.set(true);
+            this.tracking.trackEvent('comment_posted');
             setTimeout(() => this.commentSuccess.set(false), 3000);
           }else{
             this.submittingComment.set(false)
@@ -321,6 +324,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
         this.reportLoading.set(false);
         this.reportSubmitted.set(true);
         this.isAlreadyReported.set(true);
+        this.tracking.trackEvent('post_reported');
         setTimeout(() => this.reportModalOpen.set(false), 7000);
         this.aiResult = res;
       },

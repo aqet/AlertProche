@@ -299,14 +299,6 @@
   color: var(--color-text-primary);
 }
 
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-  font-family: var(--font-primary);
-}
-
 .preview-remove:hover { background: rgba(255,74,74,0.25); }
 
 /* ---- MODERATION CARD ---- */

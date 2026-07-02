@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, HostListener } from '@angular/core';
+import { Component, signal, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -9,6 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { PostService } from '../../core/services/post.service';
 import { PostType } from '../../core/models/post.model';
+import { TrackingService } from '../../core/services/tracking.service';
 
 @Component({
   selector: 'app-post-form',
@@ -181,6 +182,7 @@ export class PostFormComponent implements OnInit {
     private fb: FormBuilder,
     private postService: PostService,
     private router: Router,
+    private tracking: TrackingService,
   ) {
     this.form = this.fb.group({
       title: [
@@ -285,6 +287,7 @@ export class PostFormComponent implements OnInit {
             this.loading.set(false);
             this.success.set(true);
             this.router.navigate(['/posts', post._id]);
+            this.tracking.trackEvent('post_created');
           }
         },
         error: (err) => {
