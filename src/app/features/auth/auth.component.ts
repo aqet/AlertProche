@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { PostFormComponent } from '../post-form/post-form.component';
+import { TrackingService } from '../../core/services/tracking.service';
 
 type AuthMode = 'login' | 'register';
 type RegisterStep = 'info' | 'otp' | 'password';
@@ -154,6 +155,7 @@ export class AuthComponent implements OnInit {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
+    private tracking: TrackingService,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -198,7 +200,7 @@ export class AuthComponent implements OnInit {
     if (this.loginForm.invalid) { this.loginForm.markAllAsTouched(); return; }
     this.loading.set(true); this.error.set('');
     this.auth.login(this.loginForm.value).subscribe({
-      next: () => { this.loading.set(false); this.router.navigate(['/']); },
+      next: () => { this.loading.set(false); this.router.navigate(['/']); this.tracking.trackEvent('user_login'); },
       error: (err) => {
         this.loading.set(false);
         this.error.set(err?.error?.message || 'Email ou mot de passe incorrect.');
@@ -283,7 +285,7 @@ export class AuthComponent implements OnInit {
     this.loading.set(true); this.error.set('');
 
     this.auth.register(this.pendingPseudo, this.passwordForm.value.password, this.verifyToken, this.passwordForm.value.location).subscribe({
-      next: () => { this.loading.set(false); this.router.navigate(['/']); },
+      next: () => { this.loading.set(false); this.router.navigate(['/']); this.tracking.trackEvent('user_registered'); },
       error: (err) => {
         this.loading.set(false);
         this.error.set(err?.error?.message || 'Erreur lors de la création du compte.');

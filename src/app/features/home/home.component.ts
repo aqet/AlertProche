@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { TrackingService } from '../../core/services/tracking.service';
 
 @Component({
   selector: 'app-home',
@@ -235,6 +236,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private postService: PostService,
     public auth: AuthService,
     private http: HttpClient,
+    private tracking: TrackingService,
   ) {}
 
   ngOnInit(): void {
@@ -299,6 +301,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.imageSearchFile.set(file);
+    this.tracking.trackEvent('image_search_performed');
     this.searching.set(true);
     const formData = new FormData();
     formData.append('image', file);

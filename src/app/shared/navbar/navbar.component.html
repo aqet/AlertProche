@@ -40,8 +40,14 @@
       </li>
       <!-- Admin — visible uniquement Admin -->
       <li *ngIf="user()?.role === 'Admin'">
-        <a routerLink="/admin" routerLinkActive="active" class="nav-link nav-link-admin">
+        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link nav-link-admin">
           <i class="fas fa-crown"></i> Admin
+        </a>
+      </li>
+      <!-- Analytics — visible uniquement Admin -->
+      <li *ngIf="user()?.role === 'Admin'">
+        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">
+          <i class="fas fa-chart-line"></i> Analytics
         </a>
       </li>
     </ul>

@@ -1,0 +1,289 @@
+<div class="page-wrapper">
+  <div class="container analytics-container">
+
+  <!-- Header -->
+  <div class="analytics-header">
+    <h1><i class="fa-solid fa-chart-line"></i> Analytics</h1>
+    <div class="period-filter">
+      <button [class.active]="period() === '7d'" (click)="setPeriod('7d')">7 jours</button>
+      <button [class.active]="period() === '30d'" (click)="setPeriod('30d')">30 jours</button>
+      <button [class.active]="period() === '90d'" (click)="setPeriod('90d')">90 jours</button>
+    </div>
+  </div>
+
+  <!-- Barre de chargement -->
+  <div class="loading-bar" *ngIf="loading()"></div>
+
+  <!-- Onglets -->
+  <div class="tab-nav">
+    <button [class.active]="activeTab() === 'overview'" (click)="setTab('overview')">
+      <i class="fas fa-gauge"></i> <span class="tab-label">Vue globale</span>
+    </button>
+    <button [class.active]="activeTab() === 'pages'" (click)="setTab('pages')">
+      <i class="fas fa-file-lines"></i> <span class="tab-label">Pages</span>
+    </button>
+    <button [class.active]="activeTab() === 'geo'" (click)="setTab('geo')">
+      <i class="fas fa-earth-africa"></i> <span class="tab-label">Géographie</span>
+    </button>
+    <button [class.active]="activeTab() === 'sources'" (click)="setTab('sources')">
+      <i class="fas fa-arrow-right-to-bracket"></i> <span class="tab-label">Sources</span>
+    </button>
+    <button [class.active]="activeTab() === 'devices'" (click)="setTab('devices')">
+      <i class="fas fa-mobile-screen"></i> <span class="tab-label">Appareils</span>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- VUE GLOBALE                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'overview'">
+
+    <!-- Métriques -->
+    <div class="metrics-grid" *ngIf="overview() as o">
+      <div class="metric-card">
+        <i class="fas fa-users metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.totalSessions | number }}</span>
+          <span class="metric-label">Sessions</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <i class="fas fa-eye metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.totalPageviews | number }}</span>
+          <span class="metric-label">Pages vues</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <i class="fas fa-fingerprint metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.uniqueVisitors | number }}</span>
+          <span class="metric-label">Visiteurs uniques</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <i class="fas fa-user-plus metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.newVisitors | number }}</span>
+          <span class="metric-label">Nouveaux</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <i class="fas fa-rotate metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.returningVisitors | number }}</span>
+          <span class="metric-label">Récurrents</span>
+        </div>
+      </div>
+      <div class="metric-card highlight">
+        <i class="fas fa-circle-dot metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.activeSessions }}</span>
+          <span class="metric-label">Actifs maintenant</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <i class="fas fa-calendar-day metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.todaySessions | number }}</span>
+          <span class="metric-label">Aujourd'hui</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <i class="fas fa-arrow-trend-up metric-icon"></i>
+        <div>
+          <span class="metric-value">{{ o.conversionRate | number:'1.1-1' }}%</span>
+          <span class="metric-label">Taux de conversion</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphique courbe ngx-charts -->
+    <div class="chart-card" *ngIf="activity().length > 0">
+      <div class="chart-card-header">
+        <h3>Consultation du site</h3>
+        <div class="chart-filters">
+          <button [class.active]="chartSerie() === 'sessions'" (click)="chartSerie.set('sessions')">
+            <span class="dot" style="background:#e53935"></span> Sessions
+          </button>
+          <button [class.active]="chartSerie() === 'pageviews'" (click)="chartSerie.set('pageviews')">
+            <span class="dot" style="background:#1976d2"></span> Pages vues
+          </button>
+          <button [class.active]="chartSerie() === 'both'" (click)="chartSerie.set('both')">
+            Les deux
+          </button>
+        </div>
+      </div>
+      <ngx-charts-line-chart
+        [view]="lineView()"
+        [results]="lineChartData()"
+        [scheme]="lineColors"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="false"
+        [autoScale]="false"
+        [yScaleMin]="0"
+        [xAxisTicks]="xTicks()"
+        [gradient]="false"
+        [legend]="chartSerie() === 'both'"
+        [legendPosition]=LegendPosition.Below
+        [animations]="true"
+        [timeline]="false">
+      </ngx-charts-line-chart>
+    </div>
+
+    <div class="empty chart-card" *ngIf="!activity().length && !loading()">
+      <i class="fas fa-chart-line"></i>
+      <p>Aucune donnée d'activité pour cette période.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- PAGES                                                         -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'pages'">
+
+    <div class="chart-card" *ngIf="pages().length > 0">
+      <div class="chart-card-header">
+        <h3>Top 10 pages visitées</h3>
+      </div>
+      <ngx-charts-bar-horizontal
+        [view]="barView()"
+        [results]="pagesChartData()"
+        [scheme]="lineColors"
+        [xAxis]="true"
+        [yAxis]="false"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="false"
+        [animations]="true"
+        [gradient]="false">
+      </ngx-charts-bar-horizontal>
+    </div>
+
+    <div class="chart-card" *ngIf="topPosts().length > 0">
+      <div class="chart-card-header">
+        <h3>Top 10 posts consultés</h3>
+      </div>
+      <ngx-charts-bar-horizontal
+        [view]="barView()"
+        [results]="postsChartData()"
+        [scheme]="lineColors"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="false"
+        [animations]="true"
+        [gradient]="false">
+      </ngx-charts-bar-horizontal>
+    </div>
+
+    <div class="empty chart-card" *ngIf="!pages().length && !loading()">
+      Aucune donnée de pages pour cette période.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- GÉOGRAPHIE                                                    -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'geo'">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <h3>Visiteurs par pays</h3>
+      </div>
+      <div class="stat-list">
+        <div class="stat-row" *ngFor="let g of geo()">
+          <span class="stat-label">
+            {{ g.country }}<span *ngIf="g.city" class="stat-city"> — {{ g.city }}</span>
+          </span>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar-fill"
+              [style.width.%]="geo().length ? (g.count / geo()[0].count * 100) : 0">
+            </div>
+          </div>
+          <span class="stat-count">{{ g.count | number }}</span>
+        </div>
+        <div class="empty" *ngIf="!geo().length">Aucune donnée géographique.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- SOURCES                                                       -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'sources'">
+    <div class="chart-row">
+      <div class="chart-card chart-half">
+        <div class="chart-card-header"><h3>Sources de trafic</h3></div>
+        <ngx-charts-pie-chart
+          [view]="pieView()"
+          [results]="sourcesChartData()"
+          [scheme]="sourceColors"
+          [legend]="true"
+          [legendPosition]=LegendPosition.Below
+          [labels]="true"
+          [doughnut]="true"
+          [animations]="true"
+          *ngIf="sourcesChartData().length > 0">
+        </ngx-charts-pie-chart>
+        <div class="empty" *ngIf="!sourcesChartData().length">Aucune donnée.</div>
+      </div>
+
+      <div class="chart-card chart-half">
+        <div class="chart-card-header"><h3>Détail</h3></div>
+        <div class="stat-list">
+          <div class="stat-row" *ngFor="let s of sources()">
+            <span class="stat-label">{{ s.source }}</span>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar-fill" [style.width.%]="s.percentage"></div>
+            </div>
+            <span class="stat-count">{{ s.percentage }}%</span>
+          </div>
+          <div class="empty" *ngIf="!sources().length">Aucune donnée.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- APPAREILS                                                     -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'devices'">
+    <div class="chart-row">
+      <div class="chart-card chart-half">
+        <div class="chart-card-header"><h3>Répartition des appareils</h3></div>
+        <ngx-charts-pie-chart
+          [view]="pieView()"
+          [results]="devicesChartData()"
+          [scheme]="deviceColors"
+          [legend]="true"
+          [legendPosition]=LegendPosition.Below
+          [labels]="true"
+          [doughnut]="false"
+          [animations]="true"
+          *ngIf="devicesChartData().length > 0">
+        </ngx-charts-pie-chart>
+        <div class="empty" *ngIf="!devicesChartData().length">Aucune donnée.</div>
+      </div>
+
+      <div class="chart-card chart-half">
+        <div class="chart-card-header"><h3>Détail</h3></div>
+        <div class="stat-list">
+          <div class="stat-row" *ngFor="let d of devices()">
+            <span class="stat-label">
+              <i [class]="d.device === 'mobile' ? 'fas fa-mobile-screen' : d.device === 'tablet' ? 'fas fa-tablet-screen-button' : 'fas fa-desktop'"></i>
+              {{ d.device }}
+            </span>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar-fill" [style.width.%]="d.percentage"></div>
+            </div>
+            <span class="stat-count">{{ d.percentage }}%</span>
+          </div>
+          <div class="empty" *ngIf="!devices().length">Aucune donnée.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /.container -->
+</div><!-- /.page-wrapper -->

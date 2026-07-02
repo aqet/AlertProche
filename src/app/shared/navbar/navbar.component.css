@@ -318,12 +318,14 @@
 }
 
 /* Admin nav link */
-.nav-link-admin {
+.nav-link-admin, .nav-link-analyse {
   color: #f59e0b !important;
 }
 
 .nav-link-admin:hover,
-.nav-link-admin.active {
+.nav-link-admin.active,
+.nav-link-analyse:hover,
+.nav-link-analyse.active {
   background: rgba(245,158,11,0.15) !important;
   color: #f59e0b !important;
 }

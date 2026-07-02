@@ -1,0 +1,380 @@
+/* ── Header ──────────────────────────────────────────────────────── */
+.analytics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.analytics-header h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+/* ── Filtres de période ──────────────────────────────────────────── */
+.period-filter {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.period-filter button {
+  padding: 8px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.period-filter button:hover {
+  border-color: var(--color-border-accent);
+  color: var(--color-text-primary);
+}
+
+.period-filter button.active {
+  background: var(--color-accent-dim);
+  border-color: var(--color-border-accent);
+  color: var(--color-accent);
+}
+
+/* ── Barre de chargement ─────────────────────────────────────────── */
+.loading-bar {
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-alert) 100%);
+  border-radius: 2px;
+  margin-bottom: 1rem;
+  animation: shimmer-bar 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer-bar {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── Onglets ─────────────────────────────────────────────────────── */
+/*
+ * Sur grand écran : fond de carte, onglets en ligne.
+ * Sur petit écran : onglets en grille 2×3 (icône + label court),
+ * toujours visibles d'un coup d'œil, sans scroll caché.
+ */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  margin-bottom: 24px;
+  width: 100%;
+  overflow: hidden; /* pas de scroll, on adapte la mise en page */
+}
+
+.tab-nav button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex: 1; /* chaque onglet prend la même part */
+}
+
+.tab-nav button:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--color-text-primary);
+}
+
+.tab-nav button.active {
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+  border: 1px solid var(--color-border-accent);
+}
+
+/* ── Grille métriques ────────────────────────────────────────────── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all var(--transition-normal);
+  min-width: 0;
+}
+
+.metric-card:hover {
+  border-color: var(--color-border-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-card.highlight {
+  border-color: var(--color-border-accent);
+  background: var(--color-accent-dim);
+}
+
+.metric-icon {
+  font-size: 1.2rem;
+  color: var(--color-accent);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.metric-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.metric-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Carte graphique ─────────────────────────────────────────────── */
+.chart-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chart-card-header h3 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* ── Filtres série courbe ────────────────────────────────────────── */
+.chart-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chart-filters button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.chart-filters button:hover {
+  border-color: var(--color-border-accent);
+  color: var(--color-text-primary);
+}
+
+.chart-filters button.active {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--color-border-accent);
+  color: var(--color-text-primary);
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── ngx-charts — thème global ───────────────────────────────────── */
+::ng-deep .ngx-charts text {
+  fill: var(--color-text-secondary) !important;
+  font-family: var(--font-primary) !important;
+  font-size: 11px !important;
+}
+
+::ng-deep .ngx-charts .gridline-path,
+::ng-deep .ngx-charts .grid-panel rect {
+  stroke: var(--color-border) !important;
+  fill: none !important;
+}
+
+::ng-deep .ngx-charts .tick line {
+  stroke: var(--color-border) !important;
+}
+
+::ng-deep .ngx-charts .legend-title-text,
+::ng-deep .ngx-charts .legend-label-text {
+  fill: var(--color-text-secondary) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+/* ── Disposition côte à côte ─────────────────────────────────────── */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.chart-half {
+  margin-bottom: 0;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ── Listes stats ────────────────────────────────────────────────── */
+.stat-list { overflow: hidden; }
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stat-row:last-child { border-bottom: none; }
+
+.stat-label {
+  flex: 0 0 120px;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat-city { color: var(--color-text-muted); font-size: 0.75rem; }
+
+.stat-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--color-bg-input);
+  border-radius: 100px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 100px;
+  transition: width 0.5s ease;
+}
+
+.stat-count {
+  flex: 0 0 46px;
+  text-align: right;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* ── État vide ───────────────────────────────────────────────────── */
+.empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty i { font-size: 1.8rem; opacity: 0.4; }
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1100px) {
+  .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .chart-row    { grid-template-columns: 1fr; }
+  .chart-half   { margin-bottom: 20px; }
+}
+
+/* À partir de 650px : labels des onglets raccourcis (icône seule visible) */
+@media (max-width: 650px) {
+  .tab-nav button .tab-label { display: none; }
+  .tab-nav button { padding: 10px; font-size: 1rem; gap: 0; }
+  .analytics-header { flex-direction: column; align-items: flex-start; }
+  .analytics-header h1 { font-size: 1.3rem; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+  .metric-value { font-size: 1.2rem; }
+  .metric-icon  { font-size: 1rem; }
+  .period-filter button { padding: 7px 12px; font-size: 0.8rem; }
+}
+
+@media (max-width: 420px) {
+  .metrics-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .metric-card  { padding: 12px; gap: 8px; }
+  .metric-value { font-size: 1.1rem; }
+  .chart-card   { padding: 14px; }
+  .stat-label   { flex: 0 0 90px; font-size: 0.75rem; }
+}

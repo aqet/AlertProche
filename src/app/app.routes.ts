@@ -49,6 +49,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/reviews/reviews.component').then(m => m.ReviewsComponent)
   },
   {
+    path: 'admin/analytics',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/admin/analytics/analytics.component').then(m => m.AnalyticsComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }
