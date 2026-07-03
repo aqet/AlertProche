@@ -6,7 +6,7 @@ import {
   AnalyticsPeriod, AnalyticsTab, AnalyticsOverview,
   PageStat, GeoStat, DeviceStat, SourceStat, ActivityPoint
 } from '../../../core/models/tracking.models';
-
+import { curveMonotoneX, curveCardinal } from 'd3-shape';
 type ChartSerie = 'sessions' | 'pageviews' | 'both';
 
 @Component({
@@ -20,6 +20,7 @@ export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
   private analytics = inject(AnalyticsService);
   private el = inject(ElementRef);
 
+  curveMonotoneX=curveMonotoneX
   period = signal<AnalyticsPeriod>('30d');
   activeTab = signal<AnalyticsTab>('overview');
   loading = signal(false);

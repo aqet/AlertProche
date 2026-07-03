@@ -114,7 +114,7 @@
           </button>
         </div>
       </div>
-      <ngx-charts-line-chart
+      <ngx-charts-line-chart class="chart-legend"
         [view]="lineView()"
         [results]="lineChartData()"
         [scheme]="lineColors"
@@ -129,7 +129,8 @@
         [legend]="chartSerie() === 'both'"
         [legendPosition]=LegendPosition.Below
         [animations]="true"
-        [timeline]="false">
+        [timeline]="false"
+        [curve]=curveMonotoneX >
       </ngx-charts-line-chart>
     </div>
 
@@ -148,7 +149,7 @@
       <div class="chart-card-header">
         <h3>Top 10 pages visitées</h3>
       </div>
-      <ngx-charts-bar-horizontal
+      <ngx-charts-bar-horizontal class="chart-legend"
         [view]="barView()"
         [results]="pagesChartData()"
         [scheme]="lineColors"
@@ -165,7 +166,7 @@
       <div class="chart-card-header">
         <h3>Top 10 posts consultés</h3>
       </div>
-      <ngx-charts-bar-horizontal
+      <ngx-charts-bar-horizontal class="chart-legend"
         [view]="barView()"
         [results]="postsChartData()"
         [scheme]="lineColors"
@@ -215,7 +216,7 @@
     <div class="chart-row">
       <div class="chart-card chart-half">
         <div class="chart-card-header"><h3>Sources de trafic</h3></div>
-        <ngx-charts-pie-chart
+        <ngx-charts-pie-chart class="chart-legend"
           [view]="pieView()"
           [results]="sourcesChartData()"
           [scheme]="sourceColors"
@@ -252,7 +253,7 @@
     <div class="chart-row">
       <div class="chart-card chart-half">
         <div class="chart-card-header"><h3>Répartition des appareils</h3></div>
-        <ngx-charts-pie-chart
+        <ngx-charts-pie-chart class="chart-legend"
           [view]="pieView()"
           [results]="devicesChartData()"
           [scheme]="deviceColors"
