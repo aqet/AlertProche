@@ -1,374 +1,295 @@
-<div class="dashboard-page page-wrapper">
+<div class="dash-page page-wrapper">
   <div class="container">
+    <div class="dash-layout">
 
-    <!-- Header -->
-    <div class="dash-header animate-fade-in">
-      <div class="dash-user">
-        <div class="dash-avatar">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
-        <div>
-          <h1 class="dash-title">Bonjour, <span class="text-accent">{{ user()?.pseudo }}</span></h1>
-          <p class="dash-subtitle">Gérez vos publications, commentaires et profil</p>
-        </div>
-      </div>
-      <a routerLink="/posts/new" class="btn btn-danger btn-sm">
-        <i class="fas fa-plus"></i> Nouveau cas
-      </a>
-    </div>
-
-    <!-- Stats -->
-    <div class="dash-stats animate-fade-in stagger-1">
-      <div class="stat-card">
-        <div class="stat-icon stat-icon-posts"><i class="fas fa-file-lines"></i></div>
-        <div>
-          <div class="stat-num">{{ stats().posts }}</div>
-          <div class="stat-lbl">Publications</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon stat-icon-alert"><i class="fas fa-triangle-exclamation"></i></div>
-        <div>
-          <div class="stat-num text-alert">{{ stats().disparitions }}</div>
-          <div class="stat-lbl">Disparitions</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon stat-icon-comments"><i class="fas fa-comments"></i></div>
-        <div>
-          <div class="stat-num">{{ stats().comments }}</div>
-          <div class="stat-lbl">Commentaires</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon stat-icon-role"><i class="fas fa-shield-halved"></i></div>
-        <div>
-          <div class="stat-num" style="font-size:1rem">{{ user()?.role }}</div>
-          <div class="stat-lbl">Rôle</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="dash-tabs animate-fade-in stagger-2">
-      <button class="dash-tab" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
-        <i class="fas fa-file-lines"></i> Mes Publications
-        <span class="tab-badge">{{ stats().posts }}</span>
-      </button>
-      <button class="dash-tab" [class.active]="activeTab() === 'comments'" (click)="setTab('comments')">
-        <i class="fas fa-comments"></i> Mes Commentaires
-        <span class="tab-badge">{{ stats().comments }}</span>
-      </button>
-      <button class="dash-tab" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
-        <i class="fas fa-user-pen"></i> Mon Profil
-      </button>
-    </div>
-
-    <!-- Tab Content -->
-    <div class="dash-content animate-fade-in">
-
-      <!-- POSTS TAB -->
-      <div *ngIf="activeTab() === 'posts'">
-
-        <!-- Edit Form -->
-        <div class="edit-panel" *ngIf="editingPost()">
-          <div class="edit-panel-header">
-            <h3><i class="fas fa-pen"></i> Modifier la publication</h3>
-            <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">
-              <i class="fas fa-xmark"></i> Annuler
-            </button>
+      <!-- ── Sidebar navigation ─────────────────────── -->
+      <aside class="dash-sidebar">
+        <!-- Profil compact -->
+        <div class="dash-profile-card">
+          <div class="dash-avatar-lg">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
+          <div class="dash-profile-info">
+            <span class="dash-profile-name">{{ user()?.pseudo }}</span>
+            <span class="dash-profile-role"
+              [class.role-mod]="user()?.role === 'Moderateur'"
+              [class.role-admin]="user()?.role === 'Admin'">
+              {{ user()?.role }}
+            </span>
           </div>
-          <div class="alert-banner error" *ngIf="editError()">
-            <i class="fas fa-circle-exclamation"></i> {{ editError() }}
+        </div>
+
+        <!-- Métriques -->
+        <div class="dash-metrics">
+          <div class="dash-metric">
+            <span class="dash-metric-num">{{ stats().posts }}</span>
+            <span class="dash-metric-lbl">Publications</span>
           </div>
-          <form [formGroup]="postEditForm" (ngSubmit)="saveEdit()">
-            <div class="form-group">
-              <label class="form-label">Titre</label>
-              <input type="text" class="form-control" formControlName="title">
-              <span class="form-error" *ngIf="hasError(postEditForm, 'title', 'required')">Titre requis</span>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" rows="5" formControlName="content"></textarea>
-              <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">30 caractères
-                minimum</span>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Localisation</label>
-              <input type="text" class="form-control" formControlName="location">
-            </div>
-            <div class="edit-actions">
-              <button type="submit" class="btn btn-primary" [disabled]="editLoading()">
-                <span class="spinner" *ngIf="editLoading()"></span>
-                <span *ngIf="!editLoading()"><i class="fas fa-save"></i> Enregistrer</span>
+          <div class="dash-metric">
+            <span class="dash-metric-num text-alert">{{ stats().disparitions }}</span>
+            <span class="dash-metric-lbl">Disparitions</span>
+          </div>
+          <div class="dash-metric">
+            <span class="dash-metric-num">{{ stats().comments }}</span>
+            <span class="dash-metric-lbl">Commentaires</span>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="dash-nav">
+          <button class="dash-nav-item" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
+            <i class="fas fa-file-lines"></i>
+            <span>Mes Publications</span>
+            <span class="dash-nav-badge" *ngIf="stats().posts > 0">{{ stats().posts }}</span>
+          </button>
+          <button class="dash-nav-item" [class.active]="activeTab() === 'comments'" (click)="setTab('comments')">
+            <i class="fas fa-comments"></i>
+            <span>Mes Commentaires</span>
+            <span class="dash-nav-badge" *ngIf="stats().comments > 0">{{ stats().comments }}</span>
+          </button>
+          <button class="dash-nav-item" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
+            <i class="fas fa-user-pen"></i>
+            <span>Mon Profil</span>
+          </button>
+        </nav>
+
+        <!-- Actions rapides -->
+        <div class="dash-quick-actions">
+          <a routerLink="/posts/new" class="btn btn-danger w-full btn-sm">
+            <i class="fas fa-plus"></i> Publier un Cas
+          </a>
+          <a routerLink="/moderation" *ngIf="canModerate()" class="btn-mod-link w-full">
+            <i class="fas fa-shield-halved"></i> Espace Modération
+          </a>
+        </div>
+      </aside>
+
+      <!-- ── Contenu principal ──────────────────────── -->
+      <main class="dash-main">
+
+        <!-- ── PUBLICATIONS ─────────────────────────── -->
+        <div *ngIf="activeTab() === 'posts'" class="animate-fade-in">
+          <div class="dash-section-header">
+            <h2>Mes Publications</h2>
+          </div>
+
+          <!-- Formulaire d'édition -->
+          <div class="edit-panel" *ngIf="editingPost()">
+            <div class="edit-panel-header">
+              <h3><i class="fas fa-pen"></i> Modifier la publication</h3>
+              <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">
+                <i class="fas fa-xmark"></i> Annuler
               </button>
-              <button type="button" class="btn btn-ghost" (click)="cancelEdit()">Annuler</button>
             </div>
-          </form>
-        </div>
-
-        <!-- Loading -->
-        <div class="loading-state" *ngIf="loadingPosts()">
-          <div class="spinner"></div> Chargement...
-        </div>
-
-        <!-- Posts List -->
-        <div class="posts-list" *ngIf="!loadingPosts() && !editingPost()">
-          <div class="post-row" *ngFor="let post of myPosts(); trackBy: trackByPost">
-            <div class="post-row-main">
-              <div class="post-row-header">
-                <span class="badge" [ngClass]="getBadgeClass(post.type)">{{ post.type }}</span>
-                <span class="post-row-time">{{ getTimeAgo(post.createdAt) }}</span>
+            <div class="alert-banner error" *ngIf="editError()">
+              <i class="fas fa-circle-exclamation"></i> {{ editError() }}
+            </div>
+            <form [formGroup]="postEditForm" (ngSubmit)="saveEdit()">
+              <div class="form-group">
+                <label class="form-label">Titre</label>
+                <input type="text" class="form-control" formControlName="title">
+                <span class="form-error" *ngIf="hasError(postEditForm, 'title', 'required')">Titre requis</span>
               </div>
-              <h3 class="post-row-title">
-                <a [routerLink]="['/posts', post._id]">{{ post.title }}</a>
-              </h3>
-              <p class="post-row-excerpt">{{ post.content | slice:0:120 }}...</p>
-              <div class="post-row-meta">
-                <span><i class="fas fa-location-dot"></i> {{ post.location }}</span>
-                <span><i class="fas fa-comment"></i> {{ post.commentCount || 0 }} commentaires</span>
-                <span *ngIf="post.isAnonymous"><i class="fas fa-eye-slash"></i> Anonyme</span>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="4" formControlName="content"></textarea>
+                <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">30 caractères minimum</span>
               </div>
-            </div>
-            <div class="post-row-actions">
-              <button class="btn btn-ghost btn-sm" (click)="startEditPost(post)">
-                <i class="fas fa-pen"></i> Modifier
-              </button>
-              <button class="btn btn-sm" [class.btn-warning]="post.isActive !== false"
-                [class.btn-success-sm]="post.isActive === false" (click)="togglePostActive(post)" *ngIf="canModerate()"
-                [title]="post.isActive === false ? 'Réactiver' : 'Désactiver'">
-                <i class="fas" [ngClass]="post.isActive === false ? 'fa-eye' : 'fa-eye-slash'"></i>
-              </button>
-              <button class="btn btn-sm btn-delete" (click)="confirmDeletePost(post._id)"
-                *ngIf="deletingPostId() !== post._id">
-                <i class="fas fa-trash"></i>
-              </button>
-              <!-- Confirm Delete -->
-              <div class="confirm-delete" *ngIf="deletingPostId() === post._id">
-                <span>Supprimer ?</span>
-                <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">Oui</button>
-                <button class="btn btn-ghost btn-sm" (click)="cancelDeletePost()">Non</button>
+              <div class="form-group">
+                <label class="form-label">Localisation</label>
+                <input type="text" class="form-control" formControlName="location">
               </div>
-            </div>
+              <div class="edit-actions">
+                <button type="submit" class="btn btn-primary" [disabled]="editLoading()">
+                  <span class="spinner" *ngIf="editLoading()"></span>
+                  <span *ngIf="!editLoading()"><i class="fas fa-save"></i> Enregistrer</span>
+                </button>
+                <button type="button" class="btn btn-ghost" (click)="cancelEdit()">Annuler</button>
+              </div>
+            </form>
           </div>
 
-          <!-- Empty -->
-          <div class="empty-state" *ngIf="myPosts().length === 0">
-            <div class="empty-icon"><i class="fas fa-file-circle-plus"></i></div>
-            <h3>Aucune publication</h3>
-            <p>Vous n'avez pas encore publié de cas.</p>
-            <a routerLink="/posts/new" class="btn btn-danger btn-sm">
-              <i class="fas fa-plus"></i> Publier un cas
-            </a>
+          <div class="loading-state" *ngIf="loadingPosts()">
+            <div class="spinner"></div> Chargement...
+          </div>
+
+          <div class="posts-list" *ngIf="!loadingPosts() && !editingPost()">
+            <div class="post-row" *ngFor="let post of myPosts(); trackBy: trackByPost">
+              <div class="post-row-main">
+                <div class="post-row-header">
+                  <span class="badge" [ngClass]="getBadgeClass(post.type)">{{ post.type }}</span>
+                  <span class="post-row-time">{{ getTimeAgo(post.createdAt) }}</span>
+                </div>
+                <h3 class="post-row-title">
+                  <a [routerLink]="['/posts', post._id]">{{ post.title }}</a>
+                </h3>
+                <p class="post-row-excerpt">{{ post.content | slice:0:120 }}...</p>
+                <div class="post-row-meta">
+                  <span><i class="fas fa-location-dot"></i> {{ post.location }}</span>
+                  <span><i class="fas fa-comment"></i> {{ post.commentCount || 0 }}</span>
+                  <span *ngIf="post.isAnonymous"><i class="fas fa-eye-slash"></i> Anonyme</span>
+                </div>
+              </div>
+              <div class="post-row-actions">
+                <button class="btn btn-ghost btn-sm" (click)="startEditPost(post)">
+                  <i class="fas fa-pen"></i>
+                </button>
+                <button class="btn btn-sm" [class.btn-warning]="post.isActive !== false"
+                  [class.btn-success-sm]="post.isActive === false"
+                  (click)="togglePostActive(post)" *ngIf="canModerate()">
+                  <i class="fas" [ngClass]="post.isActive === false ? 'fa-eye' : 'fa-eye-slash'"></i>
+                </button>
+                <button class="btn btn-sm btn-delete" (click)="confirmDeletePost(post._id)"
+                  *ngIf="deletingPostId() !== post._id">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <div class="confirm-delete" *ngIf="deletingPostId() === post._id">
+                  <span>Supprimer ?</span>
+                  <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">Oui</button>
+                  <button class="btn btn-ghost btn-sm" (click)="cancelDeletePost()">Non</button>
+                </div>
+              </div>
+            </div>
+            <div class="empty-state" *ngIf="myPosts().length === 0">
+              <div class="empty-icon"><i class="fas fa-file-circle-plus"></i></div>
+              <h3>Aucune publication</h3>
+              <p>Vous n'avez pas encore publié de cas.</p>
+              <a routerLink="/posts/new" class="btn btn-danger btn-sm"><i class="fas fa-plus"></i> Publier</a>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- COMMENTS TAB -->
-      <div *ngIf="activeTab() === 'comments'">
-        <div class="loading-state" *ngIf="loadingComments()">
-          <div class="spinner"></div> Chargement...
+        <!-- ── COMMENTAIRES ─────────────────────────── -->
+        <div *ngIf="activeTab() === 'comments'" class="animate-fade-in">
+          <div class="dash-section-header">
+            <h2>Mes Commentaires</h2>
+          </div>
+          <div class="loading-state" *ngIf="loadingComments()">
+            <div class="spinner"></div> Chargement...
+          </div>
+          <div class="comments-list" *ngIf="!loadingComments()">
+            <div class="comment-row" *ngFor="let c of myComments(); trackBy: trackByComment">
+              <div class="comment-row-body">
+                <p class="comment-row-text">{{ c.content }}</p>
+                <div class="comment-row-meta">
+                  <span><i class="fas fa-clock"></i> {{ getTimeAgo(c.createdAt) }}</span>
+                  <a [routerLink]="['/posts', c.post_id]" class="comment-row-link">
+                    <i class="fas fa-arrow-up-right-from-square"></i> Voir la publication
+                  </a>
+                </div>
+              </div>
+              <div class="comment-row-actions">
+                <button class="btn btn-sm btn-delete" (click)="confirmDeleteComment(c._id)"
+                  *ngIf="deletingCommentId() !== c._id">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <div class="confirm-delete" *ngIf="deletingCommentId() === c._id">
+                  <span>Supprimer ?</span>
+                  <button class="btn btn-danger btn-sm" (click)="deleteComment(c._id)">Oui</button>
+                  <button class="btn btn-ghost btn-sm" (click)="cancelDeleteComment()">Non</button>
+                </div>
+              </div>
+            </div>
+            <div class="empty-state" *ngIf="myComments().length === 0">
+              <div class="empty-icon"><i class="fas fa-comment-slash"></i></div>
+              <h3>Aucun commentaire</h3>
+              <p>Vous n'avez pas encore commenté.</p>
+              <a routerLink="/" class="btn btn-outline btn-sm">Explorer le flux</a>
+            </div>
+          </div>
         </div>
 
-        <div class="comments-list" *ngIf="!loadingComments()">
-          <div class="comment-row" *ngFor="let c of myComments(); trackBy: trackByComment">
-            <div class="comment-row-body">
-              <p class="comment-row-text">{{ c.content }}</p>
-              <div class="comment-row-meta">
-                <span><i class="fas fa-clock"></i> {{ getTimeAgo(c.createdAt) }}</span>
-                <a [routerLink]="['/posts', c.post_id]" class="comment-row-link">
-                  <i class="fas fa-arrow-up-right-from-square"></i> Voir la publication
+        <!-- ── PROFIL ────────────────────────────────── -->
+        <div *ngIf="activeTab() === 'profile'" class="animate-fade-in">
+          <div class="dash-section-header">
+            <h2>Mon Profil</h2>
+          </div>
+          <div class="profile-layout">
+            <div class="profile-main">
+              <div class="profile-card">
+                <div class="profile-header">
+                  <div class="profile-avatar-lg">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
+                  <div>
+                    <h2 class="profile-name">{{ user()?.pseudo }}</h2>
+                    <p class="profile-email">{{ user()?.email }}</p>
+                    <span class="badge" [class.badge-prevention]="user()?.role === 'Standard'"
+                      [class.badge-abus]="user()?.role === 'Moderateur'"
+                      [class.badge-disparition]="user()?.role === 'Admin'">{{ user()?.role }}</span>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="alert-banner success" *ngIf="profileSuccess()">
+                  <i class="fas fa-circle-check"></i> {{ profileSuccess() }}
+                </div>
+                <div class="alert-banner error" *ngIf="profileError()">
+                  <i class="fas fa-circle-exclamation"></i> {{ profileError() }}
+                </div>
+                <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+                  <div class="form-group">
+                    <label class="form-label">Pseudo public</label>
+                    <div class="input-icon-wrap">
+                      <i class="fas fa-user input-icon"></i>
+                      <input type="text" class="form-control input-with-icon" formControlName="pseudo">
+                    </div>
+                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'required')">Pseudo requis</span>
+                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'minlength')">3 caractères minimum</span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Adresse email</label>
+                    <div class="input-icon-wrap">
+                      <i class="fas fa-envelope input-icon"></i>
+                      <input type="email" class="form-control input-with-icon" [value]="user()?.email" disabled>
+                    </div>
+                    <span class="form-hint">L'email ne peut pas être modifié.</span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Localisation</label>
+                    <div class="input-icon-wrap">
+                      <i class="fas fa-location-dot input-icon"></i>
+                      <select class="form-control input-with-icon" formControlName="location">
+                        <option value="">{{ user()?.location }}</option>
+                        <option *ngFor="let city of camerounCities" [value]="city">{{ city }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="privacy-notice">
+                    <i class="fas fa-shield-halved"></i>
+                    <p>Vos informations personnelles sont protégées.</p>
+                  </div>
+                  <button type="submit" class="btn btn-primary" [disabled]="profileLoading()">
+                    <span class="spinner" *ngIf="profileLoading()"></span>
+                    <span *ngIf="!profileLoading()"><i class="fas fa-save"></i> Enregistrer</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div class="profile-sidebar">
+              <div class="my-role-card">
+                <div class="my-role-header"><i class="fas fa-id-badge"></i> <span>Mon rôle</span></div>
+                <div class="my-role-body">
+                  <div class="my-role-badge"
+                    [class.my-role-standard]="user()?.role === 'Standard'"
+                    [class.my-role-mod]="user()?.role === 'Moderateur'"
+                    [class.my-role-admin]="user()?.role === 'Admin'">
+                    <i class="fas"
+                      [class.fa-user]="user()?.role === 'Standard'"
+                      [class.fa-shield-halved]="user()?.role === 'Moderateur'"
+                      [class.fa-crown]="user()?.role === 'Admin'"></i>
+                    {{ user()?.role }}
+                  </div>
+                  <p class="my-role-desc">
+                    <ng-container *ngIf="user()?.role === 'Standard'">Publiez des cas, commentez et signalez du contenu.</ng-container>
+                    <ng-container *ngIf="user()?.role === 'Moderateur'">Accès à l'espace de modération.</ng-container>
+                    <ng-container *ngIf="user()?.role === 'Admin'">Accès complet à la plateforme.</ng-container>
+                  </p>
+                </div>
+                <a routerLink="/moderation" class="btn btn-mod-link w-full" *ngIf="canModerate()">
+                  <i class="fas fa-shield-halved"></i> Espace modération
                 </a>
               </div>
             </div>
-            <div class="comment-row-actions">
-              <button class="btn btn-sm btn-delete" (click)="confirmDeleteComment(c._id)"
-                *ngIf="deletingCommentId() !== c._id">
-                <i class="fas fa-trash"></i>
-              </button>
-              <div class="confirm-delete" *ngIf="deletingCommentId() === c._id">
-                <span>Supprimer ?</span>
-                <button class="btn btn-danger btn-sm" (click)="deleteComment(c._id)">Oui</button>
-                <button class="btn btn-ghost btn-sm" (click)="cancelDeleteComment()">Non</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="empty-state" *ngIf="myComments().length === 0">
-            <div class="empty-icon"><i class="fas fa-comment-slash"></i></div>
-            <h3>Aucun commentaire</h3>
-            <p>Vous n'avez pas encore commenté de publication.</p>
-            <a routerLink="/" class="btn btn-outline btn-sm">Explorer le flux</a>
           </div>
         </div>
-      </div>
 
-      <!-- PROFILE TAB -->
-      <div *ngIf="activeTab() === 'profile'">
-        <div class="profile-layout">
-
-          <!-- LEFT: Formulaire profil -->
-          <div class="profile-main">
-            <div class="profile-card">
-              <div class="profile-header">
-                <div class="profile-avatar-lg">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
-                <div>
-                  <h2 class="profile-name">{{ user()?.pseudo }}</h2>
-                  <p class="profile-email">{{ user()?.email }}</p>
-                  <span class="badge" [class.badge-prevention]="user()?.role === 'Standard'"
-                    [class.badge-abus]="user()?.role === 'Moderateur'"
-                    [class.badge-disparition]="user()?.role === 'Admin'">
-                    {{ user()?.role }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="divider"></div>
-
-              <div class="alert-banner success" *ngIf="profileSuccess()">
-                <i class="fas fa-circle-check"></i> {{ profileSuccess() }}
-              </div>
-              <div class="alert-banner error" *ngIf="profileError()">
-                <i class="fas fa-circle-exclamation"></i> {{ profileError() }}
-              </div>
-
-              <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-                <div class="form-group">
-                  <label class="form-label">Pseudo public</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-control input-with-icon" formControlName="pseudo"
-                      placeholder="Votre pseudo">
-                  </div>
-                  <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'required')">
-                    <i class="fas fa-circle-exclamation"></i> Pseudo requis
-                  </span>
-                  <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'minlength')">
-                    <i class="fas fa-circle-exclamation"></i> 3 caractères minimum
-                  </span>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Adresse email</label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" class="form-control input-with-icon" [value]="user()?.email" disabled>
-                  </div>
-                  <span class="form-hint">L'email ne peut pas être modifié.</span>
-                </div>
-
-                <!-- Location -->
-                <div class="form-group">
-                  <label class="form-label" for="post-location">
-                    Localisation <span class="required"></span>
-                  </label>
-                  <div class="input-icon-wrap">
-                    <i class="fas fa-location-dot input-icon"></i>
-                    <select id="post-location" class="form-control input-with-icon" formControlName="location">
-                      <option value="">{{user()?.location}}</option>
-                      <option *ngFor="let city of camerounCities" [value]="city">{{ city }}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="privacy-notice">
-                  <i class="fas fa-shield-halved"></i>
-                  <p>Vos informations personnelles sont protégées et ne sont jamais affichées publiquement sans votre
-                    consentement.</p>
-                </div>
-
-                <button type="submit" class="btn btn-primary" [disabled]="profileLoading()">
-                  <span class="spinner" *ngIf="profileLoading()"></span>
-                  <span *ngIf="!profileLoading()"><i class="fas fa-save"></i> Enregistrer les modifications</span>
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <!-- RIGHT: Rôles & actions -->
-          <div class="profile-sidebar">
-
-            <!-- Mon rôle actuel -->
-            <div class="my-role-card">
-              <div class="my-role-header">
-                <i class="fas fa-id-badge"></i>
-                <span>Mon rôle actuel</span>
-              </div>
-              <div class="my-role-body">
-                <div class="my-role-badge" [class.my-role-standard]="user()?.role === 'Standard'"
-                  [class.my-role-mod]="user()?.role === 'Moderateur'" [class.my-role-admin]="user()?.role === 'Admin'">
-                  <i class="fas" [class.fa-user]="user()?.role === 'Standard'"
-                    [class.fa-shield-halved]="user()?.role === 'Moderateur'"
-                    [class.fa-crown]="user()?.role === 'Admin'"></i>
-                  {{ user()?.role }}
-                </div>
-                <p class="my-role-desc">
-                  <ng-container *ngIf="user()?.role === 'Standard'">
-                    Vous pouvez publier des cas, commenter et signaler du contenu inapproprié.
-                  </ng-container>
-                  <ng-container *ngIf="user()?.role === 'Moderateur'">
-                    Vous avez accès à l'espace de modération pour gérer les signalements.
-                  </ng-container>
-                  <ng-container *ngIf="user()?.role === 'Admin'">
-                    Vous avez un accès complet à toutes les fonctionnalités de la plateforme.
-                  </ng-container>
-                </p>
-              </div>
-              <!-- Lien modération si éligible -->
-              <a routerLink="/moderation" class="btn btn-mod-link w-full" *ngIf="canModerate()">
-                <i class="fas fa-shield-halved"></i> Accéder à l'espace modération
-              </a>
-            </div>
-
-            <!-- Tableau des rôles -->
-            <!-- <div class="roles-card">
-              <h3 class="roles-title"><i class="fas fa-shield-halved"></i> Rôles & Permissions</h3>
-
-              <div class="role-item">
-                <div class="role-badge role-standard">Standard</div>
-                <div class="role-desc">
-                  <strong>Membre standard</strong>
-                  <ul class="role-perms">
-                    <li><i class="fas fa-check"></i> Publier des cas</li>
-                    <li><i class="fas fa-check"></i> Commenter</li>
-                    <li><i class="fas fa-check"></i> Signaler du contenu</li>
-                    <li><i class="fas fa-check"></i> Modifier / supprimer ses publications</li>
-                    <li class="perm-no"><i class="fas fa-xmark"></i> Accès modération</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div class="role-item">
-                <div class="role-badge role-moderateur">Modérateur</div>
-                <div class="role-desc">
-                  <strong>Modérateur communautaire</strong>
-                  <ul class="role-perms">
-                    <li><i class="fas fa-check"></i> Tout ce que Standard peut faire</li>
-                    <li><i class="fas fa-check"></i> Voir tous les signalements</li>
-                    <li><i class="fas fa-check"></i> Désactiver / réactiver une publication</li>
-                    <li><i class="fas fa-check"></i> Supprimer tout commentaire</li>
-                    <li><i class="fas fa-check"></i> Classer un signalement sans suite</li>
-                    <li class="perm-no"><i class="fas fa-xmark"></i> Suppression définitive</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div class="role-item">
-                <div class="role-badge role-admin">Admin</div>
-                <div class="role-desc">
-                  <strong>Administrateur</strong>
-                  <ul class="role-perms">
-                    <li><i class="fas fa-check"></i> Tout ce que Modérateur peut faire</li>
-                    <li><i class="fas fa-check"></i> Supprimer définitivement toute publication</li>
-                    <li><i class="fas fa-check"></i> Gestion complète des utilisateurs</li>
-                    <li><i class="fas fa-check"></i> Configuration de la plateforme</li>
-                  </ul>
-                </div>
-              </div>
-            </div> -->
-
-          </div>
-        </div>
-      </div>
-
+      </main>
     </div>
   </div>
 </div>

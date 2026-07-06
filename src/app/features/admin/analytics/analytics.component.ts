@@ -56,7 +56,7 @@ export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (serie !== 'sessions') {
       result.push({ name: 'Pages vues', series: data.map(d => ({ name: d.date.slice(5), value: d.pageviews })) });
     }
-    return result;
+    return result; 
   });
 
   pagesChartData  = computed(() => this.pages().map(p    => ({ name: p.url,    value: p.views })));

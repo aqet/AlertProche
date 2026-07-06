@@ -206,7 +206,7 @@
   background: transparent;
   border: none;
   color: var(--color-text-secondary);
-  font-family: var(--font-primary);
+  font-family: var(--font);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
