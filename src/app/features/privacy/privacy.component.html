@@ -1,261 +1,210 @@
 <div class="privacy-page page-wrapper">
   <div class="container">
 
-    <!-- Header -->
-    <div class="privacy-header animate-fade-in">
+    <!-- ── En-tête ─────────────────────────────────────────── -->
+    <header class="privacy-header">
       <a routerLink="/" class="back-link"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
-      <div class="privacy-hero">
-        <div class="privacy-icon"><i class="fas fa-shield-halved"></i></div>
-        <h1 class="privacy-title">Politique de Confidentialité</h1>
-        <p class="privacy-subtitle">
-          Dernière mise à jour : <strong>{{ lastUpdated }}</strong>
-        </p>
-        <p class="privacy-intro">
-          AlertProche s'engage à protéger la vie privée de ses utilisateurs. Ce document décrit comment nous collectons,
-          utilisons et protégeons vos données personnelles, ainsi que les responsabilités de chaque partie concernant
-          les contenus publiés sur la plateforme.
-        </p>
+      <div class="privacy-hero-card">
+        <div class="privacy-hero-icon"><i class="fas fa-shield-halved"></i></div>
+        <div>
+          <h1 class="privacy-title">Politique de Confidentialité</h1>
+          <p class="privacy-subtitle">Dernière mise à jour : <strong>{{ lastUpdated }}</strong></p>
+          <p class="privacy-intro">
+            AlertProche s'engage à protéger la vie privée de ses utilisateurs. Ce document décrit comment nous collectons,
+            utilisons et protégeons vos données personnelles.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Layout deux colonnes ─────────────────────────────── -->
+    <div class="privacy-layout">
+
+      <!-- Sommaire sticky -->
+      <aside class="privacy-toc">
+        <h3><i class="fas fa-list"></i> Sommaire</h3>
+        <nav>
+          <a href="#collecte">01. Données collectées</a>
+          <a href="#navigation">02. Navigation anonymisée</a>
+          <a href="#utilisation">03. Utilisation des données</a>
+          <a href="#images">04. Images et contenus</a>
+          <a href="#anonymat">05. Anonymat</a>
+          <a href="#moderation">06. Modération</a>
+          <a href="#droits">07. Vos droits</a>
+          <a href="#securite">08. Sécurité</a>
+          <a href="#contact">09. Contact</a>
+        </nav>
+      </aside>
+
+      <!-- Contenu -->
+      <div class="privacy-content">
+
+        <section class="privacy-section" id="collecte">
+          <div class="section-num">01</div>
+          <div class="section-body">
+            <h2>Données collectées</h2>
+            <p>Lors de votre inscription et utilisation de la plateforme, nous collectons les données suivantes :</p>
+            <ul>
+              <li><strong>Adresse email</strong> — utilisée uniquement pour l'authentification. Elle n'est jamais affichée publiquement.</li>
+              <li><strong>Pseudo</strong> — identifiant public choisi par l'utilisateur. Peut être masqué via l'option d'anonymisation.</li>
+              <li><strong>Mot de passe</strong> — stocké sous forme de hachage cryptographique (bcrypt). Nous n'avons pas accès à votre mot de passe en clair.</li>
+              <li><strong>Contenus publiés</strong> — publications, commentaires et images soumis volontairement.</li>
+              <li><strong>Données techniques</strong> — horodatage des publications et connexions.</li>
+            </ul>
+            <div class="privacy-note">
+              <i class="fas fa-circle-info"></i>
+              Nous ne collectons pas de données de localisation GPS, de cookies de tracking, ni de données comportementales à des fins publicitaires.
+            </div>
+          </div>
+        </section>
+
+        <section class="privacy-section" id="navigation">
+          <div class="section-num">02</div>
+          <div class="section-body">
+            <h2>Données de navigation anonymisées</h2>
+            <p>Pour améliorer l'expérience utilisateur, AlertProche collecte automatiquement des données de navigation anonymisées.</p>
+            <h3>Ce qui est collecté</h3>
+            <ul>
+              <li><strong>Pages visitées</strong> — pages consultées et durée de consultation</li>
+              <li><strong>Type d'appareil</strong> — mobile, tablette ou ordinateur</li>
+              <li><strong>Navigateur et système d'exploitation</strong></li>
+              <li><strong>Pays et ville d'origine approximatifs</strong> — déduits de l'adresse IP</li>
+              <li><strong>Source de trafic</strong> — comment vous avez trouvé la plateforme</li>
+            </ul>
+            <h3>Ce qui n'est PAS stocké</h3>
+            <ul>
+              <li>Votre adresse IP en clair — elle est transformée en empreinte SHA-256 non réversible</li>
+              <li>Votre nom, email ou toute information personnelle identifiable directement</li>
+            </ul>
+            <div class="privacy-note">
+              <i class="fas fa-clock"></i>
+              Ces données sont <strong>automatiquement supprimées après 90 jours</strong>.
+            </div>
+            <p>Cette collecte est fondée sur l'<strong>intérêt légitime</strong> d'AlertProche à assurer le bon fonctionnement de la plateforme, conformément aux principes de minimisation des données.</p>
+          </div>
+        </section>
+
+        <section class="privacy-section" id="utilisation">
+          <div class="section-num">03</div>
+          <div class="section-body">
+            <h2>Utilisation des données</h2>
+            <p>Vos données sont utilisées exclusivement pour :</p>
+            <ul>
+              <li>Permettre l'authentification et la gestion de votre compte</li>
+              <li>Afficher vos publications et commentaires</li>
+              <li>Assurer la modération automatique des contenus</li>
+              <li>Garantir la sécurité et l'intégrité de la plateforme</li>
+            </ul>
+            <p>Vos données ne sont <strong>jamais vendues, louées ou partagées</strong> avec des tiers à des fins commerciales.</p>
+          </div>
+        </section>
+
+        <section class="privacy-section privacy-section-alert" id="images">
+          <div class="section-num">04</div>
+          <div class="section-body">
+            <h2>Responsabilité sur les images et contenus publiés</h2>
+            <div class="responsibility-banner">
+              <i class="fas fa-triangle-exclamation"></i>
+              <div>
+                <strong>Clause de non-responsabilité — Contenus générés par les utilisateurs</strong>
+                <p>AlertProche est une plateforme de mise en relation citoyenne. Les contenus publiés sont soumis et contrôlés par leurs auteurs.</p>
+              </div>
+            </div>
+            <h3>Images publiées par les utilisateurs</h3>
+            <p>Toute image téléversée est publiée sous la <strong>responsabilité exclusive de l'utilisateur qui la soumet</strong>. En publiant une image, l'utilisateur garantit :</p>
+            <ul>
+              <li>Être l'auteur ou disposer des droits nécessaires à sa publication</li>
+              <li>Avoir obtenu le consentement des personnes photographiées</li>
+              <li>Que l'image ne viole pas les droits à l'image ni la dignité des personnes</li>
+              <li>Que l'image ne contient pas de contenu illicite ou portant atteinte à la dignité humaine</li>
+            </ul>
+            <div class="privacy-note privacy-note-warning">
+              <i class="fas fa-shield-halved"></i>
+              <div>
+                <strong>AlertProche décline toute responsabilité</strong> quant au contenu des images publiées par les utilisateurs. Tout abus peut être signalé via le bouton "Signaler".
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="privacy-section" id="anonymat">
+          <div class="section-num">05</div>
+          <div class="section-body">
+            <h2>Anonymat et pseudonymat</h2>
+            <p>AlertProche offre une option de publication anonyme. Lorsque cette option est activée :</p>
+            <ul>
+              <li>Votre pseudo n'est pas affiché sur la publication ou le commentaire</li>
+              <li>La mention "Anonyme" est affichée à la place</li>
+              <li>Votre identité reste connue uniquement de la plateforme à des fins de modération</li>
+            </ul>
+            <div class="privacy-note">
+              <i class="fas fa-lock"></i>
+              L'anonymat public ne signifie pas l'anonymat total. En cas de signalement d'activité illicite par les autorités compétentes, les informations d'identification peuvent être communiquées dans le cadre légal applicable.
+            </div>
+          </div>
+        </section>
+
+        <section class="privacy-section" id="moderation">
+          <div class="section-num">06</div>
+          <div class="section-body">
+            <h2>Modération et signalement</h2>
+            <p>La plateforme dispose d'un système de modération à deux niveaux :</p>
+            <ul>
+              <li><strong>Modération automatique</strong> — filtre lexical (termes haineux, insultes) et filtre anti-doxxing (numéros de téléphone, identifiants officiels).</li>
+              <li><strong>Modération humaine</strong> — les modérateurs et administrateurs peuvent désactiver ou supprimer tout contenu signalé.</li>
+            </ul>
+            <p>Tout utilisateur peut signaler une publication via le bouton "Signaler" disponible sur chaque publication.</p>
+          </div>
+        </section>
+
+        <section class="privacy-section" id="droits">
+          <div class="section-num">07</div>
+          <div class="section-body">
+            <h2>Vos droits</h2>
+            <p>Vous disposez des droits suivants :</p>
+            <ul>
+              <li><strong>Droit d'accès</strong> — consulter vos données via votre espace personnel</li>
+              <li><strong>Droit de rectification</strong> — modifier votre pseudo depuis votre profil</li>
+              <li><strong>Droit à l'effacement</strong> — supprimer vos publications et commentaires</li>
+              <li><strong>Droit à la portabilité</strong> — demander l'export de vos données</li>
+            </ul>
+            <p>La suppression de votre compte entraîne l'anonymisation de vos publications afin de préserver l'intégrité des alertes communautaires.</p>
+          </div>
+        </section>
+
+        <section class="privacy-section" id="securite">
+          <div class="section-num">08</div>
+          <div class="section-body">
+            <h2>Sécurité des données</h2>
+            <p>Nous mettons en œuvre les mesures techniques suivantes :</p>
+            <ul>
+              <li>Chiffrement des mots de passe (bcrypt, facteur de coût 12)</li>
+              <li>Authentification par jetons JWT à durée limitée</li>
+              <li>Communications chiffrées via HTTPS/TLS</li>
+              <li>Base de données hébergée sur MongoDB Atlas avec contrôle d'accès strict</li>
+              <li>Validation et assainissement de toutes les entrées utilisateur</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="privacy-section" id="contact">
+          <div class="section-num">09</div>
+          <div class="section-body">
+            <h2>Contact</h2>
+            <p>Pour toute question relative à cette politique, vous pouvez nous contacter via le formulaire de signalement disponible sur chaque publication, ou depuis votre espace personnel.</p>
+            <div class="privacy-note">
+              <i class="fas fa-envelope"></i>
+              Cette politique peut être mise à jour. Toute modification significative sera notifiée aux utilisateurs inscrits.
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
 
-    <!-- Sommaire -->
-    <nav class="privacy-toc animate-fade-in stagger-1">
-      <h3><i class="fas fa-list"></i> Sommaire</h3>
-      <ol>
-        <li><a href="#collecte">Données collectées</a></li>
-        <li><a href="#navigation">Données de navigation anonymisées</a></li>
-        <li><a href="#utilisation">Utilisation des données</a></li>
-        <li><a href="#images">Responsabilité sur les images et contenus</a></li>
-        <li><a href="#anonymat">Anonymat et pseudonymat</a></li>
-        <li><a href="#moderation">Modération et signalement</a></li>
-        <li><a href="#droits">Vos droits</a></li>
-        <li><a href="#securite">Sécurité des données</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ol>
-    </nav>
-
-    <!-- Contenu -->
-    <div class="privacy-content animate-fade-in stagger-2">
-
-      <!-- 1. Données collectées -->
-      <section class="privacy-section" id="collecte">
-        <div class="section-num">01</div>
-        <div class="section-body">
-          <h2>Données collectées</h2>
-          <p>Lors de votre inscription et utilisation de la plateforme, nous collectons les données suivantes :</p>
-          <ul>
-            <li><strong>Adresse email</strong> — utilisée uniquement pour l'authentification. Elle n'est jamais affichée publiquement.</li>
-            <li><strong>Pseudo</strong> — identifiant public choisi par l'utilisateur. Peut être masqué via l'option d'anonymisation.</li>
-            <li><strong>Mot de passe</strong> — stocké sous forme de hachage cryptographique (bcrypt). Nous n'avons pas accès à votre mot de passe en clair.</li>
-            <li><strong>Contenus publiés</strong> — publications, commentaires et images soumis volontairement par l'utilisateur.</li>
-            <li><strong>Données techniques</strong> — horodatage des publications et connexions, nécessaires au fonctionnement de la plateforme.</li>
-          </ul>
-          <div class="privacy-note">
-            <i class="fas fa-circle-info"></i>
-            Nous ne collectons pas de données de localisation GPS, de cookies de tracking, ni de données comportementales à des fins publicitaires.
-          </div>
-        </div>
-      </section>
-
-      <!-- Données de navigation anonymisées -->
-      <section class="privacy-section" id="navigation">
-        <div class="section-num">02</div>
-        <div class="section-body">
-          <h2>Données de navigation anonymisées</h2>
-          <p>
-            Pour améliorer l'expérience utilisateur et assurer la sécurité de la plateforme, AlertProche collecte automatiquement
-            des données de navigation anonymisées lors de votre visite.
-          </p>
-          <h3>Ce qui est collecté</h3>
-          <ul>
-            <li><strong>Pages visitées</strong> — les pages consultées et leur durée de consultation</li>
-            <li><strong>Type d'appareil</strong> — mobile, tablette ou ordinateur</li>
-            <li><strong>Navigateur et système d'exploitation</strong> — pour optimiser l'affichage</li>
-            <li><strong>Pays et ville d'origine approximatifs</strong> — déduits de l'adresse IP</li>
-            <li><strong>Source de trafic</strong> — comment vous avez trouvé la plateforme (recherche, réseau social, lien direct...)</li>
-          </ul>
-          <h3>Ce qui n'est PAS stocké</h3>
-          <ul>
-            <li>Votre adresse IP en clair — elle est transformée en empreinte cryptographique non réversible (SHA-256) avant d'être stockée</li>
-            <li>Votre nom, email ou toute information personnelle identifiable directement</li>
-          </ul>
-          <div class="privacy-note">
-            <i class="fas fa-clock"></i>
-            Ces données sont <strong>automatiquement supprimées après 90 jours</strong> via un mécanisme de purge automatique de la base de données.
-          </div>
-          <h3>Finalité</h3>
-          <p>
-            Ces données sont utilisées exclusivement pour comprendre comment la plateforme est utilisée, identifier les 
-            dysfonctionnements éventuels et améliorer les fonctionnalités. Elles ne sont jamais utilisées à des fins publicitaires 
-            et ne sont jamais transmises à des tiers.
-          </p>
-          <p>
-            Cette collecte est fondée sur l'<strong>intérêt légitime</strong> d'AlertProche à assurer le bon fonctionnement 
-            et la sécurité de la plateforme, conformément aux principes de minimisation des données.
-          </p>
-        </div>
-      </section>
-
-      <!-- 3. Utilisation -->
-      <section class="privacy-section" id="utilisation">
-        <div class="section-num">03</div>
-        <div class="section-body">
-          <h2>Utilisation des données</h2>
-          <p>Vos données sont utilisées exclusivement pour :</p>
-          <ul>
-            <li>Permettre l'authentification et la gestion de votre compte</li>
-            <li>Afficher vos publications et commentaires sur la plateforme</li>
-            <li>Assurer la modération automatique des contenus</li>
-            <li>Garantir la sécurité et l'intégrité de la plateforme</li>
-          </ul>
-          <p>Vos données ne sont <strong>jamais vendues, louées ou partagées</strong> avec des tiers à des fins commerciales.</p>
-        </div>
-      </section>
-
-      <!-- 4. Images et contenus — SECTION CLÉ -->
-      <section class="privacy-section privacy-section-highlight" id="images">
-        <div class="section-num">04</div>
-        <div class="section-body">
-          <h2>Responsabilité sur les images et contenus publiés</h2>
-
-          <div class="responsibility-banner">
-            <i class="fas fa-triangle-exclamation"></i>
-            <div>
-              <strong>Clause de non-responsabilité — Contenus générés par les utilisateurs</strong>
-              <p>AlertProche est une plateforme de mise en relation citoyenne. Les contenus publiés (textes, images, photos) sont soumis et contrôlés par leurs auteurs.</p>
-            </div>
-          </div>
-
-          <h3>Images publiées par les utilisateurs</h3>
-          <p>
-            Toute image téléversée sur AlertProche est publiée sous la <strong>responsabilité exclusive de l'utilisateur qui la soumet</strong>.
-            En publiant une image, l'utilisateur déclare et garantit :
-          </p>
-          <ul>
-            <li>Être l'auteur de l'image ou disposer des droits nécessaires à sa publication</li>
-            <li>Avoir obtenu le consentement des personnes photographiées, ou que la publication est justifiée par un intérêt légitime (recherche d'une personne disparue, signalement d'urgence)</li>
-            <li>Que l'image ne viole pas les droits à l'image, la vie privée ou la dignité des personnes représentées</li>
-            <li>Que l'image ne contient pas de contenu illicite, pornographique, violent ou portant atteinte à la dignité humaine</li>
-          </ul>
-
-          <div class="privacy-note privacy-note-warning">
-            <i class="fas fa-shield-halved"></i>
-            <div>
-              <strong>AlertProche décline toute responsabilité</strong> quant au contenu des images publiées par les utilisateurs.
-              La plateforme ne peut être tenue responsable des images publiées sans le consentement des personnes concernées.
-              Tout abus peut être signalé via le bouton "Signaler" disponible sur chaque publication.
-            </div>
-          </div>
-
-          <h3>Traitement technique des images</h3>
-          <p>Les images sont :</p>
-          <ul>
-            <li>Stockées sur des serveurs sécurisés</li>
-            <li>Accessibles uniquement via l'URL de la publication associée</li>
-            <li>Supprimées définitivement lors de la suppression de la publication par son auteur ou par un administrateur</li>
-          </ul>
-          <p>
-            AlertProche se réserve le droit de supprimer toute image signalée comme inappropriée, illicite ou portant atteinte
-            à la dignité d'une personne, sans préavis.
-          </p>
-        </div>
-      </section>
-
-      <!-- 5. Anonymat -->
-      <section class="privacy-section" id="anonymat">
-        <div class="section-num">05</div>
-        <div class="section-body">
-          <h2>Anonymat et pseudonymat</h2>
-          <p>
-            AlertProche offre une option de publication anonyme. Lorsque cette option est activée :
-          </p>
-          <ul>
-            <li>Votre pseudo n'est pas affiché sur la publication ou le commentaire</li>
-            <li>La mention "Anonyme" est affichée à la place</li>
-            <li>Votre identité reste connue uniquement de la plateforme à des fins de modération</li>
-          </ul>
-          <div class="privacy-note">
-            <i class="fas fa-lock"></i>
-            L'anonymat public ne signifie pas l'anonymat total. En cas de signalement d'activité illicite par les autorités compétentes, les informations d'identification peuvent être communiquées dans le cadre légal applicable.
-          </div>
-        </div>
-      </section>
-
-      <!-- 6. Modération -->
-      <section class="privacy-section" id="moderation">
-        <div class="section-num">06</div>
-        <div class="section-body">
-          <h2>Modération et signalement</h2>
-          <p>La plateforme dispose d'un système de modération à deux niveaux :</p>
-          <ul>
-            <li><strong>Modération automatique</strong> — chaque publication est analysée avant d'être visible : filtre lexical (termes haineux, insultes) et filtre anti-doxxing (numéros de téléphone, identifiants officiels).</li>
-            <li><strong>Modération humaine</strong> — les modérateurs et administrateurs peuvent désactiver ou supprimer tout contenu signalé par la communauté.</li>
-          </ul>
-          <p>
-            Tout utilisateur peut signaler une publication via le bouton "Signaler" disponible sur chaque publication.
-            Les signalements sont traités dans les meilleurs délais.
-          </p>
-        </div>
-      </section>
-
-      <!-- 7. Droits -->
-      <section class="privacy-section" id="droits">
-        <div class="section-num">07</div>
-        <div class="section-body">
-          <h2>Vos droits</h2>
-          <p>Conformément aux principes de protection des données personnelles, vous disposez des droits suivants :</p>
-          <ul>
-            <li><strong>Droit d'accès</strong> — consulter vos données via votre espace personnel</li>
-            <li><strong>Droit de rectification</strong> — modifier votre pseudo depuis votre profil</li>
-            <li><strong>Droit à l'effacement</strong> — supprimer vos publications et commentaires depuis votre tableau de bord</li>
-            <li><strong>Droit à la portabilité</strong> — demander l'export de vos données en nous contactant</li>
-          </ul>
-          <p>
-            La suppression de votre compte entraîne l'anonymisation de vos publications (elles restent visibles mais sans lien avec votre identité)
-            afin de préserver l'intégrité des alertes communautaires.
-          </p>
-        </div>
-      </section>
-
-      <!-- 8. Sécurité -->
-      <section class="privacy-section" id="securite">
-        <div class="section-num">08</div>
-        <div class="section-body">
-          <h2>Sécurité des données</h2>
-          <p>Nous mettons en œuvre les mesures techniques suivantes pour protéger vos données :</p>
-          <ul>
-            <li>Chiffrement des mots de passe (bcrypt, facteur de coût 12)</li>
-            <li>Authentification par jetons JWT à durée limitée</li>
-            <li>Communications chiffrées via HTTPS/TLS</li>
-            <li>Base de données hébergée sur MongoDB Atlas avec contrôle d'accès strict</li>
-            <li>Validation et assainissement de toutes les entrées utilisateur</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- 9. Contact -->
-      <section class="privacy-section" id="contact">
-        <div class="section-num">09</div>
-        <div class="section-body">
-          <h2>Contact</h2>
-          <p>
-            Pour toute question relative à cette politique de confidentialité, à vos données personnelles,
-            ou pour signaler un abus de contenu, vous pouvez nous contacter via le formulaire de signalement
-            disponible sur chaque publication, ou directement depuis votre espace personnel.
-          </p>
-          <div class="privacy-note">
-            <i class="fas fa-envelope"></i>
-            Cette politique de confidentialité peut être mise à jour. Toute modification significative sera
-            notifiée aux utilisateurs inscrits. La date de dernière mise à jour est indiquée en haut de ce document.
-          </div>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Footer de la page -->
-    <div class="privacy-footer animate-fade-in">
-      <a routerLink="/" class="btn btn-ghost btn-sm"><i class="fas fa-house"></i> Retour à l'accueil</a>
+    <!-- ── Footer ──────────────────────────────────────────── -->
+    <div class="privacy-footer">
+      <a routerLink="/" class="btn btn-ghost btn-sm"><i class="fas fa-house"></i> Accueil</a>
       <a routerLink="/a-propos" class="btn btn-ghost btn-sm"><i class="fas fa-circle-info"></i> À propos</a>
     </div>
 

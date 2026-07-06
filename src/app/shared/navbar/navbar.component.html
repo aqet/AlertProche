@@ -1,132 +1,92 @@
 <nav class="navbar" [class.scrolled]="scrolled()">
-  <div class="navbar-inner container">
+  <div class="navbar-inner">
+
     <!-- Logo -->
     <a routerLink="/" class="logo" (click)="closeMenu()">
       <div class="logo-icon"><i class="fas fa-shield-heart"></i></div>
-      <div class="logo-text">
-        <span class="logo-name">Alert<span class="logo-accent">Proche</span></span>
-        <span class="logo-tagline">Protection des Mineurs</span>
-      </div>
+      <span class="logo-name">Alert<span class="logo-accent">Proche</span></span>
     </a>
 
-    <!-- Desktop Nav Links -->
+    <!-- Nav Links — desktop -->
     <ul class="nav-links">
       <li>
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">
-          <i class="fas fa-house"></i> Accueil
+          Accueil
         </a>
       </li>
       <li>
-        <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">
-          <i class="fas fa-circle-info"></i> À propos
-        </a>
+        <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">À propos</a>
       </li>
       <li>
-        <a routerLink="/avis" routerLinkActive="active" class="nav-link">
-          <i class="fas fa-star"></i> Avis
-        </a>
+        <a routerLink="/avis" routerLinkActive="active" class="nav-link">Avis</a>
       </li>
       <li *ngIf="isAuth()">
-        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
-          <i class="fas fa-gauge"></i> Mon Espace
-        </a>
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Mon Espace</a>
       </li>
-      <!-- Modération — visible uniquement Modérateur/Admin -->
       <li *ngIf="canModerate()">
         <a routerLink="/moderation" routerLinkActive="active" class="nav-link nav-link-mod">
-          <i class="fas fa-shield-halved"></i> Modération
-          <span class="mod-badge-dot"></span>
+          Modération <span class="mod-dot"></span>
         </a>
       </li>
-      <!-- Admin — visible uniquement Admin -->
       <li *ngIf="user()?.role === 'Admin'">
-        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link nav-link-admin">
-          <i class="fas fa-crown"></i> Admin
-        </a>
+        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link nav-link-admin">Admin</a>
       </li>
-      <!-- Analytics — visible uniquement Admin -->
       <li *ngIf="user()?.role === 'Admin'">
-        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">
-          <i class="fas fa-chart-line"></i> Analytics
-        </a>
+        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">Analytics</a>
       </li>
     </ul>
 
-    <!-- Desktop Actions -->
+    <!-- Actions — desktop -->
     <div class="nav-actions">
-      <!-- Theme Toggle -->
-      <button class="theme-toggle" (click)="theme.toggleTheme()"
-        [title]="isDark() ? 'Passer en mode clair' : 'Passer en mode sombre'">
+      <button class="theme-btn" (click)="theme.toggleTheme()" [title]="isDark() ? 'Mode clair' : 'Mode sombre'">
         <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
       </button>
 
-      <ng-container *ngIf="isAuth(); else guestActions">
-        <a routerLink="/posts/new" class="btn btn-danger btn-sm">
-          <i class="fas fa-triangle-exclamation"></i> Publier un Cas
+      <ng-container *ngIf="isAuth(); else guestBlock">
+        <a routerLink="/posts/new" class="btn-publish">
+          <i class="fas fa-plus"></i> Publier un Cas
         </a>
-        <div class="user-menu">
+        <div class="user-chip">
           <div class="user-avatar">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
-          <div class="user-info">
-            <span class="user-pseudo">{{ user()?.pseudo }}</span>
-            <span class="user-role" [class.role-mod]="user()?.role === 'Moderateur'" [class.role-admin]="user()?.role === 'Admin'">
-              {{ user()?.role }}
-            </span>
-          </div>
-          <button class="btn-logout" (click)="logout()" title="Se déconnecter">
+          <span class="user-pseudo">{{ user()?.pseudo }}</span>
+          <span class="user-role-badge" [class.mod]="user()?.role === 'Moderateur'" [class.admin]="user()?.role === 'Admin'">
+            {{ user()?.role }}
+          </span>
+          <button class="logout-btn" (click)="logout()" title="Se déconnecter">
             <i class="fas fa-right-from-bracket"></i>
           </button>
         </div>
       </ng-container>
-      <ng-template #guestActions>
-        <a routerLink="/auth" [queryParams]="{mode: 'login'}" class="btn btn-outline btn-sm">Se connecter</a>
-        <a routerLink="/auth" [queryParams]="{mode: 'register'}" class="btn btn-primary btn-sm">S'inscrire</a>
+
+      <ng-template #guestBlock>
+        <a routerLink="/auth" [queryParams]="{mode: 'login'}" class="btn-login">Se connecter</a>
+        <a routerLink="/auth" [queryParams]="{mode: 'register'}" class="btn-register">S'inscrire</a>
       </ng-template>
     </div>
 
-    <!-- Mobile Hamburger -->
-    <button class="hamburger" (click)="toggleMenu()" [class.open]="this.isOpen" aria-label="Menu">
+    <!-- Hamburger mobile -->
+    <button class="hamburger" (click)="toggleMenu()" [class.open]="isOpen" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 
-  <!-- Mobile Menu -->
-  <div class="mobile-menu" *ngIf="isOpen" >
-    <ul>
-      <li><a routerLink="/" (click)="closeMenu()"><i class="fas fa-house"></i> Accueil</a></li>
-      <li>
-        <a routerLink="/a-propos" (click)="closeMenu()"><i class="fas fa-circle-info"></i> À propos</a>
-      </li>
-      <li>
-        <a routerLink="/avis" (click)="closeMenu()"><i class="fas fa-star"></i> Avis</a>
-      </li>
-      <li *ngIf="isAuth()">
-        <a routerLink="/dashboard" (click)="closeMenu()"><i class="fas fa-gauge"></i> Mon Espace</a>
-      </li>
-      <li *ngIf="canModerate()">
-        <a routerLink="/moderation" (click)="closeMenu()" class="mobile-mod-link">
-          <i class="fas fa-shield-halved"></i> Espace Modération
-        </a>
-      </li>
-      <li *ngIf="user()?.role === 'Admin'">
-        <a routerLink="/admin" (click)="closeMenu()" class="mobile-admin-link">
-          <i class="fas fa-crown"></i> Administration
-        </a>
-      </li>
-      <li *ngIf="isAuth()">
-        <a routerLink="/posts/new" (click)="closeMenu()"><i class="fas fa-triangle-exclamation"></i> Publier un Cas</a>
-      </li>
-      <li *ngIf="!isAuth()">
-        <a routerLink="/auth" (click)="closeMenu()"><i class="fas fa-right-to-bracket"></i> Connexion / Inscription</a>
-      </li>
-      <li *ngIf="isAuth()">
-        <a href="javascript:void(0)" (click)="logout()"><i class="fas fa-right-from-bracket"></i> Se déconnecter</a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" (click)="theme.toggleTheme(); closeMenu()">
-          <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
-          {{ isDark() ? 'Mode clair' : 'Mode sombre' }}
-        </a>
-      </li>
-    </ul>
+  <!-- Menu mobile -->
+  <div class="mobile-menu" *ngIf="isOpen">
+    <div class="mobile-menu-inner">
+      <a routerLink="/" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> Accueil</a>
+      <a routerLink="/a-propos" (click)="closeMenu()" class="m-link"><i class="fas fa-circle-info"></i> À propos</a>
+      <a routerLink="/avis" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i> Avis</a>
+      <a routerLink="/dashboard" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i class="fas fa-gauge"></i> Mon Espace</a>
+      <a routerLink="/moderation" (click)="closeMenu()" class="m-link m-link-mod" *ngIf="canModerate()"><i class="fas fa-shield-halved"></i> Modération</a>
+      <a routerLink="/admin" (click)="closeMenu()" class="m-link m-link-admin" *ngIf="user()?.role === 'Admin'"><i class="fas fa-crown"></i> Administration</a>
+      <a routerLink="/admin/analytics" (click)="closeMenu()" class="m-link m-link-administration" *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+      <a routerLink="/posts/new" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i class="fas fa-triangle-exclamation"></i> Publier un Cas</a>
+      <a routerLink="/auth" (click)="closeMenu()" class="m-link" *ngIf="!isAuth()"><i class="fas fa-right-to-bracket"></i> Connexion</a>
+      <a href="javascript:void(0)" (click)="logout()" class="m-link" *ngIf="isAuth()"><i class="fas fa-right-from-bracket"></i> Se déconnecter</a>
+      <a href="javascript:void(0)" (click)="theme.toggleTheme(); closeMenu()" class="m-link">
+        <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
+        {{ isDark() ? 'Mode clair' : 'Mode sombre' }}
+      </a>
+    </div>
   </div>
 </nav>

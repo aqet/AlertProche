@@ -1,368 +1,220 @@
 <div class="home-page">
 
-  <!-- Hero Slider -->
-  <section class="hero">
-    <div class="hero-bg">
-      <div class="hero-orb orb-1"></div>
-      <div class="hero-orb orb-2"></div>
-      <div class="hero-grid"></div>
-    </div>
-
-    <!-- Slides -->
-    <div class="hero-slider">
-      <div class="hero-slide"
-        *ngFor="let slide of heroSlides; let i = index"
-        [class.active]="currentSlide() === i"
-        [class.prev]="currentSlide() === (i + 1) % heroSlides.length">
-
-        <div class="container hero-content">
-          <!-- Badge type -->
-          <div class="hero-badge animate-fade-in" [ngClass]="slide.color + '-badge'">
-            <i class="fas" [ngClass]="slide.icon"></i> {{ slide.type }}
-          </div>
-
-          <!-- Titre -->
-          <h1 class="hero-title">{{ slide.title }}</h1>
-
-          <!-- Sous-titre -->
-          <p class="hero-subtitle">{{ slide.subtitle }}</p>
-
-          <!-- Actions -->
-          <div class="hero-actions">
-            <a [routerLink]="slide.ctaRoute"
-              [queryParams]="isAuth() ? {type: slide.type} : null"
-              *ngIf="isAuth()"
-              class="btn btn-lg hero-cta-btn" [ngClass]="slide.color + '-btn'">
-              <i class="fas" [ngClass]="slide.ctaIcon"></i> {{ slide.cta }}
-            </a>
-            <a routerLink="/auth" *ngIf="!isAuth()"
-              class="btn btn-lg hero-cta-btn" [ngClass]="slide.color + '-btn'">
-              <i class="fas" [ngClass]="slide.ctaIcon"></i> {{ slide.cta }}
-            </a>
-            <a href="#flux" class="btn btn-ghost btn-lg">
-              <i class="fas fa-arrow-down"></i> Voir les alertes
-            </a>
-          </div>
+  <!-- Bandeau urgent (ticker) -->
+  <div class="urgent-ticker" *ngIf="urgentPosts().length > 0">
+    <div class="ticker-inner">
+      <div class="ticker-badge">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>URGENT</span>
+      </div>
+      <div class="ticker-scroll">
+        <div class="ticker-track">
+          <span *ngFor="let p of urgentPosts()" class="ticker-item">
+            {{ p.title }} — {{ p.location }}
+          </span>
+          <span *ngFor="let p of urgentPosts()" class="ticker-item" aria-hidden="true">
+            {{ p.title }} — {{ p.location }}
+          </span>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Indicateurs de slide -->
-    <div class="slide-indicators">
-      <button *ngFor="let slide of heroSlides; let i = index"
-        class="slide-dot"
-        [class.active]="currentSlide() === i"
-        [ngClass]="slide.color + '-dot'"
-        (click)="goToSlide(i)"
-        [title]="slide.type">
-      </button>
-    </div>
+  <!-- ══ ZONE SEARCH-FIRST ═════════════════════════════════ -->
+  <section class="search-hero page-wrapper" id="flux">
+    <div class="search-hero-inner container">
 
-    <!-- Stats -->
-    <div class="container" style="display: flex; justify-content: center;">
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-value text-alert">{{ stats().disparitions }}</span>
-          <span class="stat-label">Disparitions actives</span>
+      <!-- Titre compact -->
+      <div class="search-headline">
+        <h1>Rechercher une alerte</h1>
+        <p>{{ stats().total }} publication{{ stats().total > 1 ? 's' : '' }} — {{ stats().disparitions }} disparition{{ stats().disparitions > 1 ? 's' : '' }} actives</p>
+      </div>
+
+      <!-- Barre de recherche principale -->
+      <div class="search-bar-wrap">
+        <div class="search-main-input">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            class="search-input-main"
+            placeholder="Rechercher par nom, lieu, type de cas…"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="onSearchQueryChange($event)">
+          <button class="search-clear-btn" *ngIf="searchQuery()" (click)="onSearchQueryChange('')">
+            <i class="fas fa-xmark"></i>
+          </button>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-value text-warning">{{ stats().abus }}</span>
-          <span class="stat-label">Cas d'abus signalés</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-value" style="color:#ec4899">{{ stats().appels }}</span>
-          <span class="stat-label">Appels à l'aide</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-value text-accent">{{ stats().prevention }}</span>
-          <span class="stat-label">Publications prévention</span>
+        <input
+          type="text"
+          class="location-input"
+          placeholder="Ville / Région"
+          [ngModel]="filterLocation()"
+          (ngModelChange)="onLocationChange($event)">
+        <a routerLink="/posts/new" *ngIf="isAuth()" class="btn-new-case">
+          <i class="fas fa-plus"></i>
+          <span>Publier</span>
+        </a>
+        <a routerLink="/auth" *ngIf="!isAuth()" class="btn-new-case">
+          <i class="fas fa-right-to-bracket"></i>
+          <span>Rejoindre</span>
+        </a>
+      </div>
+
+      <!-- Filtres type — chips horizontaux -->
+      <div class="filter-chips-row">
+        <button class="fchip"
+          [class.active]="!filterType()"
+          (click)="setFilter('')">
+          <i class="fas fa-border-all"></i> Tous
+          <span class="fchip-count">{{ stats().total }}</span>
+        </button>
+        <button class="fchip fchip-urgent"
+          [class.active]="filterType() === 'Disparition'"
+          (click)="setFilter('Disparition')">
+          <i class="fas fa-triangle-exclamation"></i> Disparitions
+          <span class="fchip-count">{{ stats().disparitions }}</span>
+        </button>
+        <button class="fchip fchip-warning"
+          [class.active]="filterType() === 'Abus'"
+          (click)="setFilter('Abus')">
+          <i class="fas fa-shield-exclamation"></i> Abus
+          <span class="fchip-count">{{ stats().abus }}</span>
+        </button>
+        <button class="fchip fchip-pink"
+          [class.active]="filterType() === 'Appel à l\'aide'"
+          (click)="setFilter('Appel à l\'aide')">
+          <i class="fas fa-hand-holding-heart"></i> Appels à l'aide
+          <span class="fchip-count">{{ stats().appels }}</span>
+        </button>
+        <button class="fchip fchip-prevention"
+          [class.active]="filterType() === 'Prevention'"
+          (click)="setFilter('Prevention')">
+          <i class="fas fa-circle-info"></i> Prévention
+          <span class="fchip-count">{{ stats().prevention }}</span>
+        </button>
+
+        <!-- Recherche par image — séparée à droite -->
+        <div class="image-search-wrap">
+          <label class="image-search-btn" for="img-search-input" title="Recherche par image">
+            <i class="fas fa-camera"></i>
+            <span *ngIf="!imageSearchFile()">Photo</span>
+            <span *ngIf="imageSearchFile()">{{ imageSearchFile()?.name }}</span>
+          </label>
+          <input id="img-search-input" type="file" accept="image/*" hidden (change)="onImageSearchUpload($event)">
+          <button class="image-search-clear" *ngIf="imageSearchFile()" (click)="removeImageSearch()" title="Retirer">
+            <i class="fas fa-xmark"></i>
+          </button>
         </div>
       </div>
+
+      <!-- Aperçu image search -->
+      <div class="img-preview-row" *ngIf="imageSearchPreview()">
+        <img [src]="imageSearchPreview()" alt="Aperçu" class="img-preview-thumb">
+        <span class="img-preview-label">Recherche par similarité d'image active</span>
+        <button class="img-preview-remove" (click)="removeImageSearch()">
+          <i class="fas fa-trash"></i> Retirer
+        </button>
+      </div>
+
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════════════ -->
-  <!-- SECTION : POURQUOI CETTE PLATEFORME (visiteurs non connectés) -->
-  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- ══ SECTIONS LANDING (non connectés uniquement) ════════ -->
   <ng-container *ngIf="!isAuth()">
 
-  <section class="why-section">
-    <div class="container">
-      <div class="why-header">
-        <div class="why-badge">
-          <i class="fas fa-circle-question"></i> Pourquoi AlertProche ?
-        </div>
-        <h2 class="why-title">
-          Face à la recrudescence des abus et disparitions d'enfants au Cameroun,<br>
-          <span class="text-accent">chaque citoyen peut faire la différence.</span>
-        </h2>
-        <p class="why-desc">
-          AlertProche est un espace numérique citoyen, sécurisé et indépendant. Contrairement aux réseaux sociaux non modérés,
-          notre plateforme centralise les alertes légitimes, protège l'anonymat des témoins et structure l'entraide communautaire
-          — sans doxxing, sans diffamation, sans lynchage médiatique.
-        </p>
-      </div>
-
-      <!-- Piliers -->
-      <div class="pillars-grid">
-        <div class="pillar-card">
-          <div class="pillar-icon pillar-icon-alert">
-            <i class="fas fa-triangle-exclamation"></i>
-          </div>
-          <h3>Signaler</h3>
-          <p>Publiez un avis de disparition, un témoignage d'abus ou un contenu de prévention. Chaque signalement est modéré automatiquement avant publication.</p>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-icon pillar-icon-search">
-            <i class="fas fa-magnifying-glass"></i>
-          </div>
-          <h3>Rechercher</h3>
-          <p>Consultez le flux des alertes actives, filtrez par ville ou type de cas. Retrouvez rapidement les avis de recherche en cours dans votre région.</p>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-icon pillar-icon-community">
-            <i class="fas fa-people-group"></i>
-          </div>
-          <h3>Soutenir</h3>
-          <p>Commentez, partagez des informations utiles, apportez un soutien moral ou un conseil juridique. La communauté agit ensemble.</p>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-icon pillar-icon-shield">
-            <i class="fas fa-shield-halved"></i>
-          </div>
-          <h3>Protéger</h3>
-          <p>Votre anonymat est garanti. Un système de modération automatique bloque les contenus haineux, le doxxing et les appels à la violence.</p>
-        </div>
+    <!-- Slides logique Angular préservée (invisible) -->
+    <div aria-hidden="true" style="display:none">
+      <div *ngFor="let slide of heroSlides; let i = index"
+        [class.active]="currentSlide() === i"
+        [class.prev]="currentSlide() === (i + 1) % heroSlides.length">
       </div>
     </div>
-  </section>
 
-  <!-- ═══════════════════════════════════════════════════════════════ -->
-  <!-- SECTION : COMMENT ÇA MARCHE                                    -->
-  <!-- ═══════════════════════════════════════════════════════════════ -->
-  <section class="how-section">
-    <div class="container">
-      <div class="how-header">
-        <div class="why-badge">
-          <i class="fas fa-list-ol"></i> Comment ça marche ?
-        </div>
-        <h2 class="why-title">Simple, rapide, sécurisé.</h2>
-      </div>
-
-      <div class="steps-grid">
-        <div class="step-item">
-          <div class="step-num">01</div>
-          <div class="step-body">
-            <h4>Créez un compte</h4>
-            <p>Inscription gratuite avec un pseudo unique. Votre email reste confidentiel et n'est jamais affiché publiquement.</p>
+    <!-- Piliers -->
+    <section class="pillars-section">
+      <div class="container">
+        <div class="section-label"><i class="fas fa-shield-halved"></i> Pourquoi AlertProche ?</div>
+        <div class="pillars-row">
+          <div class="pillar">
+            <div class="pillar-ico pillar-ico-urgent"><i class="fas fa-triangle-exclamation"></i></div>
+            <h3>Signaler</h3>
+            <p>Publiez un avis de disparition ou d'abus. Chaque signalement est modéré avant publication.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-ico pillar-ico-accent"><i class="fas fa-magnifying-glass"></i></div>
+            <h3>Rechercher</h3>
+            <p>Parcourez le flux des alertes, filtrez par ville ou type de cas.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-ico pillar-ico-purple"><i class="fas fa-people-group"></i></div>
+            <h3>Soutenir</h3>
+            <p>Commentez, partagez, apportez un conseil. La communauté agit ensemble.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-ico pillar-ico-accent"><i class="fas fa-shield-halved"></i></div>
+            <h3>Protéger</h3>
+            <p>Anonymat garanti. Modération automatique contre le doxxing et les contenus haineux.</p>
           </div>
         </div>
-        <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
-        <div class="step-item">
-          <div class="step-num">02</div>
-          <div class="step-body">
-            <h4>Publiez un cas</h4>
-            <p>Remplissez le formulaire structuré : titre, description, localisation, type de cas. Ajoutez une photo si disponible.</p>
-          </div>
-        </div>
-        <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
-        <div class="step-item">
-          <div class="step-num">03</div>
-          <div class="step-body">
-            <h4>La communauté réagit</h4>
-            <p>Les membres, psychologues et conseillers juridiques peuvent commenter et apporter leur aide directement sur votre publication.</p>
-          </div>
-        </div>
-        <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
-        <div class="step-item">
-          <div class="step-num">04</div>
-          <div class="step-body">
-            <h4>Ensemble on agit</h4>
-            <p>Partagez l'alerte, contactez les autorités, mobilisez votre réseau. Chaque information partagée peut sauver une vie.</p>
-          </div>
+        <div class="pillars-cta">
+          <a routerLink="/auth" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus"></i> Rejoindre la communauté
+          </a>
+          <a routerLink="/a-propos" class="btn btn-ghost btn-lg">En savoir plus</a>
         </div>
       </div>
-
-      <!-- CTA -->
-      <div class="how-cta">
-        <a routerLink="/auth" *ngIf="!isAuth()" class="btn btn-primary btn-lg">
-          <i class="fas fa-user-plus"></i> Rejoindre la communauté
-        </a>
-        <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger btn-lg">
-          <i class="fas fa-triangle-exclamation"></i> Publier un cas maintenant
-        </a>
-        <a href="#flux" class="btn btn-ghost btn-lg">
-          <i class="fas fa-arrow-down"></i> Voir les alertes en cours
-        </a>
-      </div>
-    </div>
-  </section>
+    </section>
 
   </ng-container>
 
-  <!-- Urgent Alerts Banner -->
-  <section class="urgent-banner" *ngIf="urgentPosts().length > 0">
-    <div class="container">
-      <div class="urgent-inner">
-        <div class="urgent-label">
-          <div class="urgent-dot"></div>
-          <span>ALERTES ACTIVES</span>
-        </div>
-        <div class="urgent-scroll">
-          <div class="urgent-track">
-            <span *ngFor="let p of urgentPosts()" class="urgent-item">
-              <i class="fas fa-triangle-exclamation"></i>
-              {{ p.title }} — {{ p.location }}
-            </span>
-            <!-- Duplicate for infinite scroll -->
-            <span *ngFor="let p of urgentPosts()" class="urgent-item" aria-hidden="true">
-              <i class="fas fa-triangle-exclamation"></i>
-              {{ p.title }} — {{ p.location }}
-            </span>
-          </div>
-        </div>
+  <!-- ══ RÉSULTATS ══════════════════════════════════════════ -->
+  <div class="results-section container">
+
+    <!-- Barre résultats -->
+    <div class="results-bar">
+      <span class="results-count">
+        <span *ngIf="!loading() && !searching()">
+          {{ filteredPosts().length }} résultat{{ filteredPosts().length > 1 ? 's' : '' }}
+          <span *ngIf="filterType() || filterLocation() || searchQuery()"> — </span>
+        </span>
+        <span *ngIf="filterType()" class="active-filter">{{ filterType() }}</span>
+        <span *ngIf="filterLocation()" class="active-filter">{{ filterLocation() }}</span>
+        <span *ngIf="searchQuery()" class="active-filter">"{{ searchQuery() }}"</span>
+      </span>
+      <button class="clear-btn"
+        *ngIf="filterType() || filterLocation() || searchQuery() || imageSearchFile()"
+        (click)="clearFilters()">
+        <i class="fas fa-xmark"></i> Effacer les filtres
+      </button>
+    </div>
+
+    <!-- Skeletons -->
+    <div class="posts-grid" *ngIf="loading()">
+      <div class="skel-card" *ngFor="let i of [1,2,3,4,5,6]">
+        <div class="skeleton" style="height:18px;width:70px;margin-bottom:12px"></div>
+        <div class="skeleton" style="height:16px;width:100%;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:13px;width:65%"></div>
       </div>
     </div>
-  </section>
 
-  <!-- Main Content -->
-  <main class="page-wrapper" id="flux">
-    <div class="container">
-      <div class="flux-layout">
-
-        <!-- Filters Sidebar -->
-        <aside class="filters-sidebar">
-          <div class="filters-card">
-            <h3 class="filters-title"><i class="fas fa-sliders"></i> Filtres</h3>
-
-            <!-- Search -->
-            <div class="form-group">
-              <label class="form-label">Rechercher</label>
-              <div class="search-input-wrap">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="form-control search-input"
-                  placeholder="Mot-clé, nom..."
-                  [(ngModel)]="searchQuery"
-                  [ngModel]="searchQuery()"
-                  (ngModelChange)="onSearchQueryChange($event)">
-              </div>
-            </div>
-
-            <!-- Type Filter -->
-            <div class="form-group">
-              <label class="form-label">Type de cas</label>
-              <div class="filter-chips">
-                <button class="chip chip-disparition" [class.active]="filterType() === 'Disparition'"
-                  (click)="setFilter('Disparition')">
-                  <i class="fas fa-triangle-exclamation"></i> Disparition
-                </button>
-                <button class="chip chip-abus" [class.active]="filterType() === 'Abus'"
-                  (click)="setFilter('Abus')">
-                  <i class="fas fa-shield-exclamation"></i> Abus
-                </button>
-                <button class="chip chip-prevention" [class.active]="filterType() === 'Prevention'"
-                  (click)="setFilter('Prevention')">
-                  <i class="fas fa-circle-info"></i> Prévention
-                </button>
-                <button class="chip chip-appel" [class.active]="filterType() === 'Appel à l\'aide'"
-                  (click)="setFilter('Appel à l\'aide')">
-                  <i class="fas fa-hand-holding-heart"></i> Appel à l'aide
-                </button>
-              </div>
-            </div>
-
-            <!-- Location Filter -->
-            <div class="form-group">
-              <label class="form-label">Région / Ville</label>
-              <input type="text" class="form-control"
-                placeholder="ex: Yaoundé, Douala..."
-                [ngModel]="filterLocation()"
-                (ngModelChange)="onLocationChange($event)">
-            </div>
-
-            <!-- Image Search -->
-            <div class="form-group">
-              <label class="form-label">Recherche par image</label>
-              <input type="file" class="form-control" accept="image/*"
-                (change)="onImageSearchUpload($event)">
-              <small *ngIf="imageSearchFile()" class="text-sm text-muted">
-                Fichier sélectionné : {{ imageSearchFile()?.name }}
-              </small>
-
-              <div class="image-preview" *ngIf="imageSearchPreview()">
-                <img [src]="imageSearchPreview()" alt="Aperçu de l'image" class="preview-img">
-                <div class="preview-overlay">
-                  <div class="preview-info">
-                    <i class="fas fa-image"></i>
-                    <span>{{ imageSearchFile()?.name }}</span>
-                  </div>
-                  <button type="button" class="preview-remove" (click)="removeImageSearch()">
-                    <i class="fas fa-trash"></i> Supprimer
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <button class="btn btn-ghost w-full btn-sm" (click)="clearFilters()"
-              *ngIf="filterType() || filterLocation() || searchQuery() || imageSearchFile() || imageSearchPreview()">
-              <i class="fas fa-x"></i> Réinitialiser
-            </button>
-
-            <!-- Info Box -->
-            <div class="info-box">
-              <i class="fas fa-lock"></i>
-              <p>Vos données sont protégées. La plateforme respecte votre anonymat.</p>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Posts Feed -->
-        <section class="posts-feed">
-          <div class="feed-header">
-            <div>
-              <h2 class="section-title">Flux des Publications</h2>
-              <p class="section-subtitle">
-                {{ filteredPosts().length }} publication{{ filteredPosts().length > 1 ? 's' : '' }} trouvée{{ filteredPosts().length > 1 ? 's' : '' }}
-              </p>
-            </div>
-            <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger btn-sm">
-              <i class="fas fa-plus"></i> Nouveau cas
-            </a>
-          </div>
-
-          <!-- Loading skeletons -->
-          <div class="posts-grid" *ngIf="loading()">
-            <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]">
-              <div class="skeleton" style="height:24px; width:80px; margin-bottom:16px"></div>
-              <div class="skeleton" style="height:20px; width:100%; margin-bottom:8px"></div>
-              <div class="skeleton" style="height:16px; width:70%; margin-bottom:24px"></div>
-              <div class="skeleton" style="height:14px; width:50%"></div>
-            </div>
-          </div>
-
-          <!-- Search loader -->
-          <div class="posts-loader" *ngIf="!loading() && searching()">
-            <span class="spinner"></span>
-            <span>Recherche en cours...</span>
-          </div>
-
-          <!-- Posts Grid -->
-          <div class="posts-grid" *ngIf="!loading() && !searching() && filteredPosts().length > 0">
-            <app-post-card *ngFor="let post of filteredPosts(); trackBy: trackByPost" [post]="post"></app-post-card>
-          </div>
-
-          <!-- Empty State -->
-          <div class="empty-state" *ngIf="!loading() && filteredPosts().length === 0">
-            <div class="empty-icon"><i class="fas fa-search"></i></div>
-            <h3>Aucune publication trouvée</h3>
-            <p>Aucun résultat ne correspond à vos critères de recherche.</p>
-            <button class="btn btn-outline btn-sm" (click)="clearFilters()">Réinitialiser les filtres</button>
-          </div>
-        </section>
-      </div>
+    <!-- Loader recherche -->
+    <div class="search-loader" *ngIf="!loading() && searching()">
+      <span class="spinner"></span> Recherche en cours…
     </div>
-  </main>
+
+    <!-- Grille posts -->
+    <div class="posts-grid" *ngIf="!loading() && !searching() && filteredPosts().length > 0">
+      <app-post-card *ngFor="let post of filteredPosts(); trackBy: trackByPost" [post]="post"></app-post-card>
+    </div>
+
+    <!-- État vide -->
+    <div class="empty-results" *ngIf="!loading() && !searching() && filteredPosts().length === 0">
+      <div class="empty-icon"><i class="fas fa-search"></i></div>
+      <h3>Aucun résultat</h3>
+      <p>Aucune publication ne correspond à vos critères.</p>
+      <button class="btn btn-outline btn-sm" (click)="clearFilters()">Réinitialiser</button>
+    </div>
+
+  </div>
+
 </div>

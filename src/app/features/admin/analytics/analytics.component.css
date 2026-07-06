@@ -235,6 +235,10 @@
   color: var(--color-text-primary);
 }
 
+/* .chart-legend{
+  display: initial !important;
+} */
+
 .dot {
   display: inline-block;
   width: 8px;
