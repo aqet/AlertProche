@@ -60,6 +60,7 @@ export class PostFormComponent implements OnInit {
   };
 
   camerounCities = [
+    'National',
     'abong mbang',
     'aiyomojok',
     'akom ii',

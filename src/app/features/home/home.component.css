@@ -9,6 +9,11 @@
   z-index: 999;
 }
 
+.download{
+  width: 100%;
+  justify-content: end;
+}
+
 .ticker-inner {
   display: flex;
   align-items: center;

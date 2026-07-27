@@ -51,6 +51,7 @@ export class DashboardComponent implements OnInit {
   }));
 
   camerounCities = [
+    'National',
     'abong mbang',
     'aiyomojok',
     'akom ii',

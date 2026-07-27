@@ -22,33 +22,29 @@
 
   <!-- ══ ZONE SEARCH-FIRST ═════════════════════════════════ -->
   <section class="search-hero page-wrapper" id="flux">
+    <a href="AlertProche.apk" download="AlertProche.apk" class="btn btn-success download">
+      <i class="fa fa-download"></i> Télécharger l'application Android
+    </a>
     <div class="search-hero-inner container">
 
       <!-- Titre compact -->
       <div class="search-headline">
-        <h1>Rechercher une alerte</h1>
-        <p>{{ stats().total }} publication{{ stats().total > 1 ? 's' : '' }} — {{ stats().disparitions }} disparition{{ stats().disparitions > 1 ? 's' : '' }} actives</p>
+        <h1>Rechercheeer une alerte</h1>
+        <p>{{ stats().total }} publication{{ stats().total > 1 ? 's' : '' }} — {{ stats().disparitions }} disparition{{
+          stats().disparitions > 1 ? 's' : '' }} actives</p>
       </div>
 
       <!-- Barre de recherche principale -->
       <div class="search-bar-wrap">
         <div class="search-main-input">
           <i class="fas fa-search"></i>
-          <input
-            type="text"
-            class="search-input-main"
-            placeholder="Rechercher par nom, lieu, type de cas…"
-            [ngModel]="searchQuery()"
-            (ngModelChange)="onSearchQueryChange($event)">
+          <input type="text" class="search-input-main" placeholder="Rechercher par nom, lieu, type de cas…"
+            [ngModel]="searchQuery()" (ngModelChange)="onSearchQueryChange($event)">
           <button class="search-clear-btn" *ngIf="searchQuery()" (click)="onSearchQueryChange('')">
             <i class="fas fa-xmark"></i>
           </button>
         </div>
-        <input
-          type="text"
-          class="location-input"
-          placeholder="Ville / Région"
-          [ngModel]="filterLocation()"
+        <input type="text" class="location-input" placeholder="Ville / Région" [ngModel]="filterLocation()"
           (ngModelChange)="onLocationChange($event)">
         <a routerLink="/posts/new" *ngIf="isAuth()" class="btn-new-case">
           <i class="fas fa-plus"></i>
@@ -62,32 +58,25 @@
 
       <!-- Filtres type — chips horizontaux -->
       <div class="filter-chips-row">
-        <button class="fchip"
-          [class.active]="!filterType()"
-          (click)="setFilter('')">
+        <button class="fchip" [class.active]="!filterType()" (click)="setFilter('')">
           <i class="fas fa-border-all"></i> Tous
           <span class="fchip-count">{{ stats().total }}</span>
         </button>
-        <button class="fchip fchip-urgent"
-          [class.active]="filterType() === 'Disparition'"
+        <button class="fchip fchip-urgent" [class.active]="filterType() === 'Disparition'"
           (click)="setFilter('Disparition')">
           <i class="fas fa-triangle-exclamation"></i> Disparitions
           <span class="fchip-count">{{ stats().disparitions }}</span>
         </button>
-        <button class="fchip fchip-warning"
-          [class.active]="filterType() === 'Abus'"
-          (click)="setFilter('Abus')">
+        <button class="fchip fchip-warning" [class.active]="filterType() === 'Abus'" (click)="setFilter('Abus')">
           <i class="fas fa-shield-exclamation"></i> Abus
           <span class="fchip-count">{{ stats().abus }}</span>
         </button>
-        <button class="fchip fchip-pink"
-          [class.active]="filterType() === 'Appel à l\'aide'"
+        <button class="fchip fchip-pink" [class.active]="filterType() === 'Appel à l\'aide'"
           (click)="setFilter('Appel à l\'aide')">
           <i class="fas fa-hand-holding-heart"></i> Appels à l'aide
           <span class="fchip-count">{{ stats().appels }}</span>
         </button>
-        <button class="fchip fchip-prevention"
-          [class.active]="filterType() === 'Prevention'"
+        <button class="fchip fchip-prevention" [class.active]="filterType() === 'Prevention'"
           (click)="setFilter('Prevention')">
           <i class="fas fa-circle-info"></i> Prévention
           <span class="fchip-count">{{ stats().prevention }}</span>
@@ -124,8 +113,7 @@
 
     <!-- Slides logique Angular préservée (invisible) -->
     <div aria-hidden="true" style="display:none">
-      <div *ngFor="let slide of heroSlides; let i = index"
-        [class.active]="currentSlide() === i"
+      <div *ngFor="let slide of heroSlides; let i = index" [class.active]="currentSlide() === i"
         [class.prev]="currentSlide() === (i + 1) % heroSlides.length">
       </div>
     </div>
@@ -181,8 +169,7 @@
         <span *ngIf="filterLocation()" class="active-filter">{{ filterLocation() }}</span>
         <span *ngIf="searchQuery()" class="active-filter">"{{ searchQuery() }}"</span>
       </span>
-      <button class="clear-btn"
-        *ngIf="filterType() || filterLocation() || searchQuery() || imageSearchFile()"
+      <button class="clear-btn" *ngIf="filterType() || filterLocation() || searchQuery() || imageSearchFile()"
         (click)="clearFilters()">
         <i class="fas fa-xmark"></i> Effacer les filtres
       </button>

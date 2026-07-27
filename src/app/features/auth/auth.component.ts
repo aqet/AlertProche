@@ -51,6 +51,7 @@ export class AuthComponent implements OnInit {
   otpForm: FormGroup;     // Étape 2 : code OTP
   passwordForm: FormGroup; // Étape 3 : mot de passe
   camerounCities = [
+    'National',
     'abong mbang',
     'aiyomojok',
     'akom ii',
