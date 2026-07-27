@@ -246,8 +246,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.posts.set(posts);
         this.loading.set(false);
       },
-      error: () => {
-        this.posts.set(this.mockPosts);
+      error: (err) => {
+        // this.posts.set(this.mockPosts);
         this.loading.set(false);
       },
     });

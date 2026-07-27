@@ -1,7 +1,7 @@
 /* ── Layout principal deux colonnes ─────────────────────────── */
 .dash-layout {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 28px;
   align-items: start;
 }
@@ -143,6 +143,8 @@
   padding: 2px 7px;
   border-radius: 100px;
   font-weight: 700;
+  max-width: min-content;
+  text-align: end;
 }
 
 .dash-nav-item.active .dash-nav-badge {
@@ -515,9 +517,26 @@
   .profile-sidebar { order: -1; }
 }
 
+@media ( max-width: 680px) {
+  .dash-nav-item{
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 600px) {
-  .post-row { flex-direction: column; }
-  .post-row-actions { width: 100%; justify-content: flex-end; }
+  /* .post-row { flex-direction: column; } */
+  /* .post-row-actions { width: 100%; justify-content: flex-end; } */
   .profile-header { flex-direction: column; text-align: center; }
-  .dash-nav-item { min-width: 0; padding: 9px 10px; font-size: 0.8rem; }
+  .dash-nav-item { 
+    flex-direction: row;
+
+    p{
+      display: none;
+    }
+
+   div{
+    justify-content: end !important;
+   }
+   }
 }

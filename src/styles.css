@@ -124,13 +124,13 @@ html {
   font-size: 16px;
 }
 
-body {
+html,body {
   font-family: var(--font);
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
-  min-width: 350px;
+  min-width: 400px;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }

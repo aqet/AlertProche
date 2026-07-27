@@ -37,14 +37,14 @@
     <!-- Tabs -->
     <div class="admin-tabs animate-fade-in stagger-1">
       <button class="admin-tab" [class.active]="activeTab() === 'stats'" (click)="setTab('stats')">
-        <i class="fas fa-chart-line"></i> Statistiques
+        <i class="fas fa-chart-line"></i> <p>Statistiques</p>
       </button>
       <button class="admin-tab" [class.active]="activeTab() === 'users'" (click)="setTab('users')">
-        <i class="fas fa-users"></i> Utilisateurs
+        <i class="fas fa-users"></i> <p>Utilisateurs</p>
         <span class="tab-count" *ngIf="usersTotal() > 0">{{ usersTotal() }}</span>
       </button>
       <button class="admin-tab" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
-        <i class="fas fa-file-lines"></i> Publications
+        <i class="fas fa-file-lines"></i> <p>Publications
         <span class="tab-count" *ngIf="postsTotal() > 0">{{ postsTotal() }}</span>
       </button>
     </div>

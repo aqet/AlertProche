@@ -289,7 +289,7 @@
   align-items: flex-end;
   gap: 4px;
   height: 120px;
-  min-width: 600px;
+  /* min-width: 600px; */
 }
 
 .activity-bar-wrap {
@@ -720,7 +720,14 @@
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .stats-grid { grid-template-columns: 1fr; }
   .stats-card-wide { grid-column: 1; }
-  .admin-tabs { width: 100%; overflow-x: auto; }
+  /* .admin-tabs { width: 100%; overflow-x: auto; } */
+}
+
+@media (max-width:470px) {
+  .admin-tab{
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 640px) {
