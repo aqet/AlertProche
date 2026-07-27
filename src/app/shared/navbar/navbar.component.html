@@ -3,8 +3,11 @@
 
     <!-- Logo -->
     <a routerLink="/" class="logo" (click)="closeMenu()">
-      <div class="logo-icon"><i class="fas fa-shield-heart"></i></div>
-      <span class="logo-name">Alert<span class="logo-accent">Proche</span></span>
+      <div class="logo-icon">
+        <!-- <i class="fas fa-shield-heart"></i> -->
+         <img src="logo_alertProche.png" alt="">
+      </div>
+      <!-- <span class="logo-name">Alert<span class="logo-accent">Proche</span></span> -->
     </a>
 
     <!-- Nav Links — desktop -->
@@ -29,7 +32,8 @@
         </a>
       </li>
       <li *ngIf="user()?.role === 'Admin'">
-        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link nav-link-admin">Admin</a>
+        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"
+          class="nav-link nav-link-admin">Admin</a>
       </li>
       <li *ngIf="user()?.role === 'Admin'">
         <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">Analytics</a>
@@ -49,7 +53,8 @@
         <div class="user-chip">
           <div class="user-avatar">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
           <span class="user-pseudo">{{ user()?.pseudo }}</span>
-          <span class="user-role-badge" [class.mod]="user()?.role === 'Moderateur'" [class.admin]="user()?.role === 'Admin'">
+          <span class="user-role-badge" [class.mod]="user()?.role === 'Moderateur'"
+            [class.admin]="user()?.role === 'Admin'">
             {{ user()?.role }}
           </span>
           <button class="logout-btn" (click)="logout()" title="Se déconnecter">
@@ -76,13 +81,20 @@
       <a routerLink="/" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> Accueil</a>
       <a routerLink="/a-propos" (click)="closeMenu()" class="m-link"><i class="fas fa-circle-info"></i> À propos</a>
       <a routerLink="/avis" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i> Avis</a>
-      <a routerLink="/dashboard" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i class="fas fa-gauge"></i> Mon Espace</a>
-      <a routerLink="/moderation" (click)="closeMenu()" class="m-link m-link-mod" *ngIf="canModerate()"><i class="fas fa-shield-halved"></i> Modération</a>
-      <a routerLink="/admin" (click)="closeMenu()" class="m-link m-link-admin" *ngIf="user()?.role === 'Admin'"><i class="fas fa-crown"></i> Administration</a>
-      <a routerLink="/admin/analytics" (click)="closeMenu()" class="m-link m-link-administration" *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> Analytics</a>
-      <a routerLink="/posts/new" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i class="fas fa-triangle-exclamation"></i> Publier un Cas</a>
-      <a routerLink="/auth" (click)="closeMenu()" class="m-link" *ngIf="!isAuth()"><i class="fas fa-right-to-bracket"></i> Connexion</a>
-      <a href="javascript:void(0)" (click)="logout()" class="m-link" *ngIf="isAuth()"><i class="fas fa-right-from-bracket"></i> Se déconnecter</a>
+      <a routerLink="/dashboard" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i class="fas fa-gauge"></i> Mon
+        Espace</a>
+      <a routerLink="/moderation" (click)="closeMenu()" class="m-link m-link-mod" *ngIf="canModerate()"><i
+          class="fas fa-shield-halved"></i> Modération</a>
+      <a routerLink="/admin" (click)="closeMenu()" class="m-link m-link-admin" *ngIf="user()?.role === 'Admin'"><i
+          class="fas fa-crown"></i> Administration</a>
+      <a routerLink="/admin/analytics" (click)="closeMenu()" class="m-link m-link-administration"
+        *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+      <a routerLink="/posts/new" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
+          class="fas fa-triangle-exclamation"></i> Publier un Cas</a>
+      <a routerLink="/auth" (click)="closeMenu()" class="m-link" *ngIf="!isAuth()"><i
+          class="fas fa-right-to-bracket"></i> Connexion</a>
+      <a href="javascript:void(0)" (click)="logout()" class="m-link" *ngIf="isAuth()"><i
+          class="fas fa-right-from-bracket"></i> Se déconnecter</a>
       <a href="javascript:void(0)" (click)="theme.toggleTheme(); closeMenu()" class="m-link">
         <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
         {{ isDark() ? 'Mode clair' : 'Mode sombre' }}

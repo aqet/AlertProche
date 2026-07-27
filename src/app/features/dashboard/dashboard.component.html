@@ -9,8 +9,7 @@
           <div class="dash-avatar-lg">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
           <div class="dash-profile-info">
             <span class="dash-profile-name">{{ user()?.pseudo }}</span>
-            <span class="dash-profile-role"
-              [class.role-mod]="user()?.role === 'Moderateur'"
+            <span class="dash-profile-role" [class.role-mod]="user()?.role === 'Moderateur'"
               [class.role-admin]="user()?.role === 'Admin'">
               {{ user()?.role }}
             </span>
@@ -37,17 +36,21 @@
         <nav class="dash-nav">
           <button class="dash-nav-item" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
             <i class="fas fa-file-lines"></i>
-            <span>Mes Publications</span>
-            <span class="dash-nav-badge" *ngIf="stats().posts > 0">{{ stats().posts }}</span>
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+              <p>Mes Publications</p>
+              <span class="dash-nav-badge" *ngIf="stats().posts > 0">{{ stats().posts }}</span>
+            </div>
           </button>
           <button class="dash-nav-item" [class.active]="activeTab() === 'comments'" (click)="setTab('comments')">
             <i class="fas fa-comments"></i>
-            <span>Mes Commentaires</span>
-            <span class="dash-nav-badge" *ngIf="stats().comments > 0">{{ stats().comments }}</span>
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+              <p>Mes Commentaires</p>
+              <span class="dash-nav-badge" *ngIf="stats().comments > 0">{{ stats().comments }}</span>
+            </div>
           </button>
           <button class="dash-nav-item" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
             <i class="fas fa-user-pen"></i>
-            <span>Mon Profil</span>
+            <p>Mon Profil</p>
           </button>
         </nav>
 
@@ -91,7 +94,8 @@
               <div class="form-group">
                 <label class="form-label">Description</label>
                 <textarea class="form-control" rows="4" formControlName="content"></textarea>
-                <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">30 caractères minimum</span>
+                <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">30 caractères
+                  minimum</span>
               </div>
               <div class="form-group">
                 <label class="form-label">Localisation</label>
@@ -133,8 +137,8 @@
                   <i class="fas fa-pen"></i>
                 </button>
                 <button class="btn btn-sm" [class.btn-warning]="post.isActive !== false"
-                  [class.btn-success-sm]="post.isActive === false"
-                  (click)="togglePostActive(post)" *ngIf="canModerate()">
+                  [class.btn-success-sm]="post.isActive === false" (click)="togglePostActive(post)"
+                  *ngIf="canModerate()">
                   <i class="fas" [ngClass]="post.isActive === false ? 'fa-eye' : 'fa-eye-slash'"></i>
                 </button>
                 <button class="btn btn-sm btn-delete" (click)="confirmDeletePost(post._id)"
@@ -230,7 +234,8 @@
                       <input type="text" class="form-control input-with-icon" formControlName="pseudo">
                     </div>
                     <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'required')">Pseudo requis</span>
-                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'minlength')">3 caractères minimum</span>
+                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'minlength')">3 caractères
+                      minimum</span>
                   </div>
                   <div class="form-group">
                     <label class="form-label">Adresse email</label>
@@ -265,18 +270,17 @@
               <div class="my-role-card">
                 <div class="my-role-header"><i class="fas fa-id-badge"></i> <span>Mon rôle</span></div>
                 <div class="my-role-body">
-                  <div class="my-role-badge"
-                    [class.my-role-standard]="user()?.role === 'Standard'"
+                  <div class="my-role-badge" [class.my-role-standard]="user()?.role === 'Standard'"
                     [class.my-role-mod]="user()?.role === 'Moderateur'"
                     [class.my-role-admin]="user()?.role === 'Admin'">
-                    <i class="fas"
-                      [class.fa-user]="user()?.role === 'Standard'"
+                    <i class="fas" [class.fa-user]="user()?.role === 'Standard'"
                       [class.fa-shield-halved]="user()?.role === 'Moderateur'"
                       [class.fa-crown]="user()?.role === 'Admin'"></i>
                     {{ user()?.role }}
                   </div>
                   <p class="my-role-desc">
-                    <ng-container *ngIf="user()?.role === 'Standard'">Publiez des cas, commentez et signalez du contenu.</ng-container>
+                    <ng-container *ngIf="user()?.role === 'Standard'">Publiez des cas, commentez et signalez du
+                      contenu.</ng-container>
                     <ng-container *ngIf="user()?.role === 'Moderateur'">Accès à l'espace de modération.</ng-container>
                     <ng-container *ngIf="user()?.role === 'Admin'">Accès complet à la plateforme.</ng-container>
                   </p>
