@@ -17,6 +17,20 @@
             android:launchMode="singleTask"
             android:exported="true">
 
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <!-- Remplace par ton vrai nom de domaine -->
+                <data android:scheme="https" android:host="alert-proche-api.vercel.app" android:pathPrefix="/" />
+                <data android:scheme="http" android:host="alert-proche-api.vercel.app" android:pathPrefix="/" />
+
+                <data android:scheme="https" android:host="alert-proche.vercel.app" android:pathPrefix="/" />
+                <data android:scheme="http" android:host="alert-proche.vercel.app" android:pathPrefix="/" />
+
+            </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
