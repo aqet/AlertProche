@@ -23,6 +23,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   posts = signal<Post[]>([]);
   loading = signal(true);
   error = signal('');
+  appDownloadCount = signal(0);
+  appDownloadLoading = signal(false);
 
   findSimilar = signal<any>(null);
 
@@ -241,6 +243,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.startSlider();
+    this.loadAppDownloadCount();
     this.postService.getAllPosts().subscribe({
       next: (posts) => {
         this.posts.set(posts);
@@ -288,6 +291,25 @@ export class HomeComponent implements OnInit, OnDestroy {
       clearTimeout(this.searchTimeout);
     }
     this.searchTimeout = setTimeout(() => this.searching.set(false), 250);
+  }
+
+  loadAppDownloadCount(): void {
+    this.http.get<{ count: number }>(`${this.API}/app-download`).subscribe({
+      next: (res) => this.appDownloadCount.set(res.count ?? 0),
+      error: () => this.appDownloadCount.set(0),
+    });
+  }
+
+  onAppDownloadClick(): void {
+    if (this.appDownloadLoading()) return;
+    this.appDownloadLoading.set(true);
+    this.http.post<{ count: number }>(`${this.API}/app-download`, {}).subscribe({
+      next: (res) => {
+        this.appDownloadCount.set(res.count ?? 0);
+        this.appDownloadLoading.set(false);
+      },
+      error: () => this.appDownloadLoading.set(false),
+    });
   }
 
   onImageSearchUpload(event: Event) {

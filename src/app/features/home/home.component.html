@@ -22,8 +22,9 @@
 
   <!-- ══ ZONE SEARCH-FIRST ═════════════════════════════════ -->
   <section class="search-hero page-wrapper" id="flux">
-    <a href="AlertProche.apk" download="AlertProche.apk" class="btn btn-success download">
+    <a href="AlertProche.apk" download="AlertProche.apk" class="btn btn-success download" (click)="onAppDownloadClick()">
       <i class="fa fa-download"></i> Télécharger l'application Android
+      <span class="download-count-badge" *ngIf="auth.currentUser()?.role === 'Admin'">{{ appDownloadCount() }}</span>
     </a>
     <div class="search-hero-inner container">
 

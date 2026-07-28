@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, NgZone } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { NavbarComponent } from './shared/navbar/navbar.component';
-
+import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core'
+import { App, URLOpenListenerEvent } from '@capacitor/app'
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -15,65 +17,104 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
           <i class="fas fa-shield-heart"></i>
           <span>Alert<span class="footer-accent">Proche</span></span>
         </div>
-        <p class="footer-tagline">Plateforme citoyenne de protection des mineurs au Cameroun.</p>
+        <p class="footer-tagline">
+          Plateforme citoyenne de protection des mineurs au Cameroun.
+        </p>
         <nav class="footer-links">
           <a routerLink="/">Accueil</a>
           <a routerLink="/a-propos">À propos</a>
           <a routerLink="/confidentialite">Confidentialité</a>
           <a routerLink="/auth">Connexion</a>
         </nav>
-        <p class="footer-copy">© 2026 AlertProche — TNIC — Tous droits réservés.</p>
+        <p class="footer-copy">
+          © 2026 AlertProche — TNIC — Tous droits réservés.
+        </p>
       </div>
     </footer>
   `,
-  styles: [`
-    .app-footer {
-      background: var(--color-bg-secondary);
-      border-top: 1px solid var(--color-border);
-      padding: 40px 24px;
-      text-align: center;
-    }
-    .footer-inner {
-      max-width: 600px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-    .footer-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--color-text-primary);
-    }
-    .footer-brand i { color: var(--color-accent); }
-    .footer-accent  { color: var(--color-accent); }
-    .footer-tagline {
-      font-size: 0.82rem;
-      color: var(--color-text-muted);
-      margin: 0;
-    }
-    .footer-links {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .footer-links a {
-      font-size: 0.82rem;
-      color: var(--color-text-secondary);
-      text-decoration: none;
-      transition: color 0.15s ease;
-    }
-    .footer-links a:hover { color: var(--color-accent); }
-    .footer-copy {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin: 0;
-    }
-  `]
+  styles: [
+    `
+      .app-footer {
+        background: var(--color-bg-secondary);
+        border-top: 1px solid var(--color-border);
+        padding: 40px 24px;
+        text-align: center;
+      }
+      .footer-inner {
+        max-width: 600px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--color-text-primary);
+      }
+      .footer-brand i {
+        color: var(--color-accent);
+      }
+      .footer-accent {
+        color: var(--color-accent);
+      }
+      .footer-tagline {
+        font-size: 0.82rem;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+      .footer-links {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .footer-links a {
+        font-size: 0.82rem;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        transition: color 0.15s ease;
+      }
+      .footer-links a:hover {
+        color: var(--color-accent);
+      }
+      .footer-copy {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+    `,
+  ],
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+
+  private router = inject(Router);
+  private zone = inject(NgZone)
+
+  ngOnInit() {
+    this.initDeepLinking()
+  }
+
+  initDeepLinking() {
+    // Exécuter uniquement si on est sur mobile
+    if (!Capacitor.isNativePlatform()) return;
+
+    // Écouter le clic sur un lien externe
+    App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+      this.zone.run(() => {
+        // Ex: event.url = "https://ton-site.com/post/65d123456789"
+        const url = new URL(event.url);
+        const path = url.pathname; // Contient "/post/65d123456789"
+
+        if (path) {
+          // Naviguer dynamiquement dans l'application Angular
+          this.router.navigateByUrl(path);
+        }
+      });
+    });
+  }
+}
