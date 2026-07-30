@@ -4,6 +4,8 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
 import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
+import { NotificationService } from './core/services/notification.service';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -92,11 +94,14 @@ import { App, URLOpenListenerEvent } from '@capacitor/app'
 })
 export class AppComponent implements OnInit {
 
+  constructor(private notificationService: NotificationService){}
+
   private router = inject(Router);
   private zone = inject(NgZone)
 
   ngOnInit() {
-    this.initDeepLinking()
+    this.initDeepLinking(),
+    this.notificationService.initialiserPush();
   }
 
   initDeepLinking() {
