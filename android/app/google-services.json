@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "355900041163",
+    "project_id": "alertproche",
+    "storage_bucket": "alertproche.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355900041163:android:cf3f0f24f8721c8507784e",
+        "android_client_info": {
+          "package_name": "com.alertproche.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBidciYx1467VYKEvhW_UmKKSdhB0TToXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
