@@ -12,21 +12,29 @@ export class NotificationService {
   private apiUrl = `${environment.apiUrl}`;
   // private apiUrl = 'http://localhost:3000/';
 
-  storedData = localStorage.getItem('ap_session') || '';
-  userId!: string;
-  // Injection du HttpClient
+  private readonly sessionKey = 'ap_session';
+
   constructor(private http: HttpClient) {}
 
-  async initialiserPush() {
-    console.log(this.apiUrl);
-    if (this.storedData) {
-      try {
-        const userId = JSON.parse(this.storedData).user._id;
-      } catch (error) {
-        console.error('Failed to parse user_session:', error);
-        // Handle corrupted state (e.g., clear storage and redirect to login)
-      }
+  private getSession(): { token: string; user: { _id: string } } | null {
+    try {
+      const storedData = localStorage.getItem(this.sessionKey);
+      if (!storedData) return null;
+      const parsed = JSON.parse(storedData);
+      return parsed?.token && parsed?.user?._id ? parsed : null;
+    } catch (error) {
+      console.error('Failed to parse ap_session:', error);
+      return null;
     }
+  }
+
+  async initialiserPush() {
+    const session = this.getSession();
+    if (!session) {
+      console.warn('Aucun utilisateur authentifié trouvé, enregistrement FCM ignoré.');
+      return;
+    }
+
     if (!Capacitor.isNativePlatform()) {
       return;
     }
@@ -40,19 +48,22 @@ export class NotificationService {
       return;
     }
 
-    // Récupération et envoi du Token au Backend
     PushNotifications.addListener('registration', (token) => {
       console.log('Token FCM : ', token.value);
 
-      // Envoi du token à NestJS
       this.http
-        .post(`${this.apiUrl}/api/notifications/save-token`, {
-          userId: this.userId, // À remplacer par l'ID de l'utilisateur connecté
-          token: token.value,
-        })
+        .post(
+          `${this.apiUrl}/auth/fcm-token`,
+          { token: token.value },
+          { headers: { Authorization: `Bearer ${session.token}` } },
+        )
         .subscribe({
-          next: () =>
-            console.log('Token sauvegardé avec succès sur le serveur'),
+          next: (response: any) => {
+            console.log('Token sauvegardé avec succès sur le serveur', response);
+            if (!response?.token?.length) {
+              console.warn('Réponse serveur reçue, mais aucun token enregistré retourné.');
+            }
+          },
           error: (err) =>
             console.error('Erreur lors de la sauvegarde du token', err),
         });
