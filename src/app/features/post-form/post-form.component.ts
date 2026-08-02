@@ -34,6 +34,9 @@ export class PostFormComponent implements OnInit {
   error = signal('');
   success = signal(false);
 
+  // Rapport de notification push reçu après la création du post
+  notifReport = signal<{ sent: number; failed: number; totalTokens: number; error: string | null } | null>(null);
+
   // Image state
   selectedFile = signal<File | null>(null);
   previewUrl = signal<string | null>(null);
@@ -283,12 +286,18 @@ export class PostFormComponent implements OnInit {
       .subscribe({
         next: (post: any) => {
           if (post.decision == 'BAN' && post.confidence >= 0.9) {
+            this.loading.set(false);
             this.error.set(post.reasoning);
           } else {
             this.loading.set(false);
             this.success.set(true);
-            this.router.navigate(['/posts', post._id]);
+            // Stocker le rapport de notification si présent
+            if (post.notificationReport) {
+              this.notifReport.set(post.notificationReport);
+            }
             this.tracking.trackEvent('post_created');
+            // Rediriger après 2s pour laisser le temps de voir le rapport
+            setTimeout(() => this.router.navigate(['/posts', post._id]), 2000);
           }
         },
         error: (err) => {

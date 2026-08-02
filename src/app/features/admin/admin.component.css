@@ -736,3 +736,110 @@
   .table-toolbar { flex-direction: column; align-items: flex-start; }
   .search-wrap { max-width: 100%; width: 100%; }
 }
+
+/* ── Panneau test notification push ─────────────────────────────────────── */
+.notif-test-panel {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-accent);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.notif-test-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+.notif-test-header i { font-size: 1rem; }
+
+.notif-test-close {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  margin-left: auto;
+  padding: 4px;
+  font-size: 0.85rem;
+  transition: color var(--transition-fast);
+}
+.notif-test-close:hover { color: var(--color-alert); }
+
+.notif-test-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notif-test-stat {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.notif-test-stat i { font-size: 0.85rem; flex-shrink: 0; }
+.notif-test-stat.ok   { color: var(--color-accent); }
+.notif-test-stat.warn { color: var(--color-warning); }
+.notif-test-stat.err  { color: var(--color-alert); }
+
+/* ── Panneau test notification push ────────────────────────────────────── */
+.notif-test-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.notif-test-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.notif-test-header i { font-size: 1rem; }
+
+.notif-test-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  transition: color var(--transition);
+}
+.notif-test-close:hover { color: var(--urgent); }
+
+.notif-test-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notif-test-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.83rem;
+  color: var(--text-sub);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+}
+
+.notif-test-stat i { font-size: 0.82rem; flex-shrink: 0; }
+.notif-test-stat.ok   { color: var(--accent);   background: var(--accent-dim);   }
+.notif-test-stat.warn { color: var(--warning);  background: var(--warning-dim);  }
+.notif-test-stat.err  { color: var(--urgent);   background: var(--urgent-dim);   }

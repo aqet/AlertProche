@@ -382,3 +382,49 @@
 @media (max-width: 480px) {
   .type-cards { flex-direction: column; }
 }
+
+/* ── Rapport notification push ──────────────────────────────── */
+.notif-report {
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.notif-report-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.notif-report-header i { font-size: 1.1rem; }
+
+.notif-report-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.notif-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+}
+
+.notif-stat i { font-size: 0.8rem; width: 14px; text-align: center; }
+.notif-stat.good { color: var(--accent); }
+.notif-stat.error { color: var(--urgent); }
+
+.notif-report-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}

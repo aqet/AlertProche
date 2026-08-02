@@ -48,6 +48,10 @@ export class AdminComponent implements OnInit {
   actionSuccess = signal('');
   actionError = signal('');
 
+  // Test notification push
+  notifTestLoading = signal(false);
+  notifTestResult = signal<{ sent: number; failed: number; totalTokens: number; error: string | null } | null>(null);
+
   currentUser = computed(() => this.auth.currentUser());
 
   readonly ROLES = ['Standard', 'Moderateur', 'Admin'];
@@ -255,4 +259,20 @@ export class AdminComponent implements OnInit {
   }
 
   trackById(_: number, item: any) { return item._id; }
+
+  // ── TEST NOTIFICATION PUSH ────────────────────────────────────────────
+  testPushNotification(): void {
+    this.notifTestLoading.set(true);
+    this.notifTestResult.set(null);
+    this.adminService.testPushNotification().subscribe({
+      next: (result) => {
+        this.notifTestResult.set(result);
+        this.notifTestLoading.set(false);
+      },
+      error: (err) => {
+        this.notifTestResult.set({ sent: 0, failed: 0, totalTokens: 0, error: err?.error?.message || 'Erreur de connexion' });
+        this.notifTestLoading.set(false);
+      }
+    });
+  }
 }

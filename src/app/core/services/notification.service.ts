@@ -76,4 +76,18 @@ export class NotificationService {
       },
     );
   }
+
+  async setupNotificationChannel() {
+    // Créer le canal Android avec importance 5 (MAX / Heads-Up Banner)
+    await PushNotifications.createChannel({
+      id: 'alertes_importantes', // MÊME ID QUE DANS NESTJS
+      name: 'Alertes urgentes',
+      description: 'Notifications pour les nouvelles alertes proches',
+      importance: 5, // 5 = IMPORTANCE MAX (Affiche la bannière flottante + son)
+      visibility: 1, // Public sur l'écran de verrouillage
+      sound: 'default',
+      vibration: true,
+      lights: true,
+    });
+  }
 }

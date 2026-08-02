@@ -94,7 +94,7 @@ import { NotificationService } from './core/services/notification.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private notificationService: NotificationService){}
+  constructor(private notificationService: NotificationService,){}
 
   private router = inject(Router);
   private zone = inject(NgZone)
@@ -102,6 +102,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.initDeepLinking(),
     this.notificationService.initialiserPush();
+    // this.notificationService.setupNotificationChannel()
   }
 
   initDeepLinking() {
