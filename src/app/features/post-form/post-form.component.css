@@ -1,4 +1,4 @@
-/* ---- LAYOUT ---- */
+﻿/* ---- LAYOUT ---- */
 .form-layout {
   max-width: 1000px;
   margin: 0 auto;
@@ -19,7 +19,7 @@
   transition: color var(--transition);
 }
 
-.back-link:hover { color: var(--accent); }
+.back-link:hover { color: var(--green); }
 
 .form-title-block .section-title { margin-bottom: 4px; }
 
@@ -63,7 +63,7 @@
 .type-card i { font-size: 1.2rem; }
 
 .type-card:hover {
-  border-color: var(--border-accent);
+  border-color: var(--green-border);
   color: var(--text);
 }
 
@@ -97,8 +97,8 @@
   align-items: flex-start;
   gap: 8px;
   padding: 10px 14px;
-  background: var(--accent-dim);
-  border: 1px solid var(--border-accent);
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-md);
   font-size: 0.82rem;
   color: var(--text-sub);
@@ -106,7 +106,7 @@
   line-height: 1.5;
 }
 
-.type-hint i { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+.type-hint i { color: var(--green); flex-shrink: 0; margin-top: 1px; }
 
 /* ---- CHAR COUNT ---- */
 .char-count {
@@ -147,7 +147,7 @@
   transition: border-color var(--transition-normal);
 }
 
-.anon-toggle:hover { border-color: var(--border-accent); }
+.anon-toggle:hover { border-color: var(--green-border); }
 
 .toggle-switch { position: relative; flex-shrink: 0; }
 .toggle-switch input { display: none; }
@@ -177,8 +177,8 @@
 }
 
 .toggle-switch input:checked + .toggle-track {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--green);
+  border-color: var(--green);
 }
 
 .toggle-switch input:checked + .toggle-track::after {
@@ -211,8 +211,8 @@
 
 .drop-zone:hover,
 .drop-zone.dragover {
-  border-color: var(--accent);
-  background: var(--accent-dim);
+  border-color: var(--green);
+  background: var(--green-dim);
 }
 
 .drop-icon {
@@ -224,7 +224,7 @@
 
 .drop-zone:hover .drop-icon,
 .drop-zone.dragover .drop-icon {
-  color: var(--accent);
+  color: var(--green);
 }
 
 .drop-title {
@@ -240,7 +240,7 @@
   margin-bottom: 8px;
 }
 
-.drop-link { color: var(--accent); font-weight: 600; }
+.drop-link { color: var(--green); font-weight: 600; }
 
 .drop-hint {
   font-size: 0.75rem;
@@ -255,7 +255,7 @@
 .image-preview {
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--border-accent);
+  border: 1px solid var(--green-border);
   position: relative;
 }
 
@@ -343,7 +343,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 16px;
-  color: var(--accent);
+  color: var(--green);
   font-size: 0.9rem;
 }
 
@@ -363,7 +363,7 @@
   color: var(--text-sub);
 }
 
-.mod-rules i { color: var(--accent); font-size: 0.7rem; }
+.mod-rules i { color: var(--green); font-size: 0.7rem; }
 
 .mod-note {
   font-size: 0.75rem;
@@ -386,7 +386,7 @@
 /* ── Rapport notification push ──────────────────────────────── */
 .notif-report {
   background: var(--bg-card);
-  border: 1px solid var(--border-accent);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-lg);
   padding: 20px;
   margin-bottom: 20px;
@@ -398,7 +398,7 @@
   gap: 10px;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--green);
   margin-bottom: 14px;
 }
 
@@ -420,7 +420,7 @@
 }
 
 .notif-stat i { font-size: 0.8rem; width: 14px; text-align: center; }
-.notif-stat.good { color: var(--accent); }
+.notif-stat.good { color: var(--green); }
 .notif-stat.error { color: var(--urgent); }
 
 .notif-report-hint {

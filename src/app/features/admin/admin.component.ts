@@ -4,14 +4,13 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminService, AdminStats, AdminUser, AdminPost } from '../../core/services/admin.service';
 import { AuthService } from '../../core/services/auth.service';
-import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 
 type AdminTab = 'stats' | 'users' | 'posts';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MediaUrlPipe],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })

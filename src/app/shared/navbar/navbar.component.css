@@ -1,63 +1,78 @@
+/* ═══════════════════════════════════════════════
+   NAVBAR — AlertProche Design System Vert/Blanc
+   ═══════════════════════════════════════════════ */
+
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
   height: var(--nav-height);
+  /* Fond blanc/vert avec bordure basse verte subtile */
   background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--green);
+  box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition-normal);
 }
 
 .navbar.scrolled {
-  box-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .navbar-inner {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
   height: 100%;
   display: flex;
   align-items: center;
   gap: 0;
 }
 
-/* ── Logo ── */
+/* ── Logo ─────────────────────────────────────── */
 .logo {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   text-decoration: none;
   flex-shrink: 0;
-  margin-right: 32px;
+  margin-right: 28px;
 }
 
 .logo-icon {
-  /* width: 32px; height: 32px; */
-  /* background: var(--accent); */
-  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
-  color: #0A0F1E;
+}
 
-  img{
-   width: 150px;
-   height: auto; 
-  }
+.logo-icon img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+/* Fallback si pas d'image */
+.logo-icon i {
+  width: 36px; height: 36px;
+  background: var(--green);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #fff;
 }
 
 .logo-name {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 800;
-  color: var(--text);
+  color: var(--green-dark);
   letter-spacing: -0.3px;
 }
 
-.logo-accent { color: var(--accent); }
+/* "Proche" en vert vif */
+.logo-accent { color: var(--green); }
 
-/* ── Nav links ── */
+/* ── Nav links desktop ────────────────────────── */
 .nav-links {
   display: flex;
   list-style: none;
@@ -67,7 +82,7 @@
 
 .nav-link {
   display: block;
-  padding: 6px 11px;
+  padding: 7px 12px;
   border-radius: var(--radius-sm);
   font-size: 0.84rem;
   font-weight: 500;
@@ -78,19 +93,20 @@
   position: relative;
 }
 
-.nav-link:hover { color: var(--text); }
+.nav-link:hover { color: var(--green); }
 
 .nav-link.active {
-  color: var(--accent);
-  font-weight: 600;
+  color: var(--green);
+  font-weight: 700;
 }
 
+/* Soulignement vert sur l'actif */
 .nav-link.active::after {
   content: '';
   position: absolute;
-  bottom: -2px; left: 11px; right: 11px;
+  bottom: -2px; left: 12px; right: 12px;
   height: 2px;
-  background: var(--accent);
+  background: var(--green);
   border-radius: 2px;
 }
 
@@ -114,11 +130,11 @@
   50% { opacity: 0.4; }
 }
 
-.nav-link-admin { color: #f59e0b !important; }
-.nav-link-admin.active { color: #f59e0b !important; }
-.nav-link-admin.active::after { background: #f59e0b; }
+.nav-link-admin { color: #E65100 !important; }
+.nav-link-admin.active { color: #E65100 !important; }
+.nav-link-admin.active::after { background: #E65100; }
 
-/* ── Actions ── */
+/* ── Actions desktop ──────────────────────────── */
 .nav-actions {
   display: flex;
   align-items: center;
@@ -126,96 +142,96 @@
   flex-shrink: 0;
 }
 
+/* Bouton thème */
 .theme-btn {
-  width: 32px; height: 32px;
+  width: 34px; height: 34px;
   border-radius: 50%;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-sub);
+  background: var(--green-pale);
+  border: 1.5px solid var(--green-border);
+  color: var(--green);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.82rem;
-  transition: all var(--transition);
+  font-size: 0.85rem;
+  transition: all var(--transition-normal);
 }
-
 .theme-btn:hover {
-  border-color: var(--border-accent);
-  color: var(--accent);
+  background: var(--green-dim);
+  border-color: var(--green);
 }
 
+/* Bouton Publier — vert vif */
 .btn-publish {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 7px 14px;
-  background: var(--urgent);
+  padding: 8px 16px;
+  background: var(--green);
   color: #fff;
   border-radius: var(--radius-md);
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.83rem;
+  font-weight: 700;
   text-decoration: none;
+  box-shadow: var(--shadow-green);
   transition: background var(--transition);
   white-space: nowrap;
 }
+.btn-publish:hover { background: var(--green-hover); color: #fff; }
 
-.btn-publish:hover { background: #e03a3a; color: #fff; }
-
+/* Boutons auth */
 .btn-login {
   padding: 7px 14px;
-  border: 1.5px solid var(--border-accent);
+  border: 1.5px solid var(--green-border);
   border-radius: var(--radius-md);
-  color: var(--accent);
+  color: var(--green);
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
   transition: all var(--transition);
   white-space: nowrap;
 }
-
-.btn-login:hover { background: var(--accent-dim); }
+.btn-login:hover { background: var(--green-dim); }
 
 .btn-register {
   padding: 7px 14px;
-  background: var(--accent);
-  color: #0A0F1E;
+  background: var(--green);
+  color: #fff;
   border-radius: var(--radius-md);
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
   transition: background var(--transition);
   white-space: nowrap;
 }
+.btn-register:hover { background: var(--green-hover); color: #fff; }
 
-.btn-register:hover { background: var(--accent-hover); color: #0A0F1E; }
-
-/* ── User chip ── */
+/* ── User chip ────────────────────────────────── */
 .user-chip {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 4px 10px 4px 4px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
+  background: var(--green-pale);
+  border: 1.5px solid var(--green-border);
   border-radius: 100px;
 }
 
 .user-avatar {
-  width: 26px; height: 26px;
-  background: var(--accent);
+  width: 28px; height: 28px;
+  background: var(--green);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #0A0F1E;
+  color: #fff;
   flex-shrink: 0;
 }
 
 .user-pseudo {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text);
   max-width: 90px;
@@ -225,13 +241,12 @@
 }
 
 .user-role-badge {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--text-muted);
 }
-
 .user-role-badge.mod   { color: var(--warning); }
 .user-role-badge.admin { color: var(--urgent); }
 
@@ -244,10 +259,9 @@
   font-size: 0.8rem;
   transition: color var(--transition);
 }
-
 .logout-btn:hover { color: var(--urgent); }
 
-/* ── Hamburger ── */
+/* ── Hamburger ────────────────────────────────── */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -262,7 +276,7 @@
 .hamburger span {
   display: block;
   width: 22px; height: 2px;
-  background: var(--text);
+  background: var(--green-dark);
   border-radius: 2px;
   transition: all var(--transition-normal);
   transform-origin: center;
@@ -272,15 +286,16 @@
 .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ── Mobile menu ── */
+/* ── Menu mobile dropdown ─────────────────────── */
 .mobile-menu {
   display: none;
   background: var(--bg-card);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--green-border);
+  box-shadow: var(--shadow-md);
 }
 
 .mobile-menu-inner {
-  padding: 12px 16px 16px;
+  padding: 10px 14px 14px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -290,22 +305,20 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 14px;
+  padding: 12px 14px;
   border-radius: var(--radius-md);
   color: var(--text-sub);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 500;
   text-decoration: none;
   transition: all var(--transition);
 }
+.m-link:hover { color: var(--green); background: var(--green-pale); }
+.m-link i { width: 16px; text-align: center; color: var(--green); }
+.m-link-mod   { color: var(--warning) !important; }
+.m-link-admin { color: #E65100 !important; }
 
-.m-link:hover { color: var(--text); background: var(--bg-input); }
-.m-link i { width: 16px; text-align: center; font-size: 0.85rem; }
-.m-link-mod { color: var(--warning) !important; }
-.m-link-admin { color: var(--warning) !important; }
-.m-link-administration { color: var(--warning) !important; }
-
-/* ── Responsive ── */
+/* ── Responsive ───────────────────────────────── */
 @media (max-width: 1000px) {
   .nav-links { display: none; }
   .nav-actions { display: none; }
@@ -314,5 +327,96 @@
 }
 
 @media (max-width: 480px) {
-  .navbar-inner { padding: 0 16px; }
+  .navbar-inner { padding: 0 14px; }
+}
+
+/* ═══════════════════════════════════════════════
+   BOTTOM NAV — Mobile uniquement (≤ 1000px)
+   Barre d'onglets fixe en bas de l'écran
+   ═══════════════════════════════════════════════ */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 999;
+  height: var(--bottom-nav-h);
+  background: var(--bg-card);
+  border-top: 2px solid var(--green);
+  box-shadow: 0 -2px 12px rgba(26,158,42,0.12);
+}
+
+.bottom-nav-inner {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: color var(--transition);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font);
+}
+
+.bn-item i {
+  font-size: 1.2rem;
+  transition: color var(--transition);
+}
+
+.bn-item:hover,
+.bn-item.active {
+  color: var(--green);
+}
+
+.bn-item.active i {
+  color: var(--green);
+}
+
+/* Indicateur actif — petit point vert */
+.bn-item.active::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* Bouton Publier central — gros bouton vert */
+.bn-item.bn-publish {
+  position: relative;
+}
+
+.bn-item.bn-publish i {
+  width: 46px; height: 46px;
+  background: var(--green);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: var(--shadow-green);
+  margin-top: -10px;
+}
+
+.bn-item.bn-publish:hover i,
+.bn-item.bn-publish.active i {
+  background: var(--green-hover);
+}
+
+@media (max-width: 1000px) {
+  .bottom-nav { display: block; }
 }

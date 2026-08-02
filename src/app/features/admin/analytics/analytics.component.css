@@ -1,4 +1,4 @@
-/* ── Header ──────────────────────────────────────────────────────── */
+﻿/* ── Header ──────────────────────────────────────────────────────── */
 .analytics-header {
   display: flex;
   align-items: center;
@@ -36,20 +36,20 @@
 }
 
 .period-filter button:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--green-border);
   color: var(--color-text-primary);
 }
 
 .period-filter button.active {
-  background: var(--color-accent-dim);
-  border-color: var(--color-border-accent);
-  color: var(--color-accent);
+  background: var(--green-dim);
+  border-color: var(--green-border);
+  color: var(--green);
 }
 
 /* ── Barre de chargement ─────────────────────────────────────────── */
 .loading-bar {
   height: 3px;
-  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-alert) 100%);
+  background: linear-gradient(90deg, var(--green) 0%, var(--color-alert) 100%);
   border-radius: 2px;
   margin-bottom: 1rem;
   animation: shimmer-bar 1.5s ease-in-out infinite;
@@ -103,9 +103,9 @@
 }
 
 .tab-nav button.active {
-  background: var(--color-accent-dim);
-  color: var(--color-accent);
-  border: 1px solid var(--color-border-accent);
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green-border);
 }
 
 /* ── Grille métriques ────────────────────────────────────────────── */
@@ -129,19 +129,19 @@
 }
 
 .metric-card:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--green-border);
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
 
 .metric-card.highlight {
-  border-color: var(--color-border-accent);
-  background: var(--color-accent-dim);
+  border-color: var(--green-border);
+  background: var(--green-dim);
 }
 
 .metric-icon {
   font-size: 1.2rem;
-  color: var(--color-accent);
+  color: var(--green);
   opacity: 0.85;
   flex-shrink: 0;
 }
@@ -225,13 +225,13 @@
 }
 
 .chart-filters button:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--green-border);
   color: var(--color-text-primary);
 }
 
 .chart-filters button.active {
   background: rgba(255,255,255,0.06);
-  border-color: var(--color-border-accent);
+  border-color: var(--green-border);
   color: var(--color-text-primary);
 }
 
@@ -322,7 +322,7 @@
 
 .stat-bar-fill {
   height: 100%;
-  background: var(--color-accent);
+  background: var(--green);
   border-radius: 100px;
   transition: width 0.5s ease;
 }

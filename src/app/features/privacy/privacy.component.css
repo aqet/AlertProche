@@ -1,4 +1,4 @@
-/* ── Header ──────────────────────────────────────────────────── */
+﻿/* ── Header ──────────────────────────────────────────────────── */
 .privacy-header { margin-bottom: 40px; }
 
 .back-link {
@@ -12,7 +12,7 @@
   margin-bottom: 20px;
   transition: color var(--transition);
 }
-.back-link:hover { color: var(--accent); }
+.back-link:hover { color: var(--green); }
 
 .privacy-hero-card {
   background: var(--bg-card);
@@ -26,13 +26,13 @@
 
 .privacy-hero-icon {
   width: 52px; height: 52px;
-  background: var(--accent);
+  background: var(--green);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
-  color: #0A0F1E;
+  color: #fff;
   flex-shrink: 0;
 }
 
@@ -104,7 +104,7 @@
 
 .privacy-toc a:hover {
   background: var(--bg-input);
-  color: var(--accent);
+  color: var(--green);
 }
 
 /* ── Sections ────────────────────────────────────────────────── */
@@ -183,8 +183,8 @@
   gap: 10px;
   align-items: flex-start;
   padding: 12px 14px;
-  background: var(--accent-dim);
-  border: 1px solid var(--border-accent);
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-md);
   font-size: 0.82rem;
   color: var(--text-sub);
@@ -192,7 +192,7 @@
   margin-top: 14px;
 }
 
-.privacy-note i { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+.privacy-note i { color: var(--green); flex-shrink: 0; margin-top: 2px; }
 
 .privacy-note-warning {
   background: var(--urgent-dim);

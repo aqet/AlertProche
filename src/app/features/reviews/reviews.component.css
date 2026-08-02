@@ -1,4 +1,4 @@
-/* ── HERO ────────────────────────────────────────────────────────── */
+﻿/* ── HERO ────────────────────────────────────────────────────────── */
 .reviews-hero {
   position: relative;
   padding: 60px 0 48px;
@@ -46,12 +46,12 @@
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  background: var(--color-accent-dim);
-  border: 1px solid var(--color-border-accent);
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
   border-radius: 100px;
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--green);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 12px;
@@ -107,7 +107,7 @@
   font-size: 4rem;
   font-weight: 900;
   line-height: 1;
-  color: var(--accent);
+  color: var(--green);
 }
 
 .score-stars {
@@ -165,7 +165,7 @@
   min-width: 0;
 }
 
-.dist-bar-high { background: var(--accent); }
+.dist-bar-high { background: var(--green); }
 .dist-bar-mid  { background: var(--warning); }
 .dist-bar-low  { background: var(--urgent); }
 
@@ -179,7 +179,7 @@
 /* CTA stats */
 .stats-cta { text-align: center; }
 .stats-cta-hint { font-size: 0.9rem; color: var(--color-text-secondary); }
-.stats-cta-hint a { color: var(--color-accent); font-weight: 600; }
+.stats-cta-hint a { color: var(--green); font-weight: 600; }
 
 /* ── FORMULAIRE ──────────────────────────────────────────────────── */
 .form-section {
@@ -188,7 +188,7 @@
 
 .form-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-accent);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-xl);
   padding: 40px;
   max-width: 640px;
@@ -260,7 +260,7 @@
   transition: opacity 0.2s ease;
 }
 
-.star-label.star-label-visible { opacity: 1; color: var(--color-accent); }
+.star-label.star-label-visible { opacity: 1; color: var(--green); }
 
 /* Textarea */
 .form-textarea {
@@ -281,7 +281,7 @@
 
 .form-textarea:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--green);
 }
 
 .char-count {
@@ -334,7 +334,7 @@
 }
 
 .toggle-label input:checked + .toggle-switch {
-  background: var(--color-accent);
+  background: var(--green);
 }
 
 .toggle-label input:checked + .toggle-switch::after {
@@ -369,10 +369,10 @@
   align-items: center;
   gap: 12px;
   padding: 20px 24px;
-  background: var(--color-accent-dim);
-  border: 1px solid var(--color-border-accent);
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-md);
-  color: var(--color-accent);
+  color: var(--green);
   font-size: 0.95rem;
   font-weight: 600;
 }
@@ -422,7 +422,7 @@
 }
 
 .review-card:hover {
-  border-color: var(--border-accent);
+  border-color: var(--green-border);
   transform: translateY(-3px);
   box-shadow: var(--shadow-sm);
 }
@@ -439,13 +439,13 @@
 .rc-avatar {
   width: 44px; height: 44px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--green);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
   font-weight: 800;
-  color: #0A0F1E;
+  color: #fff;
   flex-shrink: 0;
 }
 
@@ -531,7 +531,7 @@
 
 .rv-cta-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-accent);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-xl);
   padding: 56px 40px;
   text-align: center;
@@ -544,13 +544,13 @@
 
 .rv-cta-icon {
   width: 72px; height: 72px;
-  background: var(--accent);
+  background: var(--green);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.8rem;
-  color: #0A0F1E;
+  color: #fff;
   margin-bottom: 8px;
 }
 

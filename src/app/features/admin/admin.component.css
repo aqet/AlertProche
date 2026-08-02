@@ -1,4 +1,4 @@
-/* ── HEADER ─────────────────────────────────────────────────────────────── */
+﻿/* ── HEADER ─────────────────────────────────────────────────────────────── */
 .admin-header {
   display: flex;
   align-items: center;
@@ -132,7 +132,7 @@
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  border-color: var(--color-border-accent);
+  border-color: var(--green-border);
 }
 
 .kpi-icon {
@@ -146,7 +146,7 @@
   flex-shrink: 0;
 }
 
-.kpi-users .kpi-icon  { background: var(--color-accent-dim);     color: var(--color-accent); }
+.kpi-users .kpi-icon  { background: var(--green-dim);     color: var(--green); }
 .kpi-posts .kpi-icon  { background: var(--color-prevention-dim); color: var(--color-prevention); }
 .kpi-comments .kpi-icon { background: rgba(139,92,246,0.15);     color: #8b5cf6; }
 .kpi-alert .kpi-icon  { background: var(--color-alert-dim);      color: var(--color-alert); }
@@ -304,7 +304,7 @@
 .activity-bar {
   width: 100%;
   min-height: 4px;
-  background: var(--color-accent);
+  background: var(--green);
   border-radius: 3px 3px 0 0;
   opacity: 0.8;
   transition: opacity var(--transition-fast);
@@ -385,7 +385,7 @@
 }
 
 .filter-chip:hover {
-  border-color: var(--color-border-accent);
+  border-color: var(--green-border);
   color: var(--color-text-primary);
 }
 
@@ -449,7 +449,7 @@
 .user-cell-avatar {
   width: 32px;
   height: 32px;
-  background: var(--gradient-accent);
+  background: var(--green);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -468,8 +468,8 @@
 .self-badge {
   font-size: 0.65rem;
   padding: 2px 6px;
-  background: var(--color-accent-dim);
-  color: var(--color-accent);
+  background: var(--green-dim);
+  color: var(--green);
   border-radius: 100px;
   font-weight: 700;
 }
@@ -519,7 +519,7 @@
   transition: color var(--transition-fast);
 }
 
-.post-cell-title:hover { color: var(--color-accent); }
+.post-cell-title:hover { color: var(--green); }
 
 .post-cell-flags { display: flex; gap: 6px; flex-wrap: wrap; }
 
@@ -558,8 +558,8 @@
   flex-shrink: 0;
 }
 
-.status-active { color: var(--color-accent); }
-.status-active::before { background: var(--color-accent); }
+.status-active { color: var(--green); }
+.status-active::before { background: var(--green); }
 .status-off { color: var(--color-warning); }
 .status-off::before { background: var(--color-warning); }
 
@@ -587,9 +587,9 @@
 }
 
 .btn-ghost-icon:hover {
-  background: var(--color-accent-dim);
-  border-color: var(--color-border-accent);
-  color: var(--color-accent);
+  background: var(--green-dim);
+  border-color: var(--green-border);
+  color: var(--green);
 }
 
 .btn-danger-icon {
@@ -611,9 +611,9 @@
 .btn-danger-icon:hover { background: rgba(255,74,74,0.25); }
 
 .btn-accent {
-  background: var(--color-accent-dim);
-  color: var(--color-accent);
-  border: 1px solid var(--color-border-accent);
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green-border);
   width: 32px;
   height: 32px;
   padding: 0;
@@ -685,8 +685,8 @@
 }
 
 .page-btn:hover:not(:disabled) {
-  border-color: var(--color-border-accent);
-  color: var(--color-accent);
+  border-color: var(--green-border);
+  color: var(--green);
 }
 
 .page-btn.active {
@@ -740,7 +740,7 @@
 /* ── Panneau test notification push ─────────────────────────────────────── */
 .notif-test-panel {
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border-accent);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-lg);
   padding: 18px 20px;
   margin-bottom: 20px;
@@ -752,7 +752,7 @@
   gap: 10px;
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--green);
   margin-bottom: 12px;
 }
 
@@ -785,14 +785,14 @@
 }
 
 .notif-test-stat i { font-size: 0.85rem; flex-shrink: 0; }
-.notif-test-stat.ok   { color: var(--color-accent); }
+.notif-test-stat.ok   { color: var(--green); }
 .notif-test-stat.warn { color: var(--color-warning); }
 .notif-test-stat.err  { color: var(--color-alert); }
 
 /* ── Panneau test notification push ────────────────────────────────────── */
 .notif-test-panel {
   background: var(--bg-card);
-  border: 1px solid var(--border-accent);
+  border: 1px solid var(--green-border);
   border-radius: var(--radius-lg);
   padding: 18px 20px;
   margin-bottom: 20px;
@@ -804,7 +804,7 @@
   gap: 10px;
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--green);
   margin-bottom: 12px;
 }
 
@@ -840,6 +840,6 @@
 }
 
 .notif-test-stat i { font-size: 0.82rem; flex-shrink: 0; }
-.notif-test-stat.ok   { color: var(--accent);   background: var(--accent-dim);   }
+.notif-test-stat.ok   { color: var(--green);   background: var(--green-dim);   }
 .notif-test-stat.warn { color: var(--warning);  background: var(--warning-dim);  }
 .notif-test-stat.err  { color: var(--urgent);   background: var(--urgent-dim);   }
