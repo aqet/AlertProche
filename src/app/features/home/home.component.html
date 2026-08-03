@@ -264,12 +264,12 @@
             </div>
           </div>
         </div>
-        <button class="app-dl-btn" (click)="onAppDownloadClick()" [disabled]="appDownloadLoading()">
+        <a href="alertProche.apk" class="app-dl-btn" (click)="onAppDownloadClick()" >
           <span class="spinner" *ngIf="appDownloadLoading()"></span>
           <ng-container *ngIf="!appDownloadLoading()">
             <i class="fab fa-android"></i> Télécharger APK
           </ng-container>
-        </button>
+        </a>
       </div>
     </div>
   </section>
