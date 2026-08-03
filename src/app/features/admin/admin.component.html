@@ -20,9 +20,43 @@
         <a routerLink="/admin/analytics" class="btn btn-ghost btn-sm">
           <i class="fas fa-chart-line"></i> Analytics
         </a>
+        <button class="btn btn-ghost btn-sm" (click)="testPushNotification()" [disabled]="notifTestLoading()">
+          <span class="spinner" *ngIf="notifTestLoading()"></span>
+          <i class="fas fa-bell" *ngIf="!notifTestLoading()"></i>
+          {{ notifTestLoading() ? 'Test en cours…' : 'Tester notifications' }}
+        </button>
         <button class="btn btn-ghost btn-sm" (click)="loadStats()">
           <i class="fas fa-rotate-right"></i> Actualiser
         </button>
+      </div>
+    </div>
+
+    <!-- Rapport test notification push -->
+    <div class="notif-test-panel animate-fade-in" *ngIf="notifTestResult() as r">
+      <div class="notif-test-header">
+        <i class="fas fa-bell"></i>
+        <strong>Résultat du test de notification push</strong>
+        <button class="notif-test-close" (click)="notifTestResult.set(null)">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+      <div class="notif-test-body">
+        <div class="notif-test-stat" *ngIf="r.totalTokens === 0 && !r.error">
+          <i class="fas fa-mobile-screen" style="color: var(--color-text-muted)"></i>
+          <span>Aucun appareil enregistré avec un token FCM en base.</span>
+        </div>
+        <div class="notif-test-stat ok" *ngIf="r.sent > 0">
+          <i class="fas fa-circle-check"></i>
+          <span>{{ r.sent }} notification{{ r.sent > 1 ? 's' : '' }} envoyée{{ r.sent > 1 ? 's' : '' }} avec succès sur {{ r.totalTokens }} appareil{{ r.totalTokens > 1 ? 's' : '' }}</span>
+        </div>
+        <div class="notif-test-stat warn" *ngIf="r.failed > 0">
+          <i class="fas fa-triangle-exclamation"></i>
+          <span>{{ r.failed }} envoi{{ r.failed > 1 ? 's' : '' }} échoué{{ r.failed > 1 ? 's' : '' }} (tokens invalides supprimés automatiquement)</span>
+        </div>
+        <div class="notif-test-stat err" *ngIf="r.error">
+          <i class="fas fa-circle-xmark"></i>
+          <span>Erreur FCM : {{ r.error }}</span>
+        </div>
       </div>
     </div>
 

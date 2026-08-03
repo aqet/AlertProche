@@ -102,3 +102,50 @@
     </div>
   </div>
 </nav>
+
+<!-- ══ BOTTOM NAV — Mobile uniquement ══════════════════════════ -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+
+    <!-- Accueil -->
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"
+      class="bn-item" (click)="closeMenu()">
+      <i class="fas fa-house"></i>
+      <span>Accueil</span>
+    </a>
+
+    <!-- Alertes / Flux -->
+    <a routerLink="/" [fragment]="'flux'" routerLinkActive="active"
+      class="bn-item" (click)="closeMenu()">
+      <i class="fas fa-bell"></i>
+      <span>Alertes</span>
+    </a>
+
+    <!-- Publier — bouton central vert -->
+    <a routerLink="/posts/new" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="isAuth()">
+      <i class="fas fa-plus"></i>
+      <span>Publier</span>
+    </a>
+    <a routerLink="/auth" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="!isAuth()">
+      <i class="fas fa-plus"></i>
+      <span>Publier</span>
+    </a>
+
+    <!-- Mon Espace -->
+    <a routerLink="/dashboard" routerLinkActive="active" class="bn-item" (click)="closeMenu()" *ngIf="isAuth()">
+      <i class="fas fa-gauge"></i>
+      <span>Mon Espace</span>
+    </a>
+    <a routerLink="/auth" [queryParams]="{mode:'login'}" class="bn-item" (click)="closeMenu()" *ngIf="!isAuth()">
+      <i class="fas fa-right-to-bracket"></i>
+      <span>Connexion</span>
+    </a>
+
+    <!-- À propos -->
+    <a routerLink="/a-propos" routerLinkActive="active" class="bn-item" (click)="closeMenu()">
+      <i class="fas fa-circle-info"></i>
+      <span>Infos</span>
+    </a>
+
+  </div>
+</nav>

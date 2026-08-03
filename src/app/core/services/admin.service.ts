@@ -98,4 +98,9 @@ export class AdminService {
   deletePost(postId: string): Observable<void> {
     return this.http.delete<void>(`${this.API}/posts/${postId}`);
   }
+
+  /** Déclenche une notification push de test — Admin uniquement */
+  testPushNotification(): Observable<{ sent: number; failed: number; totalTokens: number; error: string | null }> {
+    return this.http.get<any>(`${environment.apiUrl}/posts/test-notification`);
+  }
 }

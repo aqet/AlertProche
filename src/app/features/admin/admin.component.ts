@@ -4,14 +4,13 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminService, AdminStats, AdminUser, AdminPost } from '../../core/services/admin.service';
 import { AuthService } from '../../core/services/auth.service';
-import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 
 type AdminTab = 'stats' | 'users' | 'posts';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MediaUrlPipe],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
@@ -47,6 +46,10 @@ export class AdminComponent implements OnInit {
   actionLoading = signal(false);
   actionSuccess = signal('');
   actionError = signal('');
+
+  // Test notification push
+  notifTestLoading = signal(false);
+  notifTestResult = signal<{ sent: number; failed: number; totalTokens: number; error: string | null } | null>(null);
 
   currentUser = computed(() => this.auth.currentUser());
 
@@ -255,4 +258,20 @@ export class AdminComponent implements OnInit {
   }
 
   trackById(_: number, item: any) { return item._id; }
+
+  // ── TEST NOTIFICATION PUSH ────────────────────────────────────────────
+  testPushNotification(): void {
+    this.notifTestLoading.set(true);
+    this.notifTestResult.set(null);
+    this.adminService.testPushNotification().subscribe({
+      next: (result) => {
+        this.notifTestResult.set(result);
+        this.notifTestLoading.set(false);
+      },
+      error: (err) => {
+        this.notifTestResult.set({ sent: 0, failed: 0, totalTokens: 0, error: err?.error?.message || 'Erreur de connexion' });
+        this.notifTestLoading.set(false);
+      }
+    });
+  }
 }

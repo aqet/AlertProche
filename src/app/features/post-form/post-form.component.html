@@ -19,6 +19,33 @@
           <i class="fas fa-circle-exclamation"></i> {{ error() }}
         </div>
 
+        <!-- Succès + Rapport de notification push -->
+        <div class="notif-report" *ngIf="success() && notifReport() as r">
+          <div class="notif-report-header">
+            <i class="fas fa-circle-check"></i>
+            <strong>Publication créée avec succès</strong>
+          </div>
+          <div class="notif-report-body">
+            <div class="notif-stat" [class.good]="r.sent > 0">
+              <i class="fas fa-bell"></i>
+              <span>{{ r.sent }} notification{{ r.sent > 1 ? 's' : '' }} envoyée{{ r.sent > 1 ? 's' : '' }}</span>
+            </div>
+            <div class="notif-stat" *ngIf="r.failed > 0" style="color: var(--warning)">
+              <i class="fas fa-triangle-exclamation"></i>
+              <span>{{ r.failed }} échec{{ r.failed > 1 ? 's' : '' }}</span>
+            </div>
+            <div class="notif-stat" *ngIf="r.totalTokens === 0" style="color: var(--text-muted)">
+              <i class="fas fa-mobile-screen"></i>
+              <span>Aucun appareil abonné aux notifications</span>
+            </div>
+            <div class="notif-stat error" *ngIf="r.error">
+              <i class="fas fa-xmark-circle"></i>
+              <span>Erreur FCM : {{ r.error }}</span>
+            </div>
+          </div>
+          <p class="notif-report-hint">Redirection dans 2 secondes…</p>
+        </div>
+
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <div class="form-grid">
             <!-- LEFT COLUMN -->
