@@ -1,50 +1,69 @@
 <article class="post-card" [routerLink]="['/posts', post._id]">
-  <!-- Disabled banner -->
-  <div class="post-disabled-banner" *ngIf="post.isActive === false">
-    <i class="fas fa-eye-slash"></i> Publication désactivée par un modérateur
+
+  <!-- Bandeau désactivé -->
+  <div class="card-disabled-bar" *ngIf="post.isActive === false">
+    <i class="fas fa-eye-slash"></i> Désactivé par un modérateur
   </div>
-  <!-- Type Badge -->
-  <div class="card-header">
-    <span class="badge" [ngClass]="getBadgeClass()">
+
+  <!-- Image avec overlay type -->
+  <div class="card-img-wrap" *ngIf="post.image_url">
+    <img [src]="post.image_url | mediaUrl" [alt]="post.title" loading="lazy">
+    <div class="card-img-overlay"></div>
+    <!-- Badge type sur l'image -->
+    <span class="card-badge-img" [ngClass]="getBadgeClass()">
       <i class="fas" [ngClass]="getBadgeIcon()"></i>
       {{ post.type }}
     </span>
-    <span class="card-time">
-      <i class="fas fa-clock"></i>
-      {{ getTimeAgo(post.createdAt) }}
-    </span>
   </div>
 
-  <!-- Image -->
-  <div class="card-image" *ngIf="post.image_url">
-    <img [src]="post.image_url | mediaUrl" [alt]="post.title" loading="lazy" class="card-img">
-    <div class="image-overlay"></div>
-  </div>
+  <div class="card-content">
 
-  <!-- Content -->
-  <div class="card-body">
+    <!-- Header : badge + temps -->
+    <div class="card-head" *ngIf="!post.image_url">
+      <span class="card-badge" [ngClass]="getBadgeClass()">
+        <i class="fas" [ngClass]="getBadgeIcon()"></i>
+        {{ post.type }}
+      </span>
+      <span class="card-time">
+        <i class="fas fa-clock"></i>
+        {{ getTimeAgo(post.createdAt) }}
+      </span>
+    </div>
+
+    <div class="card-head card-head-img" *ngIf="post.image_url">
+      <span class="card-time">
+        <i class="fas fa-clock"></i>
+        {{ getTimeAgo(post.createdAt) }}
+      </span>
+    </div>
+
+    <!-- Titre -->
     <h3 class="card-title">{{ post.title }}</h3>
-    <p class="card-excerpt">{{ post.content | slice:0:150 }}{{ post.content.length > 150 ? '...' : '' }}</p>
+
+    <!-- Extrait -->
+    <p class="card-excerpt">{{ post.content | slice:0:140 }}{{ post.content.length > 140 ? '…' : '' }}</p>
+
+    <!-- Footer -->
+    <div class="card-foot">
+      <div class="card-meta-row">
+        <span class="card-meta-item">
+          <i class="fas fa-location-dot"></i>
+          {{ post.location }}
+        </span>
+        <span class="card-meta-item">
+          <i class="fas fa-user"></i>
+          {{ post.isAnonymous ? 'Anonyme' : (post.authorPseudo || 'Inconnu') }}
+        </span>
+      </div>
+      <div class="card-comments-badge" *ngIf="post.commentCount !== undefined">
+        <i class="fas fa-comment"></i>
+        {{ post.commentCount }}
+      </div>
+    </div>
+
   </div>
 
-  <!-- Footer -->
-  <div class="card-footer">
-    <div class="card-meta">
-      <span class="meta-item">
-        <i class="fas fa-location-dot"></i>
-        {{ post.location }}
-      </span>
-      <span class="meta-item">
-        <i class="fas fa-user"></i>
-        {{ post.isAnonymous ? 'Anonyme' : (post.authorPseudo || 'Inconnu') }}
-      </span>
-    </div>
-    <div class="card-comments" *ngIf="post.commentCount !== undefined">
-      <i class="fas fa-comment"></i>
-      {{ post.commentCount }}
-    </div>
-  </div>
+  <!-- Indicateur pulse rouge pour disparitions -->
+  <div class="card-urgent-dot" *ngIf="post.type === 'Disparition'"></div>
 
-  <!-- Active Alert Pulse for Disparition -->
-  <div class="alert-pulse" *ngIf="post.type === 'Disparition'"></div>
 </article>
