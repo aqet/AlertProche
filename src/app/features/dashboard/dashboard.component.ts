@@ -1,19 +1,21 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink, ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PostService } from '../../core/services/post.service';
 import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
+import { SosService, TrustedContact, PendingInvitation, UserSearchResult, WhoTrustedMe } from '../../core/services/sos.service';
 import { Post } from '../../core/models/post.model';
 import { Comment } from '../../core/models/comment.model';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, of } from 'rxjs';
 
-type DashTab = 'posts' | 'comments' | 'profile';
+type DashTab = 'posts' | 'comments' | 'profile' | 'sos';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -37,6 +39,23 @@ export class DashboardComponent implements OnInit {
   editLoading = signal(false);
   editError = signal('');
 
+  // ── SOS / Contacts de confiance ────────────────────────────────────────
+  trustedContacts    = signal<TrustedContact[]>([]);
+  pendingInvitations = signal<PendingInvitation[]>([]);
+  whoTrustedMe       = signal<WhoTrustedMe[]>([]);
+  loadingContacts    = signal(false);
+  contactSuccess     = signal('');
+  contactError       = signal('');
+
+  // Recherche utilisateur
+  searchQuery        = signal('');
+  searchResults      = signal<UserSearchResult[]>([]);
+  searchLoading      = signal(false);
+  private searchSubject = new Subject<string>();
+
+  // Suppression contact
+  removingContactId  = signal<string | null>(null);
+
   user = computed(() => this.auth.currentUser());
 
   canModerate = computed(() => {
@@ -49,6 +68,10 @@ export class DashboardComponent implements OnInit {
     disparitions: this.myPosts().filter(p => p.type === 'Disparition').length,
     comments: this.myComments().length,
   }));
+
+  acceptedContactsCount = computed(() =>
+    this.trustedContacts().filter(c => c.status === 'ACCEPTED').length
+  );
 
   camerounCities = [
     'National',
@@ -155,7 +178,9 @@ export class DashboardComponent implements OnInit {
     private postService: PostService,
     private commentService: CommentService,
     public auth: AuthService,
-    private fb: FormBuilder
+    private sosService: SosService,
+    private fb: FormBuilder,
+    private route: ActivatedRoute
   ) {
     this.profileForm = this.fb.group({
       pseudo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
@@ -176,6 +201,13 @@ export class DashboardComponent implements OnInit {
       this.profileForm.patchValue({ pseudo: u.pseudo });
     }
 
+    // Lire le queryParam ?tab=sos depuis la notification push
+    this.route.queryParams.subscribe(params => {
+      if (params['tab'] === 'sos') {
+        this.activeTab.set('sos');
+      }
+    });
+
     this.postService.getMyPosts().subscribe({
       next: (posts) => { this.myPosts.set(posts); this.loadingPosts.set(false); },
       error: () => { this.loadingPosts.set(false); }
@@ -185,11 +217,29 @@ export class DashboardComponent implements OnInit {
       next: (comments) => { this.myComments.set(comments); this.loadingComments.set(false); },
       error: () => { this.loadingComments.set(false); }
     });
+
+    // Charger les contacts de confiance et invitations au démarrage
+    this.loadContacts();
+
+    // Recherche avec debounce 400ms
+    this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(q => {
+        if (q.trim().length < 2) { this.searchResults.set([]); return of([]); }
+        this.searchLoading.set(true);
+        return this.sosService.searchUsers(q);
+      }),
+    ).subscribe({
+      next: (results) => { this.searchResults.set(results); this.searchLoading.set(false); },
+      error: () => { this.searchLoading.set(false); },
+    });
   }
 
   setTab(tab: DashTab) {
     this.activeTab.set(tab);
     this.editingPost.set(null);
+    if (tab === 'sos') this.loadContacts();
   }
 
   // --- Post CRUD ---
@@ -294,6 +344,91 @@ export class DashboardComponent implements OnInit {
   getBadgeClass(type: string): string {
     const map: Record<string, string> = { 'Disparition': 'badge-disparition', 'Abus': 'badge-abus', 'Prevention': 'badge-prevention' };
     return map[type] || '';
+  }
+
+  // ── CONTACTS DE CONFIANCE ──────────────────────────────────────────────
+
+  loadContacts(): void {
+    this.loadingContacts.set(true);
+    this.sosService.getMyContacts().subscribe({
+      next: (c) => { this.trustedContacts.set(c); this.loadingContacts.set(false); },
+      error: () => { this.loadingContacts.set(false); },
+    });
+    this.sosService.getPendingInvitations().subscribe({
+      next: (inv) => this.pendingInvitations.set(inv),
+      error: () => {},
+    });
+    this.sosService.getWhoTrustedMe().subscribe({
+      next: (list) => this.whoTrustedMe.set(list),
+      error: () => {},
+    });
+  }
+
+  onSearchInput(query: string): void {
+    this.searchQuery.set(query);
+    this.searchSubject.next(query);
+  }
+
+  addContact(userId: string, pseudo: string): void {
+    this.contactError.set('');
+    this.contactSuccess.set('');
+    this.sosService.addContact(userId).subscribe({
+      next: () => {
+        this.contactSuccess.set(`Invitation envoyée à ${pseudo}.`);
+        this.searchResults.set([]);
+        this.searchQuery.set('');
+        this.loadContacts();
+        setTimeout(() => this.contactSuccess.set(''), 4000);
+      },
+      error: (err) => {
+        this.contactError.set(err?.error?.message || 'Erreur lors de l\'invitation.');
+        setTimeout(() => this.contactError.set(''), 4000);
+      },
+    });
+  }
+
+  respondInvitation(inviterId: string, action: 'accept' | 'reject'): void {
+    this.sosService.respondToInvitation(inviterId, action).subscribe({
+      next: () => {
+        this.contactSuccess.set(action === 'accept' ? 'Invitation acceptée.' : 'Invitation refusée.');
+        this.loadContacts();
+        setTimeout(() => this.contactSuccess.set(''), 3000);
+      },
+      error: (err) => this.contactError.set(err?.error?.message || 'Erreur.'),
+    });
+  }
+
+  confirmRemoveContact(contactId: string): void {
+    this.removingContactId.set(contactId);
+  }
+
+  cancelRemoveContact(): void {
+    this.removingContactId.set(null);
+  }
+
+  removeContact(contactId: string): void {
+    this.sosService.removeContact(contactId).subscribe({
+      next: () => {
+        this.trustedContacts.update(list => list.filter(c => c.userId !== contactId));
+        this.removingContactId.set(null);
+        this.contactSuccess.set('Contact retiré.');
+        setTimeout(() => this.contactSuccess.set(''), 3000);
+      },
+      error: (err) => this.contactError.set(err?.error?.message || 'Erreur.'),
+    });
+  }
+
+  isAlreadyContact(userId: string): boolean {
+    return this.trustedContacts().some(c => c.userId === userId);
+  }
+
+  getContactStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      'ACCEPTED': 'Actif',
+      'PENDING':  'En attente',
+      'REJECTED': 'Refusé',
+    };
+    return map[status] || status;
   }
 
   getTimeAgo(dateStr: string): string {

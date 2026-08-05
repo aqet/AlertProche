@@ -1,0 +1,259 @@
+<!-- ══ LOADING ══════════════════════════════════════════════════════════ -->
+<div class="sos-resp-page" *ngIf="loading()">
+  <div class="sos-resp-loading">
+    <div class="spinner"></div>
+    <p>Chargement de l'alerte…</p>
+  </div>
+</div>
+
+<!-- ══ ERREUR ════════════════════════════════════════════════════════════ -->
+<div class="sos-resp-page" *ngIf="!loading() && error()">
+  <div class="sos-resp-error">
+    <div class="sos-resp-error-icon"><i class="fas fa-circle-exclamation"></i></div>
+    <h2>Alerte introuvable</h2>
+    <p>{{ error() }}</p>
+    <a routerLink="/" class="btn btn-primary"><i class="fas fa-house"></i> Accueil</a>
+  </div>
+</div>
+
+<!-- ══ CONTENU PRINCIPAL ═════════════════════════════════════════════════ -->
+<div class="sos-resp-page" *ngIf="!loading() && !error() && sos() as s">
+
+  <!-- ── HEADER STATUT ──────────────────────────────────────────────────── -->
+  <div class="sos-resp-header" [class.sos-header-resolved]="isResolved">
+    <div class="sos-resp-header-inner container">
+
+      <div class="sos-resp-status-row">
+        <!-- Icône pulsante si actif -->
+        <div class="sos-resp-pulse-icon" *ngIf="!isResolved">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <div class="sos-resp-resolved-icon" *ngIf="isResolved">
+          <i class="fas fa-circle-check"></i>
+        </div>
+
+        <div>
+          <h1 class="sos-resp-title" *ngIf="!isResolved">🆘 ALERTE SOS EN COURS</h1>
+          <h1 class="sos-resp-title sos-title-resolved" *ngIf="isResolved">
+            {{ s.status === 'RESOLVED' ? '✅ Alerte résolue' : '🔕 Alerte annulée' }}
+          </h1>
+          <p class="sos-resp-elapsed" *ngIf="!isResolved">
+            Déclenchée il y a <strong>{{ getElapsed() }}</strong>
+          </p>
+          <p class="sos-resp-elapsed" *ngIf="isResolved && s.resolvedAt">
+            Clôturée le {{ s.resolvedAt | date:'dd/MM/yyyy à HH:mm' }}
+            <span *ngIf="s.resolvedReason"> — {{ s.resolvedReason }}</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Badge niveau de menace -->
+      <div class="sos-threat-badge" [ngClass]="getThreatClass(s.threatLevel)">
+        <i class="fas fa-triangle-exclamation"></i>
+        Niveau {{ getThreatLabel(s.threatLevel) }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONTENU ────────────────────────────────────────────────────────── -->
+  <div class="container sos-resp-body">
+
+    <!-- Feedback actions -->
+    <div class="alert-banner success mb-16" *ngIf="actionSuccess()">
+      <i class="fas fa-circle-check"></i> {{ actionSuccess() }}
+    </div>
+    <div class="alert-banner error mb-16" *ngIf="actionError()">
+      <i class="fas fa-circle-exclamation"></i> {{ actionError() }}
+    </div>
+
+    <div class="sos-resp-grid">
+
+      <!-- ── COLONNE GAUCHE : Émetteur + Position ──────────────────────── -->
+      <div class="sos-resp-left">
+
+        <!-- Profil émetteur -->
+        <div class="sos-resp-card sos-emitter-card">
+          <div class="sos-resp-card-title">
+            <i class="fas fa-user-shield"></i> Personne en danger
+          </div>
+          <div class="sos-emitter-profile">
+            <div class="sos-emitter-avatar">
+              <img *ngIf="s.emitter?.photoUrl" [src]="s.emitter?.photoUrl" [alt]="s.emitter?.pseudo">
+              <span *ngIf="!s.emitter?.photoUrl">
+                {{ (s.emitter?.pseudo || '?').charAt(0).toUpperCase() }}
+              </span>
+            </div>
+            <div>
+              <h2 class="sos-emitter-name">{{ s.emitter?.pseudo || 'Utilisateur inconnu' }}</h2>
+              <p class="sos-emitter-label">Personne de confiance liée</p>
+            </div>
+          </div>
+
+          <!-- Transcription vocale si disponible -->
+          <div class="sos-voice-transcription" *ngIf="s.voiceTranscription">
+            <div class="sos-voice-header">
+              <i class="fas fa-microphone"></i> Message vocal
+            </div>
+            <p class="sos-voice-text">"{{ s.voiceTranscription }}"</p>
+          </div>
+        </div>
+
+        <!-- Position GPS -->
+        <div class="sos-resp-card sos-position-card">
+          <div class="sos-resp-card-title">
+            <i class="fas fa-location-dot"></i> Dernière position connue
+            <span class="sos-position-live" *ngIf="!isResolved">
+              <span class="live-dot"></span> Live
+            </span>
+          </div>
+
+          <div class="sos-coords">
+            <div class="sos-coord-item">
+              <span class="sos-coord-label">Latitude</span>
+              <span class="sos-coord-value">{{ s.latitude | number:'1.5-5' }}</span>
+            </div>
+            <div class="sos-coord-item">
+              <span class="sos-coord-label">Longitude</span>
+              <span class="sos-coord-value">{{ s.longitude | number:'1.5-5' }}</span>
+            </div>
+          </div>
+
+          <!-- Iframe Google Maps embed -->
+          <div class="sos-map-embed" *ngIf="safeMapUrl()">
+            <iframe
+              [src]="safeMapUrl()!"
+              width="100%"
+              height="220"
+              frameborder="0"
+              allowfullscreen
+              loading="lazy">
+            </iframe>
+          </div>
+
+          <button class="btn btn-primary w-full" (click)="openNavigation()">
+            <i class="fas fa-diamond-turn-right"></i>
+            Ouvrir dans Google Maps
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ── COLONNE DROITE : Actions + Personnes en route ────────────── -->
+      <div class="sos-resp-right">
+
+        <!-- ACTIONS — uniquement si SOS actif et pas l'émetteur -->
+        <div class="sos-resp-card sos-actions-card" *ngIf="!isResolved && !s.isOwner">
+          <div class="sos-resp-card-title">
+            <i class="fas fa-hand-holding-heart"></i> Votre réponse
+          </div>
+
+          <!-- Déjà confirmé -->
+          <div class="sos-confirmed-state" *ngIf="hasConfirmed()">
+            <div class="sos-confirmed-icon"><i class="fas fa-person-running"></i></div>
+            <h3>Vous êtes en route</h3>
+            <p>L'émetteur a été averti que vous arrivez.</p>
+          </div>
+
+          <!-- Pas encore confirmé -->
+          <div class="sos-action-buttons" *ngIf="!hasConfirmed()">
+            <p class="sos-action-desc">
+              {{ s.emitter?.pseudo }} a besoin d'aide. Pouvez-vous intervenir ?
+            </p>
+            <button
+              class="btn-sos-arrive"
+              (click)="onConfirmResponse()"
+              [disabled]="confirming()">
+              <span class="spinner" *ngIf="confirming()"></span>
+              <ng-container *ngIf="!confirming()">
+                <i class="fas fa-person-running"></i>
+                J'arrive — Je vais aider
+              </ng-container>
+            </button>
+          </div>
+
+          <!-- Clôturer l'alerte -->
+          <div class="sos-resolve-section">
+            <p class="sos-resolve-hint">
+              <i class="fas fa-circle-info"></i>
+              Si la personne est en sécurité, vous pouvez clôturer l'alerte.
+            </p>
+            <button
+              class="btn btn-outline w-full"
+              (click)="onResolve()"
+              [disabled]="resolving()">
+              <span class="spinner" *ngIf="resolving()"></span>
+              <ng-container *ngIf="!resolving()">
+                <i class="fas fa-circle-check"></i>
+                Marquer comme résolu
+              </ng-container>
+            </button>
+          </div>
+        </div>
+
+        <!-- ACTIONS — émetteur qui voit sa propre page SOS -->
+        <div class="sos-resp-card sos-actions-card" *ngIf="!isResolved && s.isOwner">
+          <div class="sos-resp-card-title">
+            <i class="fas fa-shield-halved"></i> Votre alerte
+          </div>
+          <p class="sos-action-desc">
+            Votre SOS est actif. Vos contacts ont été notifiés.
+            Si vous êtes en sécurité, clôturez l'alerte.
+          </p>
+          <button
+            class="btn btn-primary w-full"
+            (click)="onResolve()"
+            [disabled]="resolving()">
+            <span class="spinner" *ngIf="resolving()"></span>
+            <ng-container *ngIf="!resolving()">
+              <i class="fas fa-circle-check"></i>
+              Je suis en sécurité
+            </ng-container>
+          </button>
+        </div>
+
+        <!-- Alerte résolue ou annulée -->
+        <div class="sos-resp-card sos-resolved-card" *ngIf="isResolved">
+          <div class="sos-resolved-icon-lg">
+            <i class="fas fa-circle-check" *ngIf="s.status === 'RESOLVED'"></i>
+            <i class="fas fa-bell-slash" *ngIf="s.status === 'CANCELLED'"></i>
+          </div>
+          <h3>{{ s.status === 'RESOLVED' ? 'Alerte résolue' : 'Alerte annulée' }}</h3>
+          <p *ngIf="s.resolvedReason">{{ s.resolvedReason }}</p>
+          <a routerLink="/" class="btn btn-outline w-full">
+            <i class="fas fa-house"></i> Retour à l'accueil
+          </a>
+        </div>
+
+        <!-- Personnes en route -->
+        <div class="sos-resp-card sos-responders-card">
+          <div class="sos-resp-card-title">
+            <i class="fas fa-people-arrows"></i> Personnes en route
+            <span class="sos-responders-count" *ngIf="s.respondingCount > 0">
+              {{ s.respondingCount }}
+            </span>
+          </div>
+
+          <div class="sos-responders-list" *ngIf="s.respondingContacts.length > 0">
+            <div class="sos-responder-item" *ngFor="let r of s.respondingContacts">
+              <div class="sos-responder-avatar">
+                <img *ngIf="r.photoUrl" [src]="r.photoUrl" [alt]="r.pseudo">
+                <span *ngIf="!r.photoUrl">{{ r.pseudo.charAt(0).toUpperCase() }}</span>
+              </div>
+              <span class="sos-responder-name">{{ r.pseudo }}</span>
+              <span class="sos-responder-status">
+                <i class="fas fa-person-running"></i> En route
+              </span>
+            </div>
+          </div>
+
+          <div class="sos-no-responders" *ngIf="s.respondingCount === 0">
+            <i class="fas fa-hourglass-half"></i>
+            <p>En attente de réponse…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

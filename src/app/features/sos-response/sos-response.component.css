@@ -1,0 +1,445 @@
+/* ═══════════════════════════════════════════════════════════════
+   SOS RESPONSE — Page contact B
+   ═══════════════════════════════════════════════════════════════ */
+
+.sos-resp-page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding-top: var(--nav-height);
+  padding-bottom: calc(var(--bottom-nav-h) + 24px);
+}
+
+/* ── Loading / Error ───────────────────────────────────────────── */
+.sos-resp-loading,
+.sos-resp-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 60vh;
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--text-sub);
+}
+
+.sos-resp-error-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--urgent-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; color: var(--urgent);
+}
+
+.sos-resp-error h2 { font-size: 1.2rem; color: var(--text); }
+
+/* ── Header rouge ──────────────────────────────────────────────── */
+.sos-resp-header {
+  background: #C62828;
+  color: #fff;
+  padding: 24px 0;
+  border-bottom: 3px solid rgba(0,0,0,0.15);
+}
+
+.sos-resp-header.sos-header-resolved {
+  background: var(--green-dark);
+}
+
+.sos-resp-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sos-resp-status-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Icône pulsante */
+.sos-resp-pulse-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  animation: resp-pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes resp-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+  50%      { transform: scale(1.06); box-shadow: 0 0 0 14px rgba(255,255,255,0); }
+}
+
+.sos-resp-resolved-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.sos-resp-title {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin: 0 0 4px;
+  color: #fff;
+}
+
+.sos-title-resolved { letter-spacing: 0; }
+
+.sos-resp-elapsed {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* Badge niveau de menace */
+.sos-threat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.threat-low      { background: rgba(255,255,255,0.15); color: #fff; }
+.threat-medium   { background: rgba(255,193,7,0.3);  color: #FFF9C4; border: 1px solid rgba(255,193,7,0.5); }
+.threat-high     { background: rgba(255,87,34,0.4);  color: #FFCCBC; border: 1px solid rgba(255,87,34,0.6); }
+.threat-critical { background: rgba(0,0,0,0.35); color: #FFCDD2; border: 1px solid rgba(255,255,255,0.4); animation: blink-critical 1s infinite; }
+
+@keyframes blink-critical {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+
+/* ── Body grid ─────────────────────────────────────────────────── */
+.sos-resp-body {
+  padding-top: 28px;
+}
+
+.sos-resp-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Cartes communes ───────────────────────────────────────────── */
+.sos-resp-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.sos-resp-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.sos-resp-card-title i { color: var(--green); }
+
+/* ── Profil émetteur ───────────────────────────────────────────── */
+.sos-emitter-card { border-color: var(--urgent-border); }
+
+.sos-emitter-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.sos-emitter-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--urgent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; font-weight: 800;
+  color: #fff;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 3px solid var(--urgent-border);
+}
+
+.sos-emitter-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.sos-emitter-name  { font-size: 1.2rem; font-weight: 800; margin: 0; color: var(--text); }
+.sos-emitter-label { font-size: 0.78rem; color: var(--text-muted); margin: 0; }
+
+/* Transcription vocale */
+.sos-voice-transcription {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.sos-voice-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.sos-voice-header i { color: var(--green); }
+
+.sos-voice-text {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── Position GPS ──────────────────────────────────────────────── */
+.sos-position-card { border-color: var(--green-border); }
+
+.sos-position-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--green);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: live-blink 1.2s infinite;
+}
+
+@keyframes live-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+.sos-coords {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sos-coord-item {
+  flex: 1;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sos-coord-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.sos-coord-value { font-size: 0.9rem; font-weight: 700; color: var(--text); font-family: monospace; }
+
+.sos-map-embed {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+
+.sos-map-embed iframe { display: block; }
+
+/* ── Colonne droite ────────────────────────────────────────────── */
+.sos-resp-right {
+  position: sticky;
+  top: calc(var(--nav-height) + 16px);
+}
+
+/* Actions card */
+.sos-actions-card { border-color: var(--green-border); }
+
+.sos-action-desc {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* Bouton géant "J'arrive" */
+.btn-sos-arrive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 24px;
+  background: var(--urgent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(229,57,53,0.35);
+  transition: background 0.15s, transform 0.1s;
+  margin-bottom: 12px;
+}
+
+.btn-sos-arrive:hover:not(:disabled) { background: #B71C1C; transform: translateY(-1px); }
+.btn-sos-arrive:active:not(:disabled) { transform: scale(0.98); }
+.btn-sos-arrive:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-sos-arrive i { font-size: 1.2rem; }
+
+/* État confirmé */
+.sos-confirmed-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  background: var(--green-pale);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+}
+
+.sos-confirmed-icon {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; color: #fff;
+}
+
+.sos-confirmed-state h3 { font-size: 1rem; color: var(--green-dark); margin: 0; }
+.sos-confirmed-state p  { font-size: 0.82rem; color: var(--text-sub); margin: 0; }
+
+/* Résoudre */
+.sos-resolve-section {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 4px;
+}
+
+.sos-resolve-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+/* Carte résolue */
+.sos-resolved-card {
+  text-align: center;
+  border-color: var(--green-border);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.sos-resolved-icon-lg {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--green-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; color: var(--green);
+}
+
+.sos-resolved-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0; }
+.sos-resolved-card p  { font-size: 0.85rem; color: var(--text-sub); margin: 0; }
+
+/* Carte personnes en route */
+.sos-responders-card { border-color: var(--border); }
+
+.sos-responders-count {
+  margin-left: auto;
+  background: var(--green);
+  color: #fff;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.sos-responders-list { display: flex; flex-direction: column; gap: 10px; }
+
+.sos-responder-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--green-pale);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-md);
+}
+
+.sos-responder-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sos-responder-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sos-responder-name  { flex: 1; font-size: 0.88rem; font-weight: 700; color: var(--text); }
+.sos-responder-status {
+  font-size: 0.72rem;
+  color: var(--green);
+  font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
+}
+
+.sos-no-responders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.sos-no-responders i { font-size: 1.4rem; }
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .sos-resp-grid { grid-template-columns: 1fr; }
+  .sos-resp-right { position: static; }
+}
+
+@media (max-width: 600px) {
+  .sos-resp-header-inner { flex-direction: column; align-items: flex-start; }
+  .sos-resp-status-row { flex-wrap: wrap; }
+  .sos-coords { flex-direction: column; }
+}

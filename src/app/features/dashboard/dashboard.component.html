@@ -52,6 +52,13 @@
             <i class="fas fa-user-pen"></i>
             <p>Mon Profil</p>
           </button>
+          <button class="dash-nav-item" [class.active]="activeTab() === 'sos'" (click)="setTab('sos')">
+            <i class="fas fa-shield-halved"></i>
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+              <p>Contacts SOS</p>
+              <span class="dash-nav-badge" *ngIf="acceptedContactsCount() > 0">{{ acceptedContactsCount() }}/5</span>
+            </div>
+          </button>
         </nav>
 
         <!-- Actions rapides -->
@@ -291,6 +298,201 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- ── CONTACTS SOS ──────────────────────────── -->
+        <div *ngIf="activeTab() === 'sos'" class="animate-fade-in">
+          <div class="dash-section-header">
+            <h2>Contacts de Confiance — SOS</h2>
+          </div>
+
+          <!-- Bannière explicative -->
+          <div class="sos-info-banner">
+            <div class="sos-info-icon"><i class="fas fa-shield-halved"></i></div>
+            <div>
+              <strong>Pourquoi des contacts de confiance ?</strong>
+              <p>
+                En cas d'urgence, ces personnes recevront une notification push avec votre
+                position GPS en temps réel. Vous pouvez en désigner jusqu'à <strong>5</strong>.
+                Ils doivent avoir installé AlertProche pour être ajoutés.
+              </p>
+            </div>
+          </div>
+
+          <!-- Alertes -->
+          <div class="alert-banner success" *ngIf="contactSuccess()">
+            <i class="fas fa-circle-check"></i> {{ contactSuccess() }}
+          </div>
+          <div class="alert-banner error" *ngIf="contactError()">
+            <i class="fas fa-circle-exclamation"></i> {{ contactError() }}
+          </div>
+
+          <!-- Invitations reçues en attente -->
+          <div class="sos-invitations-panel" *ngIf="pendingInvitations().length > 0">
+            <h3 class="sos-sub-title">
+              <i class="fas fa-bell"></i>
+              Invitations reçues
+              <span class="badge-count">{{ pendingInvitations().length }}</span>
+            </h3>
+            <div class="sos-invitation-list">
+              <div class="sos-invitation-item" *ngFor="let inv of pendingInvitations()">
+                <div class="sos-contact-avatar">
+                  <img *ngIf="inv.photoUrl" [src]="inv.photoUrl" [alt]="inv.pseudo">
+                  <span *ngIf="!inv.photoUrl">{{ inv.pseudo.charAt(0).toUpperCase() }}</span>
+                </div>
+                <div class="sos-invitation-info">
+                  <span class="sos-contact-pseudo">{{ inv.pseudo }}</span>
+                  <span class="sos-contact-status status-pending">souhaite vous ajouter</span>
+                </div>
+                <div class="sos-invitation-actions">
+                  <button class="btn btn-primary btn-sm" (click)="respondInvitation(inv.inviterId, 'accept')">
+                    <i class="fas fa-check"></i> Accepter
+                  </button>
+                  <button class="btn btn-ghost btn-sm" (click)="respondInvitation(inv.inviterId, 'reject')">
+                    <i class="fas fa-xmark"></i> Refuser
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mes contacts actuels -->
+          <div class="sos-contacts-section">
+            <h3 class="sos-sub-title">
+              <i class="fas fa-users"></i>
+              Mes contacts ({{ acceptedContactsCount() }}/5)
+            </h3>
+
+            <div class="loading-state" *ngIf="loadingContacts()">
+              <div class="spinner"></div> Chargement...
+            </div>
+
+            <div class="sos-contacts-list" *ngIf="!loadingContacts()">
+              <div class="sos-contact-row" *ngFor="let contact of trustedContacts()">
+                <div class="sos-contact-avatar">
+                  <img *ngIf="contact.profile?.photoUrl" [src]="contact.profile?.photoUrl" [alt]="contact.profile?.pseudo">
+                  <span *ngIf="!contact.profile?.photoUrl">
+                    {{ (contact.profile?.pseudo || '?').charAt(0).toUpperCase() }}
+                  </span>
+                </div>
+                <div class="sos-contact-info">
+                  <span class="sos-contact-pseudo">{{ contact.profile?.pseudo || 'Utilisateur inconnu' }}</span>
+                  <span class="sos-contact-status"
+                    [class.status-accepted]="contact.status === 'ACCEPTED'"
+                    [class.status-pending]="contact.status === 'PENDING'"
+                    [class.status-rejected]="contact.status === 'REJECTED'">
+                    <i class="fas"
+                      [class.fa-circle-check]="contact.status === 'ACCEPTED'"
+                      [class.fa-clock]="contact.status === 'PENDING'"
+                      [class.fa-circle-xmark]="contact.status === 'REJECTED'"></i>
+                    {{ getContactStatusLabel(contact.status) }}
+                  </span>
+                </div>
+                <div class="sos-contact-actions">
+                  <div class="confirm-delete" *ngIf="removingContactId() === contact.userId">
+                    <span>Retirer ?</span>
+                    <button class="btn btn-danger btn-sm" (click)="removeContact(contact.userId)">Oui</button>
+                    <button class="btn btn-ghost btn-sm" (click)="cancelRemoveContact()">Non</button>
+                  </div>
+                  <button class="btn btn-sm btn-delete"
+                    *ngIf="removingContactId() !== contact.userId"
+                    (click)="confirmRemoveContact(contact.userId)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="empty-state" *ngIf="trustedContacts().length === 0">
+                <div class="empty-icon"><i class="fas fa-user-plus"></i></div>
+                <h3>Aucun contact de confiance</h3>
+                <p>Ajoutez jusqu'à 5 personnes ci-dessous pour activer le SOS.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ajouter un contact — recherche par pseudo -->
+          <div class="sos-add-contact" *ngIf="acceptedContactsCount() < 5">
+            <h3 class="sos-sub-title">
+              <i class="fas fa-user-plus"></i>
+              Ajouter un contact
+            </h3>
+            <div class="sos-search-wrap">
+              <div class="search-input-wrap">
+                <i class="fas fa-magnifying-glass search-ico"></i>
+                <input
+                  type="text"
+                  class="search-input"
+                  placeholder="Rechercher un utilisateur par pseudo..."
+                  [value]="searchQuery()"
+                  (input)="onSearchInput($any($event.target).value)">
+                <div class="spinner search-spinner" *ngIf="searchLoading()"></div>
+              </div>
+
+              <!-- Résultats de recherche -->
+              <div class="sos-search-results" *ngIf="searchResults().length > 0">
+                <div class="sos-search-item" *ngFor="let u of searchResults()">
+                  <div class="sos-contact-avatar sos-avatar-sm">
+                    <img *ngIf="u.photoUrl" [src]="u.photoUrl" [alt]="u.pseudo">
+                    <span *ngIf="!u.photoUrl">{{ u.pseudo.charAt(0).toUpperCase() }}</span>
+                  </div>
+                  <span class="sos-contact-pseudo">{{ u.pseudo }}</span>
+                  <button
+                    class="btn btn-primary btn-sm"
+                    *ngIf="!isAlreadyContact(u._id)"
+                    (click)="addContact(u._id, u.pseudo)">
+                    <i class="fas fa-plus"></i> Inviter
+                  </button>
+                  <span class="sos-already-added" *ngIf="isAlreadyContact(u._id)">
+                    <i class="fas fa-check"></i> Déjà ajouté
+                  </span>
+                </div>
+              </div>
+
+              <p class="sos-search-hint" *ngIf="searchQuery().length >= 2 && !searchLoading() && searchResults().length === 0">
+                <i class="fas fa-circle-info"></i>
+                Aucun utilisateur trouvé pour "{{ searchQuery() }}"
+              </p>
+              <p class="sos-search-hint" *ngIf="searchQuery().length > 0 && searchQuery().length < 2">
+                <i class="fas fa-circle-info"></i>
+                Tapez au moins 2 caractères
+              </p>
+            </div>
+          </div>
+
+          <div class="sos-limit-notice" *ngIf="acceptedContactsCount() >= 5">
+            <i class="fas fa-lock"></i>
+            Limite de 5 contacts atteinte. Retirez un contact pour en ajouter un autre.
+          </div>
+
+          <!-- ── JE SUIS CONTACT DE CONFIANCE DE... ──────────────────── -->
+          <div class="sos-trusted-by-section">
+            <h3 class="sos-sub-title">
+              <i class="fas fa-people-group"></i>
+              Je suis contact de confiance de
+              <span class="badge-count" *ngIf="whoTrustedMe().length > 0">{{ whoTrustedMe().length }}</span>
+            </h3>
+
+            <div class="sos-trusted-by-list" *ngIf="whoTrustedMe().length > 0">
+              <div class="sos-trusted-by-item" *ngFor="let u of whoTrustedMe()">
+                <div class="sos-contact-avatar sos-avatar-sm">
+                  <img *ngIf="u.photoUrl" [src]="u.photoUrl" [alt]="u.pseudo">
+                  <span *ngIf="!u.photoUrl">{{ u.pseudo.charAt(0).toUpperCase() }}</span>
+                </div>
+                <div class="sos-contact-info">
+                  <span class="sos-contact-pseudo">{{ u.pseudo }}</span>
+                  <span class="sos-contact-status status-accepted">
+                    <i class="fas fa-shield-halved"></i> Vous pouvez intervenir pour cette personne
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sos-trusted-by-empty" *ngIf="whoTrustedMe().length === 0 && !loadingContacts()">
+              <i class="fas fa-circle-info"></i>
+              Personne ne vous a encore désigné comme contact de confiance.
+            </div>
+          </div>
+
         </div>
 
       </main>

@@ -54,6 +54,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/analytics/analytics.component').then(m => m.AnalyticsComponent)
   },
   {
+    path: 'sos/history',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/sos-history/sos-history.component').then(m => m.SosHistoryComponent)
+  },
+  {
+    path: 'sos/:sosId',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/sos-response/sos-response.component').then(m => m.SosResponseComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

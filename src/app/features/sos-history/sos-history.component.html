@@ -1,0 +1,151 @@
+<div class="sos-hist-page page-wrapper">
+  <div class="container">
+
+    <!-- ── HEADER ──────────────────────────────────────────────────── -->
+    <div class="sos-hist-header">
+      <div class="sos-hist-title-row">
+        <div class="sos-hist-icon"><i class="fas fa-clock-rotate-left"></i></div>
+        <div>
+          <h1 class="section-title">Historique SOS</h1>
+          <p class="section-subtitle">
+            Toutes vos alertes émises, vos interventions et les alertes reçues.
+          </p>
+        </div>
+      </div>
+
+      <!-- Compteurs globaux -->
+      <div class="sos-hist-summary" *ngIf="history()">
+        <div class="sos-hist-stat">
+          <span class="sos-hist-stat-num text-alert">{{ history()!.emitted.length }}</span>
+          <span class="sos-hist-stat-lbl">Émises</span>
+        </div>
+        <div class="sos-hist-stat">
+          <span class="sos-hist-stat-num text-accent">{{ history()!.responded.length }}</span>
+          <span class="sos-hist-stat-lbl">Interventions</span>
+        </div>
+        <div class="sos-hist-stat">
+          <span class="sos-hist-stat-num">{{ history()!.received.length }}</span>
+          <span class="sos-hist-stat-lbl">Reçues</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SOUS-ONGLETS ─────────────────────────────────────────────── -->
+    <div class="history-tabs">
+      <button class="history-tab" [class.active]="activeTab() === 'emitted'" (click)="setTab('emitted')">
+        <i class="fas fa-circle-radiation"></i>
+        Mes alertes
+        <span class="history-tab-count" *ngIf="history()">{{ history()!.emitted.length }}</span>
+      </button>
+      <button class="history-tab" [class.active]="activeTab() === 'responded'" (click)="setTab('responded')">
+        <i class="fas fa-person-running"></i>
+        Interventions
+        <span class="history-tab-count" *ngIf="history()">{{ history()!.responded.length }}</span>
+      </button>
+      <button class="history-tab" [class.active]="activeTab() === 'received'" (click)="setTab('received')">
+        <i class="fas fa-bell"></i>
+        Reçues
+        <span class="history-tab-count" *ngIf="history()">{{ history()!.received.length }}</span>
+      </button>
+    </div>
+
+    <!-- ── LOADING ──────────────────────────────────────────────────── -->
+    <div class="loading-state" *ngIf="loading()">
+      <div class="spinner"></div> Chargement de l'historique…
+    </div>
+
+    <!-- ── LISTE ────────────────────────────────────────────────────── -->
+    <div class="history-list animate-fade-in" *ngIf="!loading()">
+
+      <!-- Vide -->
+      <div class="empty-state" *ngIf="currentList().length === 0">
+        <div class="empty-icon"><i class="fas fa-clock-rotate-left"></i></div>
+        <h3>Aucune alerte</h3>
+        <p *ngIf="activeTab() === 'emitted'">Vous n'avez pas encore déclenché de SOS.</p>
+        <p *ngIf="activeTab() === 'responded'">Vous n'avez pas encore répondu à un SOS.</p>
+        <p *ngIf="activeTab() === 'received'">Aucune alerte reçue pour l'instant.</p>
+      </div>
+
+      <!-- Items -->
+      <div class="history-item" *ngFor="let item of currentList()">
+
+        <!-- Bande statut -->
+        <div class="history-status-bar"
+          [class.bar-active]="item.status === 'ACTIVE'"
+          [class.bar-resolved]="item.status === 'RESOLVED'"
+          [class.bar-cancelled]="item.status === 'CANCELLED'">
+        </div>
+
+        <div class="history-item-body">
+
+          <!-- Ligne 1 : badges + date -->
+          <div class="history-item-header">
+            <span class="history-role-badge">{{ getRoleLabel(item.role) }}</span>
+            <span class="history-status-chip" [ngClass]="getStatusClass(item.status)">
+              <i class="fas"
+                [class.fa-circle-dot]="item.status === 'ACTIVE'"
+                [class.fa-circle-check]="item.status === 'RESOLVED'"
+                [class.fa-bell-slash]="item.status === 'CANCELLED'"></i>
+              {{ getStatusLabel(item.status) }}
+            </span>
+            <span class="history-threat-chip" [ngClass]="getThreatClass(item.threatLevel)" *ngIf="item.threatLevel">
+              <i class="fas fa-triangle-exclamation"></i>
+              {{ getThreatLabel(item.threatLevel) }}
+            </span>
+            <span class="history-date">{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+
+          <!-- Ligne 2 : profil émetteur (si pas soi-même) -->
+          <div class="history-emitter" *ngIf="item.role !== 'emitted' && item.emitter">
+            <div class="history-emitter-avatar">
+              <img *ngIf="item.emitter.photoUrl" [src]="item.emitter.photoUrl" [alt]="item.emitter.pseudo">
+              <span *ngIf="!item.emitter.photoUrl">{{ item.emitter.pseudo.charAt(0).toUpperCase() }}</span>
+            </div>
+            <div>
+              <span class="history-emitter-name">{{ item.emitter.pseudo }}</span>
+              <span class="history-emitter-label">Personne en danger</span>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="history-stats">
+            <span class="history-stat">
+              <i class="fas fa-location-dot"></i>
+              {{ item.latitude | number:'1.4-4' }}, {{ item.longitude | number:'1.4-4' }}
+            </span>
+            <span class="history-stat">
+              <i class="fas fa-clock"></i>
+              {{ getDuration(item.createdAt, item.resolvedAt) }}
+            </span>
+            <span class="history-stat" *ngIf="item.respondingCount > 0">
+              <i class="fas fa-person-running"></i>
+              {{ item.respondingCount }} intervenant{{ item.respondingCount > 1 ? 's' : '' }}
+            </span>
+            <span class="history-stat" *ngIf="item.role === 'emitted' && item.notifiedCount > 0">
+              <i class="fas fa-bell"></i>
+              {{ item.notifiedCount }} notifié{{ item.notifiedCount > 1 ? 's' : '' }}
+            </span>
+          </div>
+
+          <!-- Raison clôture -->
+          <div class="history-resolve-reason" *ngIf="item.resolvedReason && item.status !== 'ACTIVE'">
+            <i class="fas fa-circle-info"></i>{{ item.resolvedReason }}
+          </div>
+
+          <!-- Actions -->
+          <div class="history-item-footer">
+            <a [routerLink]="['/sos', item._id]" class="btn btn-outline btn-sm">
+              <i class="fas fa-arrow-up-right-from-square"></i> Voir le détail
+            </a>
+            <a [href]="getMapsUrl(item.latitude, item.longitude)"
+               target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+              <i class="fas fa-map-location-dot"></i> Carte
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -313,10 +313,16 @@
   text-decoration: none;
   transition: all var(--transition);
 }
+
+.m-link.active{
+  color: var(--green); background: var(--green-pale);
+}
+
 .m-link:hover { color: var(--green); background: var(--green-pale); }
 .m-link i { width: 16px; text-align: center; color: var(--green); }
 .m-link-mod   { color: var(--warning) !important; }
 .m-link-admin { color: #E65100 !important; }
+
 
 /* ── Responsive ───────────────────────────────── */
 @media (max-width: 1000px) {
