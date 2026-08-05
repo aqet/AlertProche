@@ -1,0 +1,268 @@
+/* ═══════════════════════════════════════════════════
+   SOS FLOATING BUTTON — AlertProche
+   Positionnement : Bas-Gauche, au-dessus de tout
+   ═══════════════════════════════════════════════════ */
+
+/* ── Conteneur principal ───────────────────────────── */
+.sos-fab-container {
+  position: fixed;
+  bottom: 80px; /* Au-dessus de la bottom nav */
+  right: 16px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Anneau SVG de progression ─────────────────────── */
+.sos-progress-ring {
+  position: absolute;
+  width: 108px;
+  height: 108px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sos-ring-fill {
+  transition: stroke-dashoffset 0.05s linear;
+}
+
+/* ── Bouton SOS rouge ──────────────────────────────── */
+.sos-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #D32F2F;
+  color: #fff;
+  border: 3px solid rgba(255,255,255,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 16px rgba(211,47,47,0.5);
+  animation: sos-pulse 2s infinite;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sos-icon { font-size: 1.2rem; }
+.sos-label { font-size: 0.58rem; font-weight: 800; letter-spacing: 1px; line-height: 1; }
+
+/* Animation onde d'urgence */
+@keyframes sos-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(211,47,47,0.7); }
+  70%  { box-shadow: 0 0 0 14px rgba(211,47,47,0); }
+  100% { box-shadow: 0 0 0 0   rgba(211,47,47,0); }
+}
+
+/* État appui prolongé */
+.sos-btn--holding {
+  animation: none;
+  transform: scale(0.95);
+  background: #B71C1C;
+}
+
+/* ── Tooltip ────────────────────────────────────────── */
+.sos-tooltip {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  background: rgba(0,0,0,0.55);
+  padding: 3px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   ÉCRAN ROUGE PLEIN — Décompte avant envoi
+   ═══════════════════════════════════════════════════ */
+.sos-fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #C62828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: sos-overlay-in 0.2s ease;
+}
+
+@keyframes sos-overlay-in {
+  from { opacity: 0; transform: scale(1.05); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.sos-countdown-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  color: #fff;
+}
+
+.sos-countdown-number {
+  font-size: 6rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: countdown-beat 1s ease-in-out infinite;
+}
+
+@keyframes countdown-beat {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+
+.sos-countdown-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Gros bouton annulation */
+.sos-cancel-mega-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 40px;
+  background: #fff;
+  color: #C62828;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  touch-action: manipulation;
+}
+
+.sos-cancel-mega-btn i { font-size: 1.4rem; }
+
+.sos-cancel-mega-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.sos-countdown-hint {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   ÉCRAN SOS ACTIF
+   ═══════════════════════════════════════════════════ */
+.sos-active-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  background: rgba(198,40,40,0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: sos-overlay-in 0.3s ease;
+}
+
+.sos-active-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 40px 28px;
+  text-align: center;
+  color: #fff;
+  max-width: 340px;
+  width: 100%;
+}
+
+/* Icône pulsante */
+.sos-active-pulse {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  animation: active-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes active-pulse {
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(255,255,255,0.4); }
+  50%       { transform: scale(1.06); box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+}
+
+.sos-active-content h2 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.sos-active-content p {
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Badge "X personnes en route" */
+.sos-responding-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.2);
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* Message d'erreur */
+.sos-error-msg {
+  background: rgba(0,0,0,0.25);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Bouton "Je suis en sécurité" */
+.sos-resolve-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: #fff;
+  color: #2E7D32;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  transition: transform 0.1s ease;
+  touch-action: manipulation;
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.sos-resolve-btn:active { transform: scale(0.97); }
+.sos-resolve-btn i { font-size: 1.1rem; }

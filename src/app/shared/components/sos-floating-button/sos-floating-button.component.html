@@ -1,0 +1,85 @@
+<!-- ══ ÉCRAN ROUGE PLEIN — Décompte avant envoi ══════════════════════ -->
+<div class="sos-fullscreen-overlay" *ngIf="state() === 'confirming'">
+  <div class="sos-countdown-content">
+
+    <div class="sos-countdown-number">{{ cancelCountdown() }}</div>
+    <p class="sos-countdown-label">Envoi du SOS dans…</p>
+
+    <button class="sos-cancel-mega-btn" (click)="onCancelConfirm()">
+      <i class="fas fa-xmark"></i>
+      ANNULER — FAUSSE ALERTE
+    </button>
+
+    <p class="sos-countdown-hint">
+      Relâchez le bouton pour annuler
+    </p>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN SOS ACTIF ══════════════════════════════════════════════ -->
+<div class="sos-active-overlay" *ngIf="state() === 'active'">
+  <div class="sos-active-content">
+    <div class="sos-active-pulse">
+      <i class="fas fa-shield-halved"></i>
+    </div>
+    <h2>SOS EN COURS</h2>
+    <p>Vos contacts sont alertés.<br>Aide en route.</p>
+
+    <div class="sos-responding-count" *ngIf="respondingCount() > 0">
+      <i class="fas fa-person-running"></i>
+      {{ respondingCount() }} personne{{ respondingCount() > 1 ? 's' : '' }} en route
+    </div>
+
+    <div class="sos-error-msg" *ngIf="errorMsg()">
+      <i class="fas fa-circle-exclamation"></i> {{ errorMsg() }}
+    </div>
+
+    <button class="sos-resolve-btn" (click)="onCloseSos()">
+      <i class="fas fa-circle-check"></i>
+      Je suis en sécurité
+    </button>
+  </div>
+</div>
+
+<!-- ══ BOUTON FLOTTANT SOS (Bas-Droit) ════════════════════════════ -->
+<div class="sos-fab-container" *ngIf="isAuthenticated() &&  ( state() === 'idle' || state() === 'holding' )">
+
+  <!-- Arc de progression SVG -->
+  <svg class="sos-progress-ring" viewBox="0 0 64 64" *ngIf="state() === 'holding'">
+    <circle
+      class="sos-ring-bg"
+      cx="32" cy="18" r="20"
+      fill="none"
+      stroke="rgba(255,255,255,0.3)"
+      stroke-width="4"/>
+    <circle
+      class="sos-ring-fill"
+      cx="45" cy="32" r="20"
+      fill="none"
+      stroke="var(--green)"
+      stroke-width="4"
+      stroke-linecap="round"
+      [style.stroke-dasharray]="'163.36'"
+      [style.stroke-dashoffset]="strokeDashoffset()"
+      transform="rotate(-90 32 32)"/>
+  </svg>
+
+  <!-- Bouton principal -->
+  <button
+    class="sos-btn"
+    [class.sos-btn--holding]="state() === 'holding'"
+    (pointerdown)="onPointerDown($event)"
+    (pointerup)="onPointerUp()"
+    (pointerleave)="onPointerUp()"
+    (contextmenu)="$event.preventDefault()"
+    aria-label="Bouton SOS d'urgence — Maintenez 3 secondes">
+
+    <i class="fas fa-shield-halved sos-icon"></i>
+    <span class="sos-label">SOS</span>
+  </button>
+
+  <!-- Tooltip d'aide -->
+  <div class="sos-tooltip" *ngIf="state() === 'idle'">
+    Maintenir 3s
+  </div>
+</div>

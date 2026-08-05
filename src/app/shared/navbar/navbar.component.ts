@@ -30,7 +30,7 @@ export class NavbarComponent {
     public theme: ThemeService,
   ) {
     if (Capacitor.isNativePlatform()) {
-      this.IsMobile=false
+      this.IsMobile=true
     }
     console.log(this.IsMobile);
     

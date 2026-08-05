@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, NgZone } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { NavbarComponent } from './shared/navbar/navbar.component';
+import { SosFloatingButtonComponent } from './shared/components/sos-floating-button/sos-floating-button.component';
 import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
@@ -9,10 +10,11 @@ import { NotificationService } from './core/services/notification.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, RouterLink],
+  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent],
   template: `
     <app-navbar></app-navbar>
     <router-outlet></router-outlet>
+    <app-sos-floating-button></app-sos-floating-button>
     <footer class="app-footer">
       <div class="footer-inner">
         <div class="footer-brand">
