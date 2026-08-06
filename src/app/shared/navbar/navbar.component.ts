@@ -8,7 +8,7 @@ import { Capacitor } from '@capacitor/core';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, NgIf],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NgIf ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
