@@ -56,7 +56,7 @@ export interface PaginatedUsers {
   limit: number;
   pages: number;
 }
-
+ 
 export interface PaginatedPosts {
   posts: AdminPost[];
   total: number;
