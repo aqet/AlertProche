@@ -10,7 +10,7 @@ export class NotificationService {
   private apiUrl = `${environment.apiUrl}`;
   private readonly sessionKey = 'ap_session';
 
-  private http   = inject(HttpClient);
+  private http = inject(HttpClient);
   private router = inject(Router);
 
   private getSession(): { token: string; user: { _id: string } } | null {
@@ -56,47 +56,55 @@ export class NotificationService {
     });
 
     // ── Notification reçue en foreground ──────────────────────────────
-    PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      const data = notification.data || {};
-      console.log('Notification reçue foreground :', data.type);
-      // Le floating button gère lui-même le polling — pas d'action UI supplémentaire ici
-    });
+    PushNotifications.addListener(
+      'pushNotificationReceived',
+      (notification) => {
+        const data = notification.data || {};
+        console.log('Notification reçue foreground :', data.type);
+        // Le floating button gère lui-même le polling — pas d'action UI supplémentaire ici
+      },
+    );
 
     // ── Tap sur une notification (app en background ou fermée) ────────
-    PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-      const data = action.notification.data || {};
-      const type  = data.type as string;
-      const sosId = data.sosId as string;
+    PushNotifications.addListener(
+      'pushNotificationActionPerformed',
+      (action) => {
+        const data = action.notification.data || {};
+        const type = data.type as string;
+        const sosId = data.sosId as string;
 
-      console.log('Tap notification :', type, sosId);
+        console.log('Tap notification :', type, sosId);
 
-      switch (type) {
-        // Contact B reçoit le SOS → ouvre la page de réponse
-        case 'SOS_TRUSTED':
-        case 'SOS_PROXIMITY':
-          if (sosId) this.router.navigate(['/sos', sosId]);
-          break;
+        switch (type) {
+          // Contact B reçoit le SOS → ouvre la page de réponse
+          case 'SOS_TRUSTED':
+          case 'SOS_PROXIMITY':
+            if (sosId) this.router.navigate(['/sos', sosId]);
+            break;
 
-        // Alerte batterie critique → ouvre aussi la page SOS
-        case 'LOW_BATTERY':
-          if (sosId) this.router.navigate(['/sos', sosId]);
-          break;
+          // Alerte batterie critique → ouvre aussi la page SOS
+          case 'LOW_BATTERY':
+            if (sosId) this.router.navigate(['/sos', sosId]);
+            break;
 
-        // SOS résolu ou annulé → si on est sur la page SOS, elle se rafraîchit seule
-        case 'SOS_RESOLVED':
-          if (sosId) this.router.navigate(['/sos', sosId]);
-          break;
+          // SOS résolu ou annulé → si on est sur la page SOS, elle se rafraîchit seule
+          case 'SOS_RESOLVED':
+            if (sosId) this.router.navigate(['/sos', sosId]);
+            break;
 
-        // Invitation contact de confiance → ouvre le dashboard onglet SOS
-        case 'TRUSTED_CONTACT_INVITE':
-        case 'TRUSTED_CONTACT_RESPONSE':
-          this.router.navigate(['/dashboard'], { queryParams: { tab: 'sos' } });
-          break;
+          // Invitation contact de confiance → ouvre le dashboard onglet SOS
+          case 'TRUSTED_CONTACT_INVITE':
+          case 'TRUSTED_CONTACT_RESPONSE':
+            this.router.navigate(['/dashboard'], {
+              queryParams: { tab: 'sos' },
+            });
+            break;
 
-        default:
-          break;
-      }
-    });
+          default:
+            break;
+        }
+      },
+    );
 
     // ── Créer le canal Android haute priorité ─────────────────────────
     await this.setupNotificationChannel();
@@ -109,12 +117,32 @@ export class NotificationService {
         id: 'alertproche_notifications',
         name: 'Alertes AlertProche',
         description: 'Notifications SOS et alertes urgentes',
-        importance: 5,
+        importance: 4,
         visibility: 1,
         sound: 'default',
         vibration: true,
         lights: true,
       });
-    } catch { /* Canal déjà créé ou non supporté */ }
+
+      await PushNotifications.createChannel({
+        id: 'alertproche_sos_channel',
+        name: 'Alertes SOS Urgentes',
+        description:
+          'Canal haute priorité pour les alarmes et alertes de danger',
+        importance: 5, // 5 = IMPORTANCE_HIGH / MAX (Heads-up + son)
+        sound: 'alertsos.mp3', // Avec l'extension .mp3 pour Capacitor
+        visibility: 1, // 1 = VISIBILITY_PUBLIC (écran de verrouillage)
+        vibration: true,
+        lights: true,
+        lightColor: '#FF0000', // LED rouge d'urgence si disponible
+      });
+    } catch (error) {
+      /* Canal déjà créé ou non supporté */
+
+      console.error(
+        'Erreur lors de la création des canaux de notification',
+        error,
+      );
+    }
   }
 }
