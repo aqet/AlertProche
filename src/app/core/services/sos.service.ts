@@ -173,6 +173,11 @@ export class SosService {
     return this.http.delete<void>(`${this.API_CONTACTS}/${contactId}`);
   }
 
+  /** Se retirer soi-même de la liste d'un autre utilisateur */
+  leaveTrustedList(ownerId: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.API_CONTACTS}/leave/${ownerId}`);
+  }
+
   // ══ RECHERCHE UTILISATEUR ══════════════════════════════════════════════
 
   searchUsers(query: string): Observable<UserSearchResult[]> {
