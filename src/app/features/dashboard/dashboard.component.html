@@ -484,6 +484,26 @@
                     <i class="fas fa-shield-halved"></i> Vous pouvez intervenir pour cette personne
                   </span>
                 </div>
+
+                <!-- Actions : confirmer ou annuler le retrait -->
+                <div class="sos-contact-actions" style="flex-shrink:0">
+
+                  <!-- Bouton retrait normal -->
+                  <button class="btn btn-sm btn-delete"
+                    *ngIf="leavingOwnerId() !== u.userId"
+                    (click)="confirmLeave(u.userId)"
+                    title="Ne plus être contact de confiance">
+                    <i class="fas fa-user-minus"></i>
+                  </button>
+
+                  <!-- Confirmation inline -->
+                  <div class="confirm-delete" *ngIf="leavingOwnerId() === u.userId">
+                    <span>Se retirer ?</span>
+                    <button class="btn btn-danger btn-sm" (click)="leaveTrustedList(u.userId)">Oui</button>
+                    <button class="btn btn-ghost btn-sm"  (click)="cancelLeave()">Non</button>
+                  </div>
+
+                </div>
               </div>
             </div>
 

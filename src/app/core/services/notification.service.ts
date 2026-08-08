@@ -39,6 +39,10 @@ export class NotificationService {
       return;
     }
 
+    // Nettoyer les listeners existants avant d'en ajouter de nouveaux
+    // (évite les doublons si initialiserPush() est appelé plusieurs fois)
+    await PushNotifications.removeAllListeners();
+
     await PushNotifications.register();
 
     // ── Enregistrement du token FCM ────────────────────────────────────

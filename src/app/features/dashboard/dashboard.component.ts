@@ -55,6 +55,8 @@ export class DashboardComponent implements OnInit {
 
   // Suppression contact
   removingContactId  = signal<string | null>(null);
+  // Se retirer de la liste de quelqu'un
+  leavingOwnerId     = signal<string | null>(null);
 
   user = computed(() => this.auth.currentUser());
 
@@ -429,6 +431,32 @@ export class DashboardComponent implements OnInit {
       'REJECTED': 'Refusé',
     };
     return map[status] || status;
+  }
+
+  // ── SE RETIRER DE LA LISTE D'UN AUTRE UTILISATEUR ──────────────────────
+
+  confirmLeave(ownerId: string): void {
+    this.leavingOwnerId.set(ownerId);
+  }
+
+  cancelLeave(): void {
+    this.leavingOwnerId.set(null);
+  }
+
+  leaveTrustedList(ownerId: string): void {
+    this.sosService.leaveTrustedList(ownerId).subscribe({
+      next: (res) => {
+        this.whoTrustedMe.update(list => list.filter(u => u.userId !== ownerId));
+        this.leavingOwnerId.set(null);
+        this.contactSuccess.set(res.message);
+        setTimeout(() => this.contactSuccess.set(''), 4000);
+      },
+      error: (err) => {
+        this.leavingOwnerId.set(null);
+        this.contactError.set(err?.error?.message || 'Erreur lors de la suppression.');
+        setTimeout(() => this.contactError.set(''), 4000);
+      },
+    });
   }
 
   getTimeAgo(dateStr: string): string {
