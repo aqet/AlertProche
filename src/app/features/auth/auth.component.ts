@@ -302,9 +302,9 @@ export class AuthComponent implements OnInit {
 
   get stepLabel(): string {
     const labels: Record<RegisterStep, string> = {
-      info: 'Étape 1 / 3 — Informations',
-      otp: 'Étape 2 / 3 — Vérification email',
-      password: 'Étape 3 / 3 — Mot de passe'
+      info: 'Étape 1 / 3 - Informations',
+      otp: 'Étape 2 / 3 - Vérification email',
+      password: 'Étape 3 / 3 - Mot de passe'
     };
     return labels[this.registerStep()];
   }

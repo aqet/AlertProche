@@ -17,18 +17,26 @@
             android:launchMode="singleTask"
             android:exported="true">
 
+            <!-- ══ Deep Links HTTPS (App Links Android 6+) ══════════════════ -->
+            <!-- autoVerify=true : Android vérifie assetlinks.json sur le domaine -->
+            <!-- Si la vérification échoue, Android propose un sélecteur d'app   -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                
-                <!-- Remplace par ton vrai nom de domaine -->
-                <data android:scheme="https" android:host="alert-proche-api.vercel.app" android:pathPrefix="/" />
-                <data android:scheme="http" android:host="alert-proche-api.vercel.app" android:pathPrefix="/" />
+                <!-- Domaine principal du frontend -->
+                <data android:scheme="https" android:host="alert-proche.vercel.app" />
+                <data android:scheme="http"  android:host="alert-proche.vercel.app" />
+            </intent-filter>
 
-                <data android:scheme="https" android:host="alert-proche.vercel.app" android:pathPrefix="/" />
-                <data android:scheme="http" android:host="alert-proche.vercel.app" android:pathPrefix="/" />
-
+            <!-- ══ Custom URL Scheme (fonctionne SANS assetlinks.json) ════════ -->
+            <!-- Utilisez alertproche://posts/xxx dans vos liens partagés        -->
+            <!-- Ce scheme est exclusif à votre app — jamais d'ambiguïté         -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="alertproche" />
             </intent-filter>
 
             <intent-filter>
@@ -48,7 +56,7 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <!-- Canal par défaut pour FCM — doit correspondre au channelId du backend -->
+        <!-- Canal par défaut pour FCM - doit correspondre au channelId du backend -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="alertproche_notifications" />

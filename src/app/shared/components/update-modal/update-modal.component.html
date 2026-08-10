@@ -1,0 +1,40 @@
+<!-- ══ HARD UPDATE - Modal bloquante ════════════════════════════════════ -->
+<div class="update-overlay update-overlay--hard" *ngIf="showHardModal()">
+  <div class="update-modal">
+    <div class="update-modal-icon update-icon--hard">
+      <i class="fas fa-mobile-screen-button"></i>
+    </div>
+    <h2 class="update-title">Mise à jour requise</h2>
+    <p class="update-desc">
+      Cette version de l'application n'est plus supportée.<br>
+      Veuillez mettre à jour AlertProche pour continuer à l'utiliser.
+    </p>
+    <div class="update-version-badge" *ngIf="status()?.latestVersion">
+      <i class="fas fa-tag"></i>
+      Nouvelle version : <strong>{{ status()!.latestVersion }}</strong>
+    </div>
+    <div class="update-notes" *ngIf="status()?.releaseNotes">
+      <p>{{ status()!.releaseNotes }}</p>
+    </div>
+    <button class="btn-update-hard" (click)="openStore()">
+      <i class="fas fa-download"></i>
+      Mettre à jour maintenant
+    </button>
+    <!-- Pas de bouton "Plus tard" - modal non dismissible -->
+  </div>
+</div>
+
+<!-- ══ SOFT UPDATE - Banner non bloquante ═══════════════════════════════ -->
+<div class="update-banner" *ngIf="showSoftModal()">
+  <div class="update-banner-icon"><i class="fas fa-circle-up"></i></div>
+  <div class="update-banner-body">
+    <strong>Mise à jour disponible - v{{ status()!.latestVersion }}</strong>
+    <p>Nouvelles fonctionnalités et corrections de sécurité.</p>
+  </div>
+  <div class="update-banner-actions">
+    <button class="btn-update-soft" (click)="openStore()">
+      <i class="fas fa-download"></i> Mettre à jour
+    </button>
+    <button class="btn-dismiss" (click)="dismissSoft()">Plus tard</button>
+  </div>
+</div>

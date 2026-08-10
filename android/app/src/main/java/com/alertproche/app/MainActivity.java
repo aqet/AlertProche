@@ -11,7 +11,7 @@ import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
 
-    // ID du canal — doit correspondre exactement au channelId envoyé par le backend FCM
+    // ID du canal - doit correspondre exactement au channelId envoyé par le backend FCM
     public static final String CHANNEL_ID = "alertproche_notifications";
 
     @Override

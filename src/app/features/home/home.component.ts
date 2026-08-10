@@ -200,7 +200,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       color: 'slide-appel',
       title: 'Une personne a besoin de vous.',
       subtitle:
-        'Personne hospitalisée sans famille identifiée, individu en détresse — votre aide peut changer une vie.',
+        'Personne hospitalisée sans famille identifiée, individu en détresse - votre aide peut changer une vie.',
       cta: "Lancer un appel à l'aide",
       ctaRoute: '/posts/new',
       ctaIcon: 'fa-hand-holding-heart',

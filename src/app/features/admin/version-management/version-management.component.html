@@ -1,0 +1,189 @@
+<div class="vm-page">
+
+  <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+  <div class="vm-header">
+    <div class="vm-header-icon"><i class="fas fa-mobile-screen-button"></i></div>
+    <div>
+      <h2 class="section-title">Gestion des versions</h2>
+      <p class="section-subtitle">
+        Définissez les versions de l'application et envoyez des notifications de mise à jour.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ CONFIG ACTUELLE ══════════════════════════════════════════════════ -->
+  <div class="vm-current-config" *ngIf="!configLoading() && currentConfig()">
+    <div class="vm-config-chip">
+      <i class="fas fa-circle-check"></i>
+      <div>
+        <div>Version en production : <strong>{{ currentConfig()!.latestVersion }}</strong></div>
+        <div>Minimum supportée : <strong>{{ currentConfig()!.minSupportedVersion }}</strong></div>
+        <div>Mis à jour le {{ formatDate(currentConfig()!.updatedAt) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="configLoading()">
+    <div class="spinner"></div> Chargement...
+  </div>
+
+  <div class="vm-grid">
+
+    <!-- ══ FORMULAIRE VERSIONS ══════════════════════════════════════════ -->
+    <div class="vm-card">
+      <div class="vm-card-header">
+        <i class="fas fa-tag"></i>
+        <h3>Configurer les versions</h3>
+      </div>
+
+      <div class="alert-banner success mb-16" *ngIf="versionSuccess()">
+        <i class="fas fa-circle-check"></i> {{ versionSuccess() }}
+      </div>
+      <div class="alert-banner error mb-16" *ngIf="versionError()">
+        <i class="fas fa-circle-exclamation"></i> {{ versionError() }}
+      </div>
+
+      <form [formGroup]="versionForm" (ngSubmit)="saveVersion()">
+
+        <div class="form-group">
+          <label class="form-label">
+            Version la plus récente <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="latestVersion"
+            placeholder="ex: 1.2.0">
+          <span class="form-error" *ngIf="hasError(versionForm, 'latestVersion', 'required')">
+            Champ requis
+          </span>
+          <span class="form-error" *ngIf="hasError(versionForm, 'latestVersion', 'pattern')">
+            Format requis : X.Y.Z (ex: 1.2.0)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Version minimale supportée <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="minSupportedVersion"
+            placeholder="ex: 1.1.0">
+          <span class="form-error" *ngIf="hasError(versionForm, 'minSupportedVersion', 'required')">
+            Champ requis
+          </span>
+          <span class="form-error" *ngIf="hasError(versionForm, 'minSupportedVersion', 'pattern')">
+            Format requis : X.Y.Z (ex: 1.1.0)
+          </span>
+          <p class="vm-hint">
+            <i class="fas fa-circle-info"></i>
+            En dessous de cette version → mise à jour <strong>bloquante</strong> (hard update).
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Lien de téléchargement (APK / Store)</label>
+          <input
+            type="url"
+            class="form-control"
+            formControlName="downloadUrl"
+            placeholder="https://play.google.com/store/...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notes de version (optionnel)</label>
+          <textarea
+            class="form-control"
+            formControlName="releaseNotes"
+            rows="3"
+            placeholder="Nouvelles fonctionnalités, corrections..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" [disabled]="versionSaving()">
+          <span class="spinner" *ngIf="versionSaving()"></span>
+          <ng-container *ngIf="!versionSaving()">
+            <i class="fas fa-floppy-disk"></i> Enregistrer la nouvelle version
+          </ng-container>
+        </button>
+      </form>
+    </div>
+
+    <!-- ══ ENVOI NOTIFICATION ════════════════════════════════════════════ -->
+    <div class="vm-card">
+      <div class="vm-card-header">
+        <i class="fas fa-bell"></i>
+        <h3>Notifier les utilisateurs obsolètes</h3>
+      </div>
+
+      <!-- Résultat succès -->
+      <div class="vm-notif-result" *ngIf="notifResult()">
+        <div class="vm-notif-result-icon">
+          <i class="fas fa-circle-check"></i>
+        </div>
+        <div>
+          <strong>Envoi terminé !</strong>
+          <p>
+            <span class="vm-notif-count">{{ notifResult()!.notifiedCount }}</span>
+            notification{{ notifResult()!.notifiedCount > 1 ? 's' : '' }} envoyée{{ notifResult()!.notifiedCount > 1 ? 's' : '' }}
+            avec succès.
+            <span *ngIf="notifResult()!.failedCount > 0" class="vm-notif-failed">
+              ({{ notifResult()!.failedCount }} échec{{ notifResult()!.failedCount > 1 ? 's' : '' }})
+            </span>
+          </p>
+          <p class="vm-notif-zero" *ngIf="notifResult()!.notifiedCount === 0">
+            Aucun utilisateur à notifier - tous sont à jour ou sans token FCM.
+          </p>
+        </div>
+      </div>
+
+      <div class="alert-banner error mb-16" *ngIf="notifError()">
+        <i class="fas fa-circle-exclamation"></i> {{ notifError() }}
+      </div>
+
+      <form [formGroup]="notifForm" (ngSubmit)="sendNotification()">
+
+        <div class="form-group">
+          <label class="form-label">Message personnalisé (optionnel)</label>
+          <textarea
+            class="form-control"
+            formControlName="customMessage"
+            rows="3"
+            placeholder="Laissez vide pour une génération automatique par l'IA..."></textarea>
+          <div class="vm-ai-hint">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            Si vous laissez ce champ vide, <strong>l'IA Google Gemini</strong>
+            générera automatiquement une accroche engageante.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Version cible (optionnel)</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="targetVersion"
+            placeholder="ex: 1.1.0 - laissez vide pour tous les obsolètes">
+          <span class="form-error" *ngIf="hasError(notifForm, 'targetVersion', 'pattern')">
+            Format X.Y.Z requis
+          </span>
+          <p class="vm-hint">
+            <i class="fas fa-circle-info"></i>
+            Tous les utilisateurs avec une version <strong>inférieure</strong>
+            à cette valeur seront notifiés.
+          </p>
+        </div>
+
+        <button type="submit" class="btn btn-danger w-full" [disabled]="notifSending()">
+          <span class="spinner" *ngIf="notifSending()"></span>
+          <ng-container *ngIf="!notifSending()">
+            <i class="fas fa-paper-plane"></i>
+            Envoyer la notification aux utilisateurs obsolètes
+          </ng-container>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>

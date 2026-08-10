@@ -13,11 +13,11 @@
           <div class="ticker-inner">
             <span *ngFor="let p of urgentPosts()" class="ticker-item">
               <i class="fas fa-triangle-exclamation"></i>
-              {{ p.title }} — {{ p.location }}
+              {{ p.title }} - {{ p.location }}
             </span>
             <span *ngFor="let p of urgentPosts()" class="ticker-item" aria-hidden="true">
               <i class="fas fa-triangle-exclamation"></i>
-              {{ p.title }} — {{ p.location }}
+              {{ p.title }} - {{ p.location }}
             </span>
           </div>
         </div>

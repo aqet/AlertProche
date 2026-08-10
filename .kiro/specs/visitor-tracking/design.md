@@ -1,4 +1,4 @@
-# Design Document — Visitor Tracking
+# Design Document - Visitor Tracking
 
 ## Overview
 
@@ -43,7 +43,7 @@ graph TD
 
 ## Components and Interfaces
 
-### Backend — TrackingModule
+### Backend - TrackingModule
 
 **Structure :**
 ```
@@ -60,21 +60,21 @@ src/tracking/
 ```
 
 **Endpoints de collecte** (pas de JWT) :
-- `POST /tracking/session` — Créer/mettre à jour une session
-- `POST /tracking/pageview` — Enregistrer un pageview
-- `POST /tracking/event` — Enregistrer un TrackingEvent
-- `PATCH /tracking/session/:sessionId/end` — Clore une session (envoyé via sendBeacon)
+- `POST /tracking/session` - Créer/mettre à jour une session
+- `POST /tracking/pageview` - Enregistrer un pageview
+- `POST /tracking/event` - Enregistrer un TrackingEvent
+- `PATCH /tracking/session/:sessionId/end` - Clore une session (envoyé via sendBeacon)
 
 **Endpoints analytics** (JWT + Roles Admin) :
-- `GET /tracking/analytics/overview?period=30d` — Métriques globales
-- `GET /tracking/analytics/pages?period=30d` — Top pages
-- `GET /tracking/analytics/geo?period=30d` — Répartition géo
-- `GET /tracking/analytics/devices?period=30d` — Répartition devices
-- `GET /tracking/analytics/sources?period=30d` — Sources de trafic
-- `GET /tracking/analytics/activity?period=30d` — Courbe sessions/pageviews par jour
-- `GET /tracking/analytics/top-posts?period=30d` — Top posts consultés
+- `GET /tracking/analytics/overview?period=30d` - Métriques globales
+- `GET /tracking/analytics/pages?period=30d` - Top pages
+- `GET /tracking/analytics/geo?period=30d` - Répartition géo
+- `GET /tracking/analytics/devices?period=30d` - Répartition devices
+- `GET /tracking/analytics/sources?period=30d` - Sources de trafic
+- `GET /tracking/analytics/activity?period=30d` - Courbe sessions/pageviews par jour
+- `GET /tracking/analytics/top-posts?period=30d` - Top posts consultés
 
-### Frontend — TrackingService
+### Frontend - TrackingService
 
 Service singleton (`providedIn: 'root'`) intégré dans `app.config.ts` via `APP_INITIALIZER`.
 
@@ -86,7 +86,7 @@ Responsabilités :
 - Batcher les pageviews (flush toutes les 10s ou sur changement de route)
 - Exposer `trackEvent(type, metadata?)` pour les feature components
 
-### Frontend — AnalyticsComponent
+### Frontend - AnalyticsComponent
 
 Composant standalone lazy-loadé sur `/admin/analytics`.
 
@@ -222,7 +222,7 @@ export type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system — essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+*A property is a characteristic or behavior that should hold true across all valid executions of a system - essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
 ### Property 1: Normalisation des URLs dynamiques
 
@@ -236,7 +236,7 @@ export type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
 **Validates: Requirements 1.6, 4.5**
 
-### Property 3: Hash IP — format invariant
+### Property 3: Hash IP - format invariant
 
 *For any* adresse IP valide (IPv4 ou IPv6), la fonction de hashage doit produire un string de exactement 16 caractères hexadécimaux minuscules, et deux IPs différentes peuvent produire le même hash mais la même IP produit toujours le même hash.
 
@@ -248,7 +248,7 @@ export type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
 **Validates: Requirements 5.7**
 
-### Property 5: Calcul de durée — invariante positive
+### Property 5: Calcul de durée - invariante positive
 
 *For any* paire de timestamps (entrée, sortie) où sortie >= entrée, la durée calculée en millisecondes doit être un entier >= 0.
 
@@ -256,11 +256,11 @@ export type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
 ### Property 6: Détection du type d'appareil
 
-*For any* largeur d'écran en pixels, la fonction de détection doit retourner exactement `mobile` si < 768, `tablet` si entre 768 et 1024 inclus, `desktop` sinon — sans chevauchement entre les catégories.
+*For any* largeur d'écran en pixels, la fonction de détection doit retourner exactement `mobile` si < 768, `tablet` si entre 768 et 1024 inclus, `desktop` sinon - sans chevauchement entre les catégories.
 
 **Validates: Requirements 4.1**
 
-### Property 7: Invariante PII — documents persistés
+### Property 7: Invariante PII - documents persistés
 
 *For any* document inséré dans `tracking_sessions` ou `tracking_events`, le document ne doit contenir aucun champ `ip`, `email`, ni aucun string correspondant au format d'une adresse IPv4 complète.
 
@@ -271,7 +271,7 @@ export type DeviceType = 'mobile' | 'tablet' | 'desktop';
 ## Error Handling
 
 **Frontend (Tracking_Service) :**
-- Toutes les erreurs réseau sont silencieuses — `try/catch` autour de `sendBeacon`/`fetch`, jamais de propagation vers l'utilisateur.
+- Toutes les erreurs réseau sont silencieuses - `try/catch` autour de `sendBeacon`/`fetch`, jamais de propagation vers l'utilisateur.
 - `localStorage` inaccessible : `try/catch` → mode session-only, `visitorId` en mémoire uniquement pour la session.
 - Pas de retry : fire-and-forget, si le beacon échoue il est abandonné.
 
@@ -311,14 +311,14 @@ La librairie PBT retenue est **[fast-check](https://fast-check.dev/)** (npm), di
 // Tag format: Feature: visitor-tracking, Property N: <titre>
 ```
 
-### Tests unitaires — Backend
+### Tests unitaires - Backend
 
 - `TrackingService.hashIp()` : vérifier format 16 chars pour des IPs connues.
 - `TrackingService.resolveGeo()` : mocker `geoip-lite`, tester le fallback Unknown.
 - `TrackingService.extractSourceFromForwardedFor()` : tester avec/sans header.
 - `TrackingController` : vérifier retour 202 immédiat et non-attente de la persistance.
 
-### Tests unitaires — Frontend
+### Tests unitaires - Frontend
 
 - `TrackingService.normalizeUrl()` : URLs avec/sans ObjectId, URLs imbriquées.
 - `TrackingService.detectDevice()` : largeurs limites (767, 768, 1024, 1025).

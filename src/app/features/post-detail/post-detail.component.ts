@@ -119,11 +119,11 @@ export class PostDetailComponent implements OnInit, OnDestroy {
 
   private updateMetaTags(post: Post): void {
     const url = window.location.href;
-    const description = `${post.type} — ${post.location} | ${post.content.slice(0, 160)}`;
+    const description = `${post.type} - ${post.location} | ${post.content.slice(0, 160)}`;
     const image =
       (post as any).image_url || 'https://alert-proche.vercel.app/favicon.ico';
 
-    this.titleService.setTitle(`${post.title} — AlertProche`);
+    this.titleService.setTitle(`${post.title} - AlertProche`);
 
     // Open Graph (Facebook, WhatsApp, Telegram, LinkedIn)
     this.meta.updateTag({ property: 'og:title', content: post.title });
@@ -253,7 +253,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
       : window.location.href;
 
     const text = p
-      ? `🚨 ${p.type} — ${p.title}\n📍 ${p.location}`
+      ? `🚨 ${p.type} - ${p.title}\n📍 ${p.location}`
       : 'Alerte via AlertProche';
 
     if (navigator.share) {

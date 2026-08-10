@@ -2,7 +2,7 @@
 
   <div class="auth-wrapper">
 
-    <!-- Panneau gauche — branding -->
+    <!-- Panneau gauche - branding -->
     <div class="auth-brand">
       <div class="brand-logo">
         <img src="logo_alertProche.png" alt="AlertProche" class="brand-img">
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <!-- Panneau droit — formulaire -->
+    <!-- Panneau droit - formulaire -->
     <div class="auth-form-panel">
 
       <!-- Tabs connexion / inscription -->
@@ -154,7 +154,7 @@
           </p>
         </form>
 
-        <!-- Étape 2 — OTP -->
+        <!-- Étape 2 - OTP -->
         <form *ngIf="registerStep() === 'otp'" [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="auth-form">
           <div class="otp-box">
             <i class="fas fa-envelope-open-text otp-icon"></i>
@@ -184,7 +184,7 @@
           </div>
         </form>
 
-        <!-- Étape 3 — Mot de passe -->
+        <!-- Étape 3 - Mot de passe -->
         <form *ngIf="registerStep() === 'password'" [formGroup]="passwordForm" (ngSubmit)="onRegister()" class="auth-form">
           <div class="otp-box otp-box-success">
             <i class="fas fa-circle-check otp-icon"></i>

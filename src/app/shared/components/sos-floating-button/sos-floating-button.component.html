@@ -1,4 +1,4 @@
-<!-- ══ ÉCRAN ROUGE PLEIN — Décompte avant envoi ══════════════════════ -->
+<!-- ══ ÉCRAN ROUGE PLEIN - Décompte avant envoi ══════════════════════ -->
 <div class="sos-fullscreen-overlay" *ngIf="state() === 'confirming'">
   <div class="sos-countdown-content">
 
@@ -7,7 +7,7 @@
 
     <button class="sos-cancel-mega-btn" (click)="onCancelConfirm()">
       <i class="fas fa-xmark"></i>
-      ANNULER — FAUSSE ALERTE
+      ANNULER - FAUSSE ALERTE
     </button>
 
     <p class="sos-countdown-hint">
@@ -72,7 +72,7 @@
     (pointerup)="onPointerUp()"
     (pointerleave)="onPointerUp()"
     (contextmenu)="$event.preventDefault()"
-    aria-label="Bouton SOS d'urgence — Maintenez 3 secondes">
+    aria-label="Bouton SOS d'urgence - Maintenez 3 secondes">
 
     <i class="fas fa-shield-halved sos-icon"></i>
     <span class="sos-label">SOS</span>

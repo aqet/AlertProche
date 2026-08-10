@@ -200,7 +200,7 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
             }
           });
         },
-        error: () => { /* silence — ne pas interrompre le SOS si erreur réseau */ },
+        error: () => { /* silence - ne pas interrompre le SOS si erreur réseau */ },
       });
     }, 5_000);
   }

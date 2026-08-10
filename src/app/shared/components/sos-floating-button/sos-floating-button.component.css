@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════
-   SOS FLOATING BUTTON — AlertProche
+   SOS FLOATING BUTTON - AlertProche
    Positionnement : Bas-Gauche, au-dessus de tout
    ═══════════════════════════════════════════════════ */
 
@@ -82,7 +82,7 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   ÉCRAN ROUGE PLEIN — Décompte avant envoi
+   ÉCRAN ROUGE PLEIN - Décompte avant envoi
    ═══════════════════════════════════════════════════ */
 .sos-fullscreen-overlay {
   position: fixed;

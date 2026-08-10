@@ -10,7 +10,7 @@
       <!-- <span class="logo-name">Alert<span class="logo-accent">Proche</span></span> -->
     </a>
 
-    <!-- Nav Links — desktop -->
+    <!-- Nav Links - desktop -->
     <ul class="nav-links">
       <li>
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">
@@ -44,7 +44,7 @@
       </li>
     </ul>
 
-    <!-- Actions — desktop -->
+    <!-- Actions - desktop -->
     <div class="nav-actions">
       <button class="theme-btn" (click)="theme.toggleTheme()" [title]="isDark() ? 'Mode clair' : 'Mode sombre'">
         <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
@@ -109,7 +109,7 @@
   </div>
 </nav>
 
-<!-- ══ BOTTOM NAV — Mobile uniquement ══════════════════════════ -->
+<!-- ══ BOTTOM NAV - Mobile uniquement ══════════════════════════ -->
 <nav  *ngIf="IsMobile" class="bottom-nav">
   <div class="bottom-nav-inner">
 
@@ -130,7 +130,7 @@
       <span>Avis</span>
     </a>
 
-    <!-- Publier — bouton central vert -->
+    <!-- Publier - bouton central vert -->
     <a routerLink="/posts/new" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="isAuth()">
       <i class="fas fa-plus"></i>
       <span>Publier</span>
