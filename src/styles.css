@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   ALERTPROCHE — Design System v3  |  Vert & Blanc  |  Flat UI
+   ALERTPROCHE - Design System v3  |  Vert & Blanc  |  Flat UI
    Logo : bouclier vert #1A9E2A / titre foncé #1B5E20
    ═══════════════════════════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
@@ -224,7 +224,7 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1;
 }
 
-/* Bouton principal — vert plein */
+/* Bouton principal - vert plein */
 .btn-primary {
   background: var(--green);
   color: #fff;
@@ -232,7 +232,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .btn-primary:hover { background: var(--green-hover); color: #fff; }
 
-/* Bouton danger — urgences */
+/* Bouton danger - urgences */
 .btn-danger {
   background: var(--urgent);
   color: #fff;

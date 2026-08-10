@@ -9,7 +9,7 @@
           <h1 class="admin-title">Panneau d'Administration</h1>
           <p class="admin-subtitle">
             Connecté en tant que
-            <span class="admin-role-chip"><i class="fas fa-crown"></i> {{ currentUser()?.pseudo }} — Admin</span>
+            <span class="admin-role-chip"><i class="fas fa-crown"></i> {{ currentUser()?.pseudo }} - Admin</span>
           </p>
         </div>
       </div>
@@ -80,6 +80,9 @@
       <button class="admin-tab" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
         <i class="fas fa-file-lines"></i> <p>Publications
         <span class="tab-count" *ngIf="postsTotal() > 0">{{ postsTotal() }}</span>
+      </button>
+      <button class="admin-tab" [class.active]="activeTab() === 'versions'" (click)="setTab('versions')">
+        <i class="fas fa-mobile-screen-button"></i> <p>Versions App</p>
       </button>
     </div>
 
@@ -226,7 +229,7 @@
 
           <!-- Activité 30 jours -->
           <div class="stats-card stats-card-wide">
-            <h3 class="stats-card-title"><i class="fas fa-chart-bar"></i> Activité — 30 derniers jours</h3>
+            <h3 class="stats-card-title"><i class="fas fa-chart-bar"></i> Activité - 30 derniers jours</h3>
             <div class="activity-chart" *ngIf="stats()!.activityByDay.length > 0; else noActivity">
               <div class="activity-bars">
                 <div class="activity-bar-wrap" *ngFor="let day of stats()!.activityByDay">
@@ -338,7 +341,7 @@
                     <button class="btn btn-ghost btn-sm" (click)="cancelDeleteUser()">Non</button>
                   </div>
                 </div>
-                <span class="text-muted" *ngIf="user._id === currentUser()?._id" style="font-size:0.75rem">—</span>
+                <span class="text-muted" *ngIf="user._id === currentUser()?._id" style="font-size:0.75rem">-</span>
               </td>
             </tr>
           </tbody>
@@ -474,6 +477,13 @@
           <i class="fas fa-chevron-right"></i>
         </button>
       </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB VERSIONS                                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="activeTab() === 'versions'" class="animate-fade-in">
+      <app-version-management></app-version-management>
     </div>
 
   </div>

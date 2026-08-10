@@ -8,13 +8,13 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
 
 ## Tasks
 
-- [x] 1. Backend — Créer le module tracking de base
+- [x] 1. Backend - Créer le module tracking de base
   - Créer `src/tracking/tracking.module.ts`, `tracking.controller.ts`, `tracking.service.ts`
   - Définir le module NestJS avec imports nécessaires (MongooseModule, ConfigModule)
   - Déclarer les routes de base dans le controller (stubs vides)
   - _Requirements: 5.1, 5.2_
 
-- [x] 2. Backend — Définir les schemas MongoDB
+- [x] 2. Backend - Définir les schemas MongoDB
   - [x] 2.1 Créer schema `tracking-session.schema.ts`
     - Définir les champs selon le design (`sessionId`, `visitorId`, `userId`, `ipHash`, `country`, `city`, `device`, `browser`, `os`, `entryPage`, `exitPage`, `trafficSource`, `isNewVisitor`, `duration`, `startedAt`, `endedAt`)
     - Ajouter TTL index de 90 jours sur `createdAt`
@@ -25,7 +25,7 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Ajouter TTL index de 90 jours sur `createdAt`
     - _Requirements: 5.2, 5.3, 5.4_
 
-- [x] 3. Backend — Créer les DTOs de validation
+- [x] 3. Backend - Créer les DTOs de validation
   - [x] 3.1 Créer `dto/create-session.dto.ts`
     - Définir les champs et decorators `class-validator` selon le design
     - Valider `sessionId` et `visitorId` comme UUID v4 valides
@@ -36,14 +36,14 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Valider `sessionId` et `visitorId` comme UUID v4 valides
     - _Requirements: 3.1-3.6, 5.7_
 
-- [x] 4. Backend — Implémenter les fonctions utilitaires du TrackingService
+- [x] 4. Backend - Implémenter les fonctions utilitaires du TrackingService
   - [x] 4.1 Implémenter `hashIp(ip: string): string`
     - Utiliser `crypto.createHash('sha256')` pour hasher l'IP
     - Tronquer le hash à 16 premiers caractères hexadécimaux
     - _Requirements: 4.3, 5.3_
   
   - [ ]* 4.2 Property test pour hashIp
-    - **Property 3: Hash IP — format invariant**
+    - **Property 3: Hash IP - format invariant**
     - **Validates: Requirements 4.3, 5.3**
     - Générer IPs aléatoires (IPv4 + IPv6) avec `fc.ipV4()` et `fc.ipV6()`
     - Vérifier longueur = 16 et format hexadécimal
@@ -58,7 +58,7 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Sinon retourner `req.ip`
     - _Requirements: 4.6_
 
-- [x] 5. Backend — Implémenter les endpoints de collecte (publics)
+- [x] 5. Backend - Implémenter les endpoints de collecte (publics)
   - [x] 5.1 Implémenter `POST /tracking/session`
     - Retourner `202 Accepted` immédiatement
     - Extraire l'IP (via `extractSourceFromForwardedFor`)
@@ -86,12 +86,12 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - _Requirements: 1.7_
   
   - [ ]* 5.5 Property test pour validation invariante PII
-    - **Property 7: Invariante PII — documents persistés**
+    - **Property 7: Invariante PII - documents persistés**
     - **Validates: Requirements 4.3, 5.3, 5.4**
     - Générer des objets session/event aléatoires
     - Vérifier qu'aucun champ `ip` n'existe et qu'aucune IP complète n'est présente dans les strings
 
-- [x] 6. Backend — Implémenter les endpoints analytics (JWT + Admin)
+- [x] 6. Backend - Implémenter les endpoints analytics (JWT + Admin)
   - [x] 6.1 Implémenter `GET /tracking/analytics/overview?period=30d`
     - Protéger avec guards JWT + Roles Admin
     - Calculer métriques : total sessions, total pageviews, visiteurs uniques, taux conversion
@@ -132,13 +132,13 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Retourner top 10 posts avec nombre de vues
     - _Requirements: 6.10_
 
-- [x] 7. Checkpoint backend — Vérifier la structure et les tests
+- [x] 7. Checkpoint backend - Vérifier la structure et les tests
   - Vérifier que tous les endpoints répondent correctement
   - Vérifier que les property tests passent
   - Vérifier que les indexes TTL sont bien créés dans MongoDB
   - Demander au user si des questions surviennent
 
-- [x] 8. Frontend — Créer les modèles et interfaces TypeScript
+- [x] 8. Frontend - Créer les modèles et interfaces TypeScript
   - [x] 8.1 Créer `src/app/core/models/tracking.models.ts`
     - Définir `TrackingSessionPayload`, `PageviewPayload`, `TrackingEventPayload`
     - Définir types `TrafficSource`, `TrackingEventType`, `DeviceType`
@@ -149,7 +149,7 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Créer type union `AnalyticsTab` pour les onglets
     - _Requirements: 6.3-6.10_
 
-- [x] 9. Frontend — Implémenter le TrackingService
+- [x] 9. Frontend - Implémenter le TrackingService
   - [x] 9.1 Créer `src/app/core/services/tracking.service.ts`
     - Déclarer service singleton avec `providedIn: 'root'`
     - Définir propriétés privées : `visitorId`, `sessionId`, `currentPageEntry`, `pageviewBatch`
@@ -220,20 +220,20 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Appeler sur événements `beforeunload` et `visibilitychange`
     - _Requirements: 1.7, 7.1_
 
-- [x] 10. Frontend — Intégrer le TrackingService dans app.config.ts
+- [x] 10. Frontend - Intégrer le TrackingService dans app.config.ts
   - [x] 10.1 Ajouter TrackingService dans APP_INITIALIZER
     - Appeler `initSession()` au démarrage de l'application
     - Configurer l'écoute des événements Router
     - _Requirements: 1.3, 2.1_
 
-- [x] 11. Frontend — Créer le service AnalyticsService
+- [x] 11. Frontend - Créer le service AnalyticsService
   - [x] 11.1 Créer `src/app/core/services/analytics.service.ts`
     - Définir méthodes pour appeler les endpoints analytics (GET /tracking/analytics/*)
     - Gérer les filtres de période (7d, 30d, 90d)
     - Retourner des Observables typés
     - _Requirements: 6.1, 6.11_
 
-- [ ] 12. Frontend — Créer le composant AnalyticsComponent
+- [ ] 12. Frontend - Créer le composant AnalyticsComponent
   - [x] 12.1 Créer composant standalone `admin/analytics/analytics.component.ts`
     - Déclarer signals : `period`, `overview`, `loading`, `activeTab`
     - Injecter `AnalyticsService`
@@ -280,13 +280,13 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Ne pas bloquer l'affichage du reste de la page
     - _Requirements: 6.12_
 
-- [x] 13. Frontend — Configurer la route `/admin/analytics`
+- [x] 13. Frontend - Configurer la route `/admin/analytics`
   - [x] 13.1 Ajouter route lazy-loaded dans app.routes.ts
     - Route `/admin/analytics` pointant vers `AnalyticsComponent`
     - Protéger avec `adminGuard`
     - _Requirements: 6.1, 6.2_
 
-- [x] 14. Intégration — Connecter tracking aux actions clés
+- [x] 14. Intégration - Connecter tracking aux actions clés
   - [x] 14.1 Ajouter tracking dans PostsComponent (création de post)
     - Appeler `trackingService.trackEvent('post_created')` après succès
     - _Requirements: 3.1_
@@ -311,14 +311,14 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Appeler `trackingService.trackEvent('user_registered')` après réception JWT (étape 3)
     - _Requirements: 3.6_
 
-- [x] 15. Conformité — Mettre à jour la page de confidentialité
+- [x] 15. Conformité - Mettre à jour la page de confidentialité
   - [x] 15.1 Modifier `src/app/features/privacy/privacy.component.html`
     - Ajouter section expliquant le tracking anonymisé
     - Mentionner IP hashée, pas d'IP en clair, TTL 90 jours
     - Indiquer finalité : amélioration UX et sécurité
     - _Requirements: 8.1-8.4_
 
-- [x] 16. Checkpoint final — Tests et validation complète
+- [x] 16. Checkpoint final - Tests et validation complète
   - Vérifier que tous les property tests passent (backend + frontend)
   - Tester un parcours complet : visite anonyme → inscription → navigation → analytics admin
   - Vérifier que les données apparaissent correctement dans MongoDB
@@ -358,13 +358,13 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
 }
 ```
 
-- **Wave 1** — Module NestJS de base
-- **Wave 2** — Schemas MongoDB + DTOs (peuvent se faire en parallèle)
-- **Wave 3** — Fonctions utilitaires du service (hashIp, resolveGeo, extractIp)
-- **Wave 4** — Endpoints collecte + analytics (peuvent se faire en parallèle)
-- **Wave 5** — Checkpoint backend : validation complète avant de passer au frontend
-- **Wave 6** — Modèles et interfaces Angular
-- **Wave 7** — TrackingService + AnalyticsService (peuvent se faire en parallèle)
-- **Wave 8** — Intégration APP_INITIALIZER + AnalyticsComponent + Route `/admin/analytics`
-- **Wave 9** — Connexion aux actions clés + mise à jour page confidentialité
-- **Wave 10** — Checkpoint final end-to-end
+- **Wave 1** - Module NestJS de base
+- **Wave 2** - Schemas MongoDB + DTOs (peuvent se faire en parallèle)
+- **Wave 3** - Fonctions utilitaires du service (hashIp, resolveGeo, extractIp)
+- **Wave 4** - Endpoints collecte + analytics (peuvent se faire en parallèle)
+- **Wave 5** - Checkpoint backend : validation complète avant de passer au frontend
+- **Wave 6** - Modèles et interfaces Angular
+- **Wave 7** - TrackingService + AnalyticsService (peuvent se faire en parallèle)
+- **Wave 8** - Intégration APP_INITIALIZER + AnalyticsComponent + Route `/admin/analytics`
+- **Wave 9** - Connexion aux actions clés + mise à jour page confidentialité
+- **Wave 10** - Checkpoint final end-to-end

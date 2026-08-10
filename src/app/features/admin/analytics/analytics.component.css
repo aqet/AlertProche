@@ -247,7 +247,7 @@
   flex-shrink: 0;
 }
 
-/* ── ngx-charts — thème global ───────────────────────────────────── */
+/* ── ngx-charts - thème global ───────────────────────────────────── */
 ::ng-deep .ngx-charts text {
   fill: var(--color-text-secondary) !important;
   font-family: var(--font-primary) !important;

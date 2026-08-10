@@ -9,7 +9,7 @@ export interface ModerationResult {
 @Injectable({ providedIn: 'root' })
 export class ModerationService {
 
-  // Dictionnaire lexical — termes interdits (insultes, haine, violence)
+  // Dictionnaire lexical - termes interdits (insultes, haine, violence)
   private readonly BANNED_WORDS = [
     // Insultes françaises
     'idiot', 'imbécile', 'connard', 'salaud', 'ordure', 'bâtard', 'putain',
@@ -24,7 +24,7 @@ export class ModerationService {
     'abruti', 'crétin'
   ];
 
-  // Regex anti-doxxing — numéros de téléphone camerounais et identifiants
+  // Regex anti-doxxing - numéros de téléphone camerounais et identifiants
   // private readonly PHONE_PATTERNS = [
   //   /\b(6[5-9]\d{7})\b/g,           // Mobile Cameroun (65x à 69x, 8 chiffres)
   //   /\b(2[23]\d{7})\b/g,             // Fixe Cameroun
@@ -58,7 +58,7 @@ export class ModerationService {
       }
     }
 
-    // // 2. Filtre anti-doxxing — téléphones
+    // // 2. Filtre anti-doxxing - téléphones
     // for (const pattern of this.PHONE_PATTERNS) {
     //   pattern.lastIndex = 0;
     //   if (pattern.test(text)) {
@@ -70,7 +70,7 @@ export class ModerationService {
     //   }
     // }
 
-    // 3. Filtre anti-doxxing — identifiants officiels
+    // 3. Filtre anti-doxxing - identifiants officiels
     for (const pattern of this.ID_PATTERNS) {
       pattern.lastIndex = 0;
       if (pattern.test(text)) {

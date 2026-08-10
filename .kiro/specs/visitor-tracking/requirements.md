@@ -96,7 +96,7 @@ Ce module ajoute un système de tracking complet pour la plateforme AlertProche 
 1. THE Analytics_API SHALL stocker les sessions dans une collection MongoDB `tracking_sessions` avec un index TTL de 90 jours sur le champ `createdAt`.
 2. THE Analytics_API SHALL stocker les événements de tracking dans une collection MongoDB `tracking_events` avec un index TTL de 90 jours sur le champ `createdAt`.
 3. THE Analytics_API SHALL ne jamais stocker d'adresse IP complète dans aucune collection MongoDB.
-4. THE Analytics_API SHALL ne jamais stocker d'informations personnelles identifiables directes (nom, email) dans les collections de tracking — uniquement le `userId` sous forme de référence ObjectId optionnelle.
+4. THE Analytics_API SHALL ne jamais stocker d'informations personnelles identifiables directes (nom, email) dans les collections de tracking - uniquement le `userId` sous forme de référence ObjectId optionnelle.
 5. WHEN un utilisateur est supprimé de la plateforme, THE Analytics_API SHALL conserver les données de tracking associées en anonymisant uniquement le champ `userId` (mis à `null`), préservant ainsi les statistiques agrégées.
 6. THE Analytics_API SHALL accepter les événements de tracking depuis des sessions non authentifiées (pas de JWT requis pour les endpoints de collecte).
 7. THE Analytics_API SHALL valider que le `sessionId` est bien un UUID v4 valide avant de persister tout événement.
@@ -135,7 +135,7 @@ Ce module ajoute un système de tracking complet pour la plateforme AlertProche 
 2. THE Tracking_Service SHALL regrouper les `pageview` events en batch et les envoyer toutes les 10 secondes maximum, ou immédiatement lors d'un changement de route.
 3. THE Analytics_API SHALL répondre aux requêtes de collecte d'événements avec un statut HTTP `202 Accepted` en moins de 100ms, sans attendre la fin de la persistance MongoDB.
 4. THE Analytics_API SHALL persister les données de tracking de manière asynchrone (non bloquante pour la réponse HTTP) en utilisant des opérations MongoDB `insertOne` sans await sur la réponse finale.
-5. THE Tracking_Service SHALL ne pas ajouter de dépendance externe au bundle Angular principal — les librairies de tracking doivent être chargées dans des chunks séparés si nécessaire.
+5. THE Tracking_Service SHALL ne pas ajouter de dépendance externe au bundle Angular principal - les librairies de tracking doivent être chargées dans des chunks séparés si nécessaire.
 
 ---
 

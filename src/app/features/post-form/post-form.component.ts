@@ -55,7 +55,7 @@ export class PostFormComponent implements OnInit {
   ];
 
   postTypeDescriptions: Record<string, string> = {
-    Disparition: 'Personne disparue — enfant, adulte, personne âgée',
+    Disparition: 'Personne disparue - enfant, adulte, personne âgée',
     Abus: 'Maltraitance, exploitation, violence sur mineur ou personne vulnérable',
     Prevention: 'Sensibilisation, guide, information utile à la communauté',
     "Appel à l'aide":

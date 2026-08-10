@@ -77,7 +77,7 @@ export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
     domain: ['#e53935', '#1976d2', '#fb8c00', '#8e24aa', '#00897b']
   };
 
-  // Ticks X adaptatifs — moins de labels sur petit écran pour éviter l'entassement
+  // Ticks X adaptatifs - moins de labels sur petit écran pour éviter l'entassement
   xTicks = signal<string[]>([]);
 
   ngOnInit(): void {

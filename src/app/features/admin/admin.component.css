@@ -69,25 +69,39 @@
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 6px;
+  padding: 5px;
   margin-bottom: 24px;
-  width: fit-content;
+  width: 100%;           /* pleine largeur au lieu de fit-content */
+  overflow-x: auto;      /* scroll horizontal si vraiment trop serré */
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
 }
 
 .admin-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
   border-radius: var(--radius-md);
   background: transparent;
   border: none;
   color: var(--color-text-secondary);
   font-family: var(--font-primary);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-normal);
+  white-space: nowrap;
+  flex: 1;               /* chaque onglet prend la même largeur */
+  min-width: 0;          /* empêche le débordement */
+}
+
+/* Sur mobile : icône seule si l'écran est très petit */
+.admin-tab p {
+  display: inline;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -720,7 +734,6 @@
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .stats-grid { grid-template-columns: 1fr; }
   .stats-card-wide { grid-column: 1; }
-  /* .admin-tabs { width: 100%; overflow-x: auto; } */
 }
 
 @media (max-width:470px) {
@@ -843,3 +856,30 @@
 .notif-test-stat.ok   { color: var(--green);   background: var(--green-dim);   }
 .notif-test-stat.warn { color: var(--warning);  background: var(--warning-dim);  }
 .notif-test-stat.err  { color: var(--urgent);   background: var(--urgent-dim);   }
+
+/* ── Responsive tabs — petits écrans ───────────────────────────────────── */
+
+/* Tablette étroite : texte plus court, icône visible */
+@media (max-width: 640px) {
+  .admin-tabs {
+    padding: 4px;
+    gap: 2px;
+  }
+
+  .admin-tab {
+    padding: 8px 6px;
+    font-size: 0.7rem;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .admin-tab i { font-size: 1rem; }
+
+  /* Cache le texte sur très petit écran si icône suffit */
+  .admin-tab p { display: none; }
+}
+
+/* Très petit écran : uniquement les icônes */
+@media (max-width: 400px) {
+  .admin-tab { padding: 8px 4px; }
+}

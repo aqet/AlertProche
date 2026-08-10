@@ -65,7 +65,7 @@ export class NotificationService {
       (notification) => {
         const data = notification.data || {};
         console.log('Notification reçue foreground :', data.type);
-        // Le floating button gère lui-même le polling — pas d'action UI supplémentaire ici
+        // Le floating button gère lui-même le polling - pas d'action UI supplémentaire ici
       },
     );
 

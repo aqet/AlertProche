@@ -60,7 +60,7 @@
   letter-spacing: 0.4px;
 }
 
-/* Sous-onglets — réutilisés depuis le dashboard */
+/* Sous-onglets - réutilisés depuis le dashboard */
 .history-tabs {
   display: flex;
   gap: 4px;
@@ -115,7 +115,7 @@
 /* Liste */
 .history-list { display: flex; flex-direction: column; gap: 12px; }
 
-/* Item — même style que dans le dashboard */
+/* Item - même style que dans le dashboard */
 .history-item {
   display: flex;
   background: var(--bg-card);

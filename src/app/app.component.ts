@@ -2,19 +2,22 @@ import { Component, inject, OnInit, NgZone } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { SosFloatingButtonComponent } from './shared/components/sos-floating-button/sos-floating-button.component';
+import { UpdateModalComponent } from './shared/components/update-modal/update-modal.component';
 import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import { NotificationService } from './core/services/notification.service';
+import { AppInitService } from './core/services/app-init.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent],
+  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent, UpdateModalComponent],
   template: `
     <app-navbar></app-navbar>
     <router-outlet></router-outlet>
     <app-sos-floating-button></app-sos-floating-button>
+    <app-update-modal></app-update-modal>
     <footer class="app-footer">
       <div class="footer-inner">
         <div class="footer-brand">
@@ -31,7 +34,7 @@ import { NotificationService } from './core/services/notification.service';
           <a routerLink="/auth">Connexion</a>
         </nav>
         <p class="footer-copy">
-          © 2026 AlertProche — TNIC — Tous droits réservés.
+          © 2026 AlertProche - TNIC - Tous droits réservés.
         </p>
       </div>
     </footer>
@@ -98,29 +101,40 @@ export class AppComponent implements OnInit {
 
   constructor(private notificationService: NotificationService,){}
 
-  private router = inject(Router);
-  private zone = inject(NgZone)
+  private router     = inject(Router);
+  private zone       = inject(NgZone);
+  private appInit    = inject(AppInitService);
 
   ngOnInit() {
-    this.initDeepLinking(),
+    this.initDeepLinking();
     this.notificationService.initialiserPush();
-    // this.notificationService.setupNotificationChannel()
+    this.appInit.initializeApp();
   }
 
   initDeepLinking() {
-    // Exécuter uniquement si on est sur mobile
     if (!Capacitor.isNativePlatform()) return;
 
-    // Écouter le clic sur un lien externe
     App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
       this.zone.run(() => {
-        // Ex: event.url = "https://ton-site.com/post/65d123456789"
-        const url = new URL(event.url);
-        const path = url.pathname; // Contient "/post/65d123456789"
+        try {
+          const rawUrl = event.url;
+          let path: string | null = null;
 
-        if (path) {
-          // Naviguer dynamiquement dans l'application Angular
-          this.router.navigateByUrl(path);
+          // Schéma custom : alertproche://posts/123  →  /posts/123
+          if (rawUrl.startsWith('alertproche://')) {
+            path = rawUrl.replace('alertproche:/', '') || '/';
+          }
+          // Schéma HTTPS : https://alert-proche.vercel.app/posts/123  →  /posts/123
+          else if (rawUrl.startsWith('http')) {
+            const url = new URL(rawUrl);
+            path = url.pathname + url.search;
+          }
+
+          if (path && path !== '/') {
+            this.router.navigateByUrl(path);
+          }
+        } catch (e) {
+          console.warn('Deep link parsing error:', e);
         }
       });
     });

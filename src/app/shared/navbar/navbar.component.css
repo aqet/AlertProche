@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════
-   NAVBAR — AlertProche Design System Vert/Blanc
+   NAVBAR - AlertProche Design System Vert/Blanc
    ═══════════════════════════════════════════════ */
 
 .navbar {
@@ -161,7 +161,7 @@
   border-color: var(--green);
 }
 
-/* Bouton Publier — vert vif */
+/* Bouton Publier - vert vif */
 .btn-publish {
   display: inline-flex;
   align-items: center;
@@ -337,7 +337,7 @@
 }
 
 /* ═══════════════════════════════════════════════
-   BOTTOM NAV — Mobile uniquement (≤ 1000px)
+   BOTTOM NAV - Mobile uniquement (≤ 1000px)
    Barre d'onglets fixe en bas de l'écran
    ═══════════════════════════════════════════════ */
 .bottom-nav {
@@ -390,7 +390,7 @@
   color: var(--green);
 }
 
-/* Indicateur actif — petit point vert */
+/* Indicateur actif - petit point vert */
 .bn-item.active::before {
   content: '';
   position: absolute;
@@ -400,7 +400,7 @@
   background: var(--green);
 }
 
-/* Bouton Publier central — gros bouton vert */
+/* Bouton Publier central - gros bouton vert */
 .bn-item.bn-publish {
   position: relative;
 }

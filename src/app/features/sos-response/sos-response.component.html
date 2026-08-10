@@ -42,7 +42,7 @@
           </p>
           <p class="sos-resp-elapsed" *ngIf="isResolved && s.resolvedAt">
             Clôturée le {{ s.resolvedAt | date:'dd/MM/yyyy à HH:mm' }}
-            <span *ngIf="s.resolvedReason"> — {{ s.resolvedReason }}</span>
+            <span *ngIf="s.resolvedReason"> - {{ s.resolvedReason }}</span>
           </p>
         </div>
       </div>
@@ -141,7 +141,7 @@
       <!-- ── COLONNE DROITE : Actions + Personnes en route ────────────── -->
       <div class="sos-resp-right">
 
-        <!-- ACTIONS — uniquement si SOS actif et pas l'émetteur -->
+        <!-- ACTIONS - uniquement si SOS actif et pas l'émetteur -->
         <div class="sos-resp-card sos-actions-card" *ngIf="!isResolved && !s.isOwner">
           <div class="sos-resp-card-title">
             <i class="fas fa-hand-holding-heart"></i> Votre réponse
@@ -166,7 +166,7 @@
               <span class="spinner" *ngIf="confirming()"></span>
               <ng-container *ngIf="!confirming()">
                 <i class="fas fa-person-running"></i>
-                J'arrive — Je vais aider
+                J'arrive - Je vais aider
               </ng-container>
             </button>
           </div>
@@ -190,7 +190,7 @@
           </div>
         </div>
 
-        <!-- ACTIONS — émetteur qui voit sa propre page SOS -->
+        <!-- ACTIONS - émetteur qui voit sa propre page SOS -->
         <div class="sos-resp-card sos-actions-card" *ngIf="!isResolved && s.isOwner">
           <div class="sos-resp-card-title">
             <i class="fas fa-shield-halved"></i> Votre alerte
