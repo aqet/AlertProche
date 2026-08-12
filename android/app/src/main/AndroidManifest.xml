@@ -25,8 +25,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Domaine principal du frontend -->
-                <data android:scheme="https" android:host="alert-proche.vercel.app" />
-                <data android:scheme="http"  android:host="alert-proche.vercel.app" />
+                <data android:scheme="https" android:host="alertproche.com" />
+                <data android:scheme="http"  android:host="alertproche.com" />
+
+                <data android:scheme="https" android:host="alert-proche-api.vercel.app/" />
+                <data android:scheme="http"  android:host="alert-proche-api.vercel.app/" />
             </intent-filter>
 
             <!-- ══ Custom URL Scheme (fonctionne SANS assetlinks.json) ════════ -->
