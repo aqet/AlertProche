@@ -124,7 +124,7 @@ export class AppComponent implements OnInit {
           if (rawUrl.startsWith('alertproche://')) {
             path = rawUrl.replace('alertproche:/', '') || '/';
           }
-          // Schéma HTTPS : https://alert-proche.vercel.app/posts/123  →  /posts/123
+          // Schéma HTTPS : https://alertproche.com/posts/123  →  /posts/123
           else if (rawUrl.startsWith('http')) {
             const url = new URL(rawUrl);
             path = url.pathname + url.search;
