@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   error = signal('');
   appDownloadCount = signal(0);
   appDownloadLoading = signal(false);
+  showApkModal = signal(false);
 
   findSimilar = signal<any>(null);
 
@@ -301,15 +302,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onAppDownloadClick(): void {
-    if (this.appDownloadLoading()) return;
-    this.appDownloadLoading.set(true);
-    this.http.post<{ count: number }>(`${this.API}/app-download`, {}).subscribe({
-      next: (res) => {
-        this.appDownloadCount.set(res.count ?? 0);
-        this.appDownloadLoading.set(false);
-      },
-      error: () => this.appDownloadLoading.set(false),
-    });
+    this.showApkModal.set(true);
+  }
+
+  closeApkModal(): void {
+    this.showApkModal.set(false);
   }
 
   onImageSearchUpload(event: Event) {
