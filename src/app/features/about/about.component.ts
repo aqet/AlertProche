@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -12,5 +12,16 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class AboutComponent {
   isAuth = computed(() => this.auth.isAuthenticated());
+  showApkModal = signal(false);
+
   constructor(public auth: AuthService) {}
+
+  openApkModal(event: Event): void {
+    event.preventDefault();
+    this.showApkModal.set(true);
+  }
+
+  closeApkModal(): void {
+    this.showApkModal.set(false);
+  }
 }

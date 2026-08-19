@@ -48,9 +48,9 @@
             <a href="#flux" class="btn-hero-secondary">
               <i class="fas fa-arrow-down"></i> Voir les alertes
             </a>
-            <a href="#Download" class="app-dl-btn" >
+            <button class="app-dl-btn" (click)="onAppDownloadClick()">
                 <i class="fab fa-android"></i> Télécharger APK
-            </a>
+            </button>
           </div>
         </div>
 
@@ -266,14 +266,32 @@
             </div>
           </div>
         </div>
-        <a href="alertProche.apk" class="app-dl-btn" (click)="onAppDownloadClick()">
-          <span class="spinner" *ngIf="appDownloadLoading()"></span>
-          <ng-container *ngIf="!appDownloadLoading()">
-            <i class="fab fa-android"></i> Télécharger APK
-          </ng-container>
-        </a>
+        <button class="app-dl-btn" (click)="onAppDownloadClick()">
+          <i class="fab fa-android"></i> Télécharger APK
+        </button>
       </div>
     </div>
   </section>
 
+</div>
+
+<!-- ══ MODAL APK BIENTÔT DISPONIBLE ════════════════════════════ -->
+<div class="apk-modal-overlay" *ngIf="showApkModal()" (click)="closeApkModal()">
+  <div class="apk-modal" (click)="$event.stopPropagation()">
+    <button class="apk-modal-close" (click)="closeApkModal()">
+      <i class="fas fa-xmark"></i>
+    </button>
+    <div class="apk-modal-icon">
+      <i class="fab fa-android"></i>
+    </div>
+    <h3>Bientôt disponible</h3>
+    <p>L'application Android AlertProche est en cours de finalisation. Elle sera disponible très prochainement en téléchargement gratuit sur ce site.</p>
+    <div class="apk-modal-hint">
+      <i class="fas fa-bell"></i>
+      Revenez bientôt sur <strong>alertproche.com</strong>
+    </div>
+    <button class="btn btn-primary" (click)="closeApkModal()">
+      <i class="fas fa-check"></i> Compris
+    </button>
+  </div>
 </div>

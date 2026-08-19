@@ -605,3 +605,103 @@
   .hero-actions { flex-direction: column; }
   .app-card     { flex-direction: column; align-items: flex-start; }
 }
+
+/* ── Modal APK ───────────────────────────────────────────────── */
+.apk-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: overlay-in 0.2s ease;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.apk-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  position: relative;
+  animation: modal-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.88) translateY(16px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+.apk-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px; height: 30px;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text-sub);
+  font-size: 0.85rem;
+  transition: background var(--transition), color var(--transition);
+}
+.apk-modal-close:hover { background: var(--urgent-dim); color: var(--urgent); }
+
+.apk-modal-icon {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #3ddc84 0%, #0d9e4e 100%);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  color: #fff;
+}
+
+.apk-modal h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.apk-modal p {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.apk-modal-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  color: var(--green);
+  width: 100%;
+  justify-content: center;
+}
+.apk-modal-hint i { flex-shrink: 0; }
+.apk-modal-hint strong { color: var(--green); }
+
+.apk-modal .btn {
+  width: 100%;
+  justify-content: center;
+}

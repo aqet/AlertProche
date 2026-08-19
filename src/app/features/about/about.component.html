@@ -1,7 +1,7 @@
 <div class="about-page page-wrapper">
   <div class="container">
 
-    <!-- ── En-tête ─────────────────────────────────────────── -->
+    <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
     <header class="about-header">
       <a routerLink="/" class="back-link"><i class="fas fa-arrow-left"></i> Retour</a>
       <div class="about-hero-card">
@@ -10,138 +10,427 @@
         </div>
         <div class="about-hero-text">
           <div class="about-badge"><i class="fas fa-circle-info"></i> À propos</div>
-          <h1>AlertProche - Protéger les personnes vulnérables,<br><span class="text-accent">c'est l'affaire de tous.</span></h1>
-          <p>Une plateforme citoyenne, sécurisée et indépendante, dédiée à la protection des mineurs et des personnes vulnérables au Cameroun.</p>
+          <h1>AlertProche<br><span class="text-accent">Protéger les personnes vulnérables, c'est l'affaire de
+              tous.</span></h1>
+          <p>Plateforme citoyenne, sécurisée et indépendante, dédiée à la protection des mineurs et des personnes
+            vulnérables au Cameroun. Gratuite, accessible à tous, disponible sur web et Android.</p>
+          <div class="hero-pills">
+            <span class="hero-pill"><i class="fas fa-globe"></i> Cameroun</span>
+            <span class="hero-pill"><i class="fas fa-mobile-screen"></i> Web + Android</span>
+            <span class="hero-pill"><i class="fas fa-lock"></i> 100% gratuit</span>
+            <span class="hero-pill"><i class="fas fa-shield-halved"></i> Anonymat garanti</span>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- ── Mission ──────────────────────────────────────────── -->
+    <!-- ══ MISSION ════════════════════════════════════════════════════════ -->
     <section class="about-section">
       <div class="about-sec-label"><i class="fas fa-bullseye"></i> Notre mission</div>
       <h2 class="about-sec-title">Pourquoi AlertProche existe ?</h2>
       <div class="mission-layout">
         <div class="mission-body">
-          <p>Face à la recrudescence préoccupante des cas d'abus, d'exploitations et d'enlèvements de mineurs au Cameroun, AlertProche se positionne comme un espace numérique tiers, citoyen et sécurisé.</p>
-          <p>La plateforme est ouverte à <strong>tous les cas de personnes vulnérables</strong> : enfants disparus, adultes en détresse, personnes hospitalisées dont la famille est introuvable, victimes d'abus ou d'exploitation.</p>
-          <p>Notre objectif est de <strong>libérer la parole</strong>, de <strong>centraliser les alertes légitimes</strong> et de <strong>structurer l'entraide communautaire</strong> - protégée contre le doxxing, la diffamation et le lynchage médiatique.</p>
+          <p>Face à la recrudescence préoccupante des cas d'abus, d'enlèvements et de disparitions de mineurs au
+            Cameroun, AlertProche est né d'un constat simple : <strong>l'information circule trop lentement, et la
+              communauté manque d'un espace structuré pour agir ensemble.</strong></p>
+          <p>Les familles de disparus n'avaient aucun endroit centralisé pour lancer une alerte. Les témoins d'abus
+            n'osaient pas parler par peur des représailles. Les personnes hospitalisées sans famille identifiée
+            restaient invisibles. <strong>AlertProche répond à chacune de ces situations.</strong></p>
+          <p>Notre objectif : <strong>libérer la parole</strong>, <strong>centraliser les alertes légitimes</strong> et
+            <strong>structurer l'entraide communautaire</strong> — protégée contre le doxxing, la diffamation et le
+            lynchage médiatique.</p>
+          <p>La plateforme est ouverte à <strong>tous les cas de personnes vulnérables</strong> : enfants disparus,
+            adultes en détresse, victimes d'abus ou d'exploitation, personnes hospitalisées dont la famille est
+            introuvable.</p>
         </div>
         <div class="mission-pillars">
           <div class="mission-pill"><i class="fas fa-shield-heart"></i> Plateforme 100% citoyenne</div>
           <div class="mission-pill"><i class="fas fa-lock"></i> Anonymat garanti</div>
           <div class="mission-pill"><i class="fas fa-robot"></i> Modération automatique</div>
           <div class="mission-pill"><i class="fas fa-users"></i> Communauté bienveillante</div>
+          <div class="mission-pill"><i class="fas fa-mobile-screen"></i> App Android gratuite (bientot disponible)</div>
+          <div class="mission-pill"><i class="fas fa-map-location-dot"></i> Ciblage géographique</div>
         </div>
       </div>
     </section>
 
-    <!-- ── Ce que vous pouvez faire ──────────────────────────── -->
+    <!-- ══ 4 TYPES DE CAS ════════════════════════════════════════════════ -->
     <section class="about-section">
-      <div class="about-sec-label"><i class="fas fa-layer-group"></i> Ce que vous pouvez faire</div>
-      <h2 class="about-sec-title">Les 5 piliers de la plateforme</h2>
-      <div class="pillars-grid">
-        <div class="pillar-card">
-          <div class="pillar-ico pillar-ico-urgent"><i class="fas fa-triangle-exclamation"></i></div>
-          <h3>Signaler</h3>
-          <p>Publiez un avis de disparition, un témoignage d'abus ou un contenu de prévention. Chaque signalement est modéré automatiquement avant publication.</p>
+      <div class="about-sec-label"><i class="fas fa-triangle-exclamation"></i> Types de signalements</div>
+      <h2 class="about-sec-title">Quels cas peut-on signaler ?</h2>
+      <p class="about-sec-sub">AlertProche accepte 4 catégories de signalements, chacune avec son niveau d'urgence.</p>
+      <div class="cases-grid">
+        <div class="case-card case-disparition">
+          <div class="case-header">
+            <div class="case-ico"><i class="fas fa-triangle-exclamation"></i></div>
+            <span class="case-tag tag-disparition">Priorité maximale</span>
+          </div>
+          <h3>Disparition</h3>
+          <p>Avis de recherche pour un enfant ou un adulte disparu. Signalement avec photo, description physique,
+            dernière localisation connue et circonstances de la disparition.</p>
         </div>
-        <div class="pillar-card">
-          <div class="pillar-ico pillar-ico-accent"><i class="fas fa-magnifying-glass"></i></div>
-          <h3>Rechercher</h3>
-          <p>Consultez le flux des alertes actives, filtrez par ville ou type de cas. Retrouvez rapidement les avis de recherche en cours dans votre région.</p>
+        <div class="case-card case-abus">
+          <div class="case-header">
+            <div class="case-ico"><i class="fas fa-shield-exclamation"></i></div>
+            <span class="case-tag tag-abus">Haute priorité</span>
+          </div>
+          <h3>Abus</h3>
+          <p>Témoignage ou signalement d'abus physique, sexuel ou psychologique sur un mineur ou une personne
+            vulnérable. Modéré avec soin pour protéger la vie privée.</p>
         </div>
-        <div class="pillar-card">
-          <div class="pillar-ico pillar-ico-purple"><i class="fas fa-people-group"></i></div>
-          <h3>Soutenir</h3>
-          <p>Commentez, partagez des informations utiles, apportez un soutien moral ou un conseil juridique. La communauté agit ensemble.</p>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-ico pillar-ico-accent"><i class="fas fa-shield-halved"></i></div>
-          <h3>Protéger</h3>
-          <p>Votre anonymat est garanti. Un système de modération automatique bloque les contenus haineux, le doxxing et les appels à la violence.</p>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-ico pillar-ico-pink"><i class="fas fa-hand-holding-heart"></i></div>
+        <div class="case-card case-appel">
+          <div class="case-header">
+            <div class="case-ico"><i class="fas fa-hand-holding-heart"></i></div>
+            <span class="case-tag tag-appel">Urgence sociale</span>
+          </div>
           <h3>Appel à l'aide</h3>
-          <p>Signalez une personne hospitalisée sans famille identifiée, une personne vulnérable en détresse ou tout cas nécessitant une aide urgente.</p>
+          <p>Personne hospitalisée sans famille identifiée, individu en situation précaire ou en détresse nécessitant
+            une aide urgente. La communauté peut se mobiliser.</p>
+        </div>
+        <div class="case-card case-prevention">
+          <div class="case-header">
+            <div class="case-ico"><i class="fas fa-circle-info"></i></div>
+            <span class="case-tag tag-prevention">Information</span>
+          </div>
+          <h3>Prévention</h3>
+          <p>Partage d'informations préventives : zones à risque, personnes suspectes signalées, conseils de sécurité
+            pour les enfants. Éduquer pour mieux protéger.</p>
         </div>
       </div>
     </section>
 
-    <!-- ── Comment ça marche ─────────────────────────────────── -->
+    <!-- ══ FONCTIONNALITÉS PRINCIPALES ══════════════════════════════════ -->
+    <section class="about-section">
+      <div class="about-sec-label"><i class="fas fa-layer-group"></i> Fonctionnalités</div>
+      <h2 class="about-sec-title">Tout ce que vous pouvez faire</h2>
+      <p class="about-sec-sub">Une plateforme complète pensée pour l'action immédiate et l'entraide durable.</p>
+
+      <div class="features-grid">
+
+        <!-- SOS -->
+        <div class="feature-card feature-card-sos">
+          <div class="feature-card-header">
+            <div class="feature-ico fco-orange"><i class="fas fa-shield-halved"></i></div>
+            <h3>Bouton SOS d'urgence</h3>
+            <span class="feature-badge-new">Exclusif</span>
+          </div>
+          <p>En cas de danger immédiat, déclenchez un SOS. Vos contacts de confiance reçoivent une notification push
+            avec votre <strong>position GPS en temps réel</strong>. Ils peuvent confirmer qu'ils arrivent ou clôturer
+            l'alerte une fois la situation résolue.</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Position GPS en direct</li>
+            <li><i class="fas fa-check"></i> Notification push instantanée</li>
+            <li><i class="fas fa-check"></i> Jusqu'à 5 contacts de confiance</li>
+            <li><i class="fas fa-check"></i> Niveau de menace ajustable</li>
+            <li><i class="fas fa-check"></i> Message vocal transcrit (bientot disponible)</li>
+          </ul>
+        </div>
+
+
+        <!-- Signalement -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-ico fco-red"><i class="fas fa-plus-circle"></i></div>
+            <h3>Publier un signalement</h3>
+          </div>
+          <p>Formulaire structuré avec titre, description détaillée, localisation, type de cas et photo. Chaque
+            publication passe par une modération automatique avant d'être visible.</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Photo optionnelle</li>
+            <li><i class="fas fa-check"></i> Localisation précise</li>
+            <li><i class="fas fa-check"></i> Publication anonyme possible</li>
+            <li><i class="fas fa-check"></i> Modération avant publication</li>
+          </ul>
+        </div>
+
+        <!-- Recherche -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-ico fco-blue"><i class="fas fa-magnifying-glass"></i></div>
+            <h3>Rechercher & Filtrer</h3>
+          </div>
+          <p>Naviguez dans le flux d'alertes actives. Filtrez par ville, région, type de cas ou mot-clé. Retrouvez
+            rapidement les avis en cours dans votre zone géographique.</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Recherche par mot-clé</li>
+            <li><i class="fas fa-check"></i> Filtre par ville / région</li>
+            <li><i class="fas fa-check"></i> Filtre par type de cas</li>
+            <li><i class="fas fa-check"></i> Recherche par photo (IA)</li>
+          </ul>
+        </div>
+
+        <!-- Communauté -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-ico fco-purple"><i class="fas fa-people-group"></i></div>
+            <h3>Soutien communautaire</h3>
+          </div>
+          <p>Commentez les alertes, partagez des informations utiles, apportez un soutien moral ou un conseil juridique.
+            La communauté se mobilise ensemble pour chaque cas.</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Commentaires et réponses</li>
+            <li><i class="fas fa-check"></i> Partage sur les réseaux</li>
+            <li><i class="fas fa-check"></i> Lien de partage unique</li>
+            <li><i class="fas fa-check"></i> Soutien anonyme possible</li>
+          </ul>
+        </div>
+
+        <!-- App mobile -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-ico fco-green"><i class="fas fa-mobile-screen"></i></div>
+            <h3>Application Android</h3>
+          </div>
+          <p>Téléchargez l'APK AlertProche pour Android. Recevez les alertes de votre région en temps réel via
+            notifications push. Accès complet à toutes les fonctionnalités, y compris le SOS.</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Notifications push temps réel</li>
+            <li><i class="fas fa-check"></i> Accès hors-ligne partiel</li>
+            <li><i class="fas fa-check"></i> SOS depuis l'app</li>
+            <li><i class="fas fa-check"></i> Téléchargement gratuit</li>
+          </ul>
+        </div>
+
+        <!-- Recherche par image -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-ico fco-pink"><i class="fas fa-camera"></i></div>
+            <h3>Recherche par photo</h3>
+          </div>
+          <p>Uploadez une photo d'une personne disparue et notre IA recherche des alertes similaires dans la base de
+            données. Aide à retrouver des correspondances même sans connaître le nom.</p>
+          <ul class="feature-list">
+            <li><i class="fas fa-check"></i> Recherche par similarité</li>
+            <li><i class="fas fa-check"></i> Technologie IA (Gemini)</li>
+            <li><i class="fas fa-check"></i> Résultats instantanés</li>
+            <li><i class="fas fa-check"></i> Aucune donnée stockée</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ COMMENT ÇA MARCHE ═════════════════════════════════════════════ -->
     <section class="about-section">
       <div class="about-sec-label"><i class="fas fa-list-ol"></i> Mode d'emploi</div>
       <h2 class="about-sec-title">Comment ça marche ?</h2>
-      <p class="about-sec-sub">Simple, rapide, sécurisé - en 4 étapes.</p>
+      <p class="about-sec-sub">Démarrez en moins de 2 minutes — simple, rapide, sécurisé.</p>
       <div class="steps-row">
         <div class="step">
           <div class="step-num">01</div>
           <h4>Créez un compte</h4>
-          <p>Inscription gratuite avec un pseudo unique. Votre email reste confidentiel.</p>
+          <p>Inscription gratuite avec un pseudo unique. Votre adresse email reste strictement confidentielle et n'est
+            jamais affichée.</p>
         </div>
         <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
         <div class="step">
           <div class="step-num">02</div>
           <h4>Publiez un cas</h4>
-          <p>Formulaire structuré : titre, description, localisation, type de cas, photo.</p>
+          <p>Remplissez le formulaire : titre, description, localisation, type de cas, photo. Choisissez de publier
+            anonymement ou avec votre pseudo.</p>
         </div>
         <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
         <div class="step">
           <div class="step-num">03</div>
           <h4>La communauté réagit</h4>
-          <p>Membres, psychologues et conseillers juridiques peuvent commenter et aider.</p>
+          <p>Membres, bénévoles, psychologues et conseillers peuvent commenter, partager l'alerte et apporter leur aide
+            concrète.</p>
         </div>
         <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
         <div class="step">
           <div class="step-num">04</div>
           <h4>Ensemble on agit</h4>
-          <p>Partagez l'alerte, contactez les autorités, mobilisez votre réseau.</p>
+          <p>Partagez l'alerte, contactez les autorités locales, mobilisez votre réseau. Marquez le cas comme résolu
+            quand la personne est retrouvée.</p>
         </div>
       </div>
     </section>
 
-    <!-- ── Sécurité ──────────────────────────────────────────── -->
+    <!-- ══ ROLES ══════════════════════════════════════════════════════════ -->
+    <!-- <section class="about-section">
+      <div class="about-sec-label"><i class="fas fa-id-badge"></i> Rôles & accès</div>
+      <h2 class="about-sec-title">Qui peut faire quoi ?</h2>
+      <p class="about-sec-sub">La plateforme est organisée autour de trois niveaux d'accès.</p>
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-header">
+            <div class="role-ico role-ico-standard"><i class="fas fa-user"></i></div>
+            <div>
+              <h3>Membre Standard</h3>
+              <span class="role-tag">Accès gratuit</span>
+            </div>
+          </div>
+          <ul class="role-list">
+            <li><i class="fas fa-check"></i> Publier et gérer ses signalements</li>
+            <li><i class="fas fa-check"></i> Commenter les alertes</li>
+            <li><i class="fas fa-check"></i> Déclencher le SOS d'urgence</li>
+            <li><i class="fas fa-check"></i> Gérer ses contacts de confiance</li>
+            <li><i class="fas fa-check"></i> Recherche par photo</li>
+            <li><i class="fas fa-check"></i> Accès à l'historique SOS</li>
+          </ul>
+        </div>
+        <div class="role-card role-card-mod">
+          <div class="role-header">
+            <div class="role-ico role-ico-mod"><i class="fas fa-shield-halved"></i></div>
+            <div>
+              <h3>Modérateur</h3>
+              <span class="role-tag role-tag-mod">Sur désignation</span>
+            </div>
+          </div>
+          <ul class="role-list">
+            <li><i class="fas fa-check"></i> Tout ce qu'un membre peut faire</li>
+            <li><i class="fas fa-check"></i> Accès à l'espace de modération</li>
+            <li><i class="fas fa-check"></i> Valider ou rejeter les publications</li>
+            <li><i class="fas fa-check"></i> Masquer les contenus signalés</li>
+            <li><i class="fas fa-check"></i> Voir les publications en attente</li>
+          </ul>
+        </div>
+        <div class="role-card role-card-admin">
+          <div class="role-header">
+            <div class="role-ico role-ico-admin"><i class="fas fa-crown"></i></div>
+            <div>
+              <h3>Administrateur</h3>
+              <span class="role-tag role-tag-admin">Accès complet</span>
+            </div>
+          </div>
+          <ul class="role-list">
+            <li><i class="fas fa-check"></i> Tout ce qu'un modérateur peut faire</li>
+            <li><i class="fas fa-check"></i> Gestion des utilisateurs</li>
+            <li><i class="fas fa-check"></i> Tableau de bord analytique</li>
+            <li><i class="fas fa-check"></i> Statistiques en temps réel</li>
+            <li><i class="fas fa-check"></i> Configuration de la plateforme</li>
+          </ul>
+        </div>
+      </div>
+    </section> -->
+
+    <!-- ══ SÉCURITÉ ═══════════════════════════════════════════════════════ -->
     <section class="about-section">
-      <div class="about-sec-label"><i class="fas fa-robot"></i> Sécurité</div>
+      <div class="about-sec-label"><i class="fas fa-robot"></i> Sécurité & confidentialité</div>
       <h2 class="about-sec-title">Comment la plateforme vous protège ?</h2>
+      <p class="about-sec-sub">La sécurité des victimes et des témoins est notre priorité absolue.</p>
       <div class="security-grid">
         <div class="security-card">
           <div class="security-ico"><i class="fas fa-filter"></i></div>
           <h4>Filtre lexical automatique</h4>
-          <p>Termes haineux, insultes et incitations à la violence sont automatiquement bloqués avant publication.</p>
+          <p>Termes haineux, insultes et incitations à la violence sont automatiquement détectés et bloqués avant toute
+            publication. Le contenu ne passe jamais sans vérification.</p>
         </div>
         <div class="security-card">
           <div class="security-ico"><i class="fas fa-user-secret"></i></div>
           <h4>Protection anti-doxxing</h4>
-          <p>Numéros de téléphone, CNI et identifiants officiels sont détectés et bloqués automatiquement.</p>
+          <p>Numéros de téléphone, numéros de CNI et identifiants officiels sont automatiquement détectés et supprimés
+            des publications pour protéger l'identité des personnes.</p>
         </div>
         <div class="security-card">
           <div class="security-ico"><i class="fas fa-eye-slash"></i></div>
           <h4>Publication anonyme</h4>
-          <p>Publiez ou commentez de manière totalement anonyme. Votre pseudo ne sera pas affiché.</p>
+          <p>Publiez ou commentez de manière totalement anonyme. Votre pseudo ne sera pas affiché sur les publications
+            que vous choisissez de rendre anonymes.</p>
         </div>
         <div class="security-card">
           <div class="security-ico"><i class="fas fa-shield-halved"></i></div>
-          <h4>Équipe de modération</h4>
-          <p>Des modérateurs humains peuvent désactiver tout contenu signalé par la communauté.</p>
+          <h4>Modération humaine</h4>
+          <p>Une équipe de modérateurs bénévoles peut examiner, valider ou désactiver tout contenu signalé par la
+            communauté. Double filet de sécurité.</p>
+        </div>
+        <div class="security-card">
+          <div class="security-ico"><i class="fas fa-key"></i></div>
+          <h4>Authentification sécurisée</h4>
+          <p>Connexion via JWT sécurisé et optionnellement via Firebase Authentication. Votre mot de passe est chiffré,
+            votre email n'est jamais partagé.</p>
+        </div>
+        <div class="security-card">
+          <div class="security-ico"><i class="fas fa-location-dot"></i></div>
+          <h4>GPS SOS chiffré</h4>
+          <p>Les données de localisation du SOS ne sont transmises qu'à vos contacts de confiance désignés. Aucun tiers
+            ne peut y accéder sans votre consentement.</p>
         </div>
       </div>
     </section>
 
-    <!-- ── CTA ──────────────────────────────────────────────── -->
+    <!-- ══ STACK / TRANSPARENCE ═══════════════════════════════════════════ -->
+    <section class="about-section">
+      <div class="about-sec-label"><i class="fas fa-code"></i> Transparence technique</div>
+      <h2 class="about-sec-title">Une plateforme indépendante et transparente</h2>
+      <div class="transparency-layout">
+        <div class="transparency-body">
+          <p>AlertProche est une initiative citoyenne indépendante, non affiliée à un gouvernement ou à une organisation
+            commerciale. La plateforme est développée et maintenue par des bénévoles engagés dans la protection des
+            personnes vulnérables.</p>
+          <p>Les données sont hébergées sur des serveurs sécurisés. Aucune donnée personnelle n'est vendue ni partagée
+            avec des tiers à des fins commerciales. Consultez notre <a routerLink="/confidentialite"
+              class="inline-link">politique de confidentialité</a> pour tous les détails.</p>
+          <p>L'application sera bientot disponible en téléchargement direct (APK Android) depuis le site officiel
+            <strong style="color: var(--green);">alertproche.com</strong>, sans intermédiaire.</p>
+        </div>
+        <!-- <div class="tech-stack">
+          <div class="tech-item"><i class="fab fa-angular"></i> Angular 18</div>
+          <div class="tech-item"><i class="fas fa-server"></i> NestJS</div>
+          <div class="tech-item"><i class="fas fa-database"></i> MongoDB</div>
+          <div class="tech-item"><i class="fab fa-android"></i> Capacitor Android</div>
+          <div class="tech-item"><i class="fas fa-cloud"></i> Vercel</div>
+          <div class="tech-item"><i class="fas fa-robot"></i> Google Gemini AI</div>
+        </div> -->
+      </div>
+    </section> 
+
+    <!-- ══ FAQ ════════════════════════════════════════════════════════════ -->
+    <section class="about-section">
+      <div class="about-sec-label"><i class="fas fa-circle-question"></i> Questions fréquentes</div>
+      <h2 class="about-sec-title">Vous avez des questions ?</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4><i class="fas fa-chevron-right"></i> AlertProche est-il gratuit ?</h4>
+          <p>Oui, entièrement gratuit. Inscription, publication, SOS, application Android — tout est sans frais et sans
+            publicité.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-chevron-right"></i> Faut-il un compte pour consulter les alertes ?</h4>
+          <p>Non. Tout visiteur peut consulter les alertes publiées sans créer de compte. Un compte est nécessaire
+            uniquement pour publier, commenter ou utiliser le SOS.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-chevron-right"></i> Comment fonctionne la modération ?</h4>
+          <p>Chaque publication passe d'abord par un filtre automatique (contenu haineux, doxxing). Ensuite, les
+            modérateurs humains vérifient les cas sensibles avant publication.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-chevron-right"></i> Le SOS fonctionne-t-il sans internet ?</h4>
+          <p>Le SOS nécessite une connexion pour envoyer la notification à vos contacts. Avec l'app Android, une
+            connexion 2G suffit pour déclencher l'alerte GPS.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-chevron-right"></i> Puis-je signaler un cas en dehors du Cameroun ?</h4>
+          <p>La plateforme est actuellement concentrée sur le Cameroun, mais tout signalement avec une localisation
+            précise est accepté. L'expansion géographique est prévue.</p>
+        </div>
+        <div class="faq-item">
+          <h4><i class="fas fa-chevron-right"></i> Comment devenir modérateur ?</h4>
+          <p>Les modérateurs sont désignés par l'équipe d'administration parmi les membres actifs et de confiance.
+            Contribuez régulièrement à la communauté pour être repéré.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ CTA ════════════════════════════════════════════════════════════ -->
     <section class="about-cta">
       <div class="about-cta-inner">
         <div class="about-cta-icon"><i class="fas fa-shield-heart"></i></div>
         <div class="about-cta-text">
           <h2>Prêt à rejoindre la communauté ?</h2>
-          <p>Ensemble, nous pouvons faire la différence pour la protection des enfants au Cameroun.</p>
+          <p>Ensemble, nous pouvons faire la différence pour la protection des enfants et des personnes vulnérables au
+            Cameroun.</p>
         </div>
         <div class="about-cta-actions">
-          <a routerLink="/auth" *ngIf="!isAuth()" class="btn btn-primary btn-lg">
-            <i class="fas fa-user-plus"></i> Créer un compte
+          <a routerLink="/auth" *ngIf="!isAuth()" [queryParams]="{mode:'register'}" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus"></i> Créer un compte gratuit
           </a>
           <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger btn-lg">
             <i class="fas fa-triangle-exclamation"></i> Publier un cas
+          </a>
+          <a (click)="openApkModal($event)" href="#" class="btn btn-outline btn-lg" style="cursor:pointer;">
+            <i class="fab fa-android"></i> Télécharger l'APK
           </a>
           <a routerLink="/" class="btn btn-ghost btn-lg">
             <i class="fas fa-house"></i> Voir les alertes
@@ -150,5 +439,26 @@
       </div>
     </section>
 
+  </div>
+</div>
+
+<!-- ══ MODAL APK BIENTÔT DISPONIBLE ════════════════════════════ -->
+<div class="apk-modal-overlay" *ngIf="showApkModal()" (click)="closeApkModal()">
+  <div class="apk-modal" (click)="$event.stopPropagation()">
+    <button class="apk-modal-close" (click)="closeApkModal()">
+      <i class="fas fa-xmark"></i>
+    </button>
+    <div class="apk-modal-icon">
+      <i class="fab fa-android"></i>
+    </div>
+    <h3>Bientôt disponible</h3>
+    <p>L'application Android AlertProche est en cours de finalisation. Elle sera disponible très prochainement en téléchargement gratuit sur ce site.</p>
+    <div class="apk-modal-hint">
+      <i class="fas fa-bell"></i>
+      Revenez bientôt sur <strong>alertproche.com</strong>
+    </div>
+    <button class="btn btn-primary" (click)="closeApkModal()">
+      <i class="fas fa-check"></i> Compris
+    </button>
   </div>
 </div>

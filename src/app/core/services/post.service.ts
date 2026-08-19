@@ -5,6 +5,7 @@ import { Post, CreatePostDto } from '../models/post.model';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { ModerationService } from './moderation.service';
+import { ParsedAudioAlertDto } from '../models/parsed-audio-alert.dto';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
@@ -35,6 +36,35 @@ export class PostService {
 
   getReportedPosts(): Observable<Post[]> {
     return this.http.get<Post[]>(`${this.API}/reported`);
+  }
+
+  /**
+   * Valide une ville saisie librement via l'IA.
+   */
+  async validateCity(city: string): Promise<{ valid: boolean; normalizedName: string | null; reason: string }> {
+    return firstValueFrom(
+      this.http.post<{ valid: boolean; normalizedName: string | null; reason: string }>(
+        `${this.API}/validate-city`,
+        { city }
+      )
+    );
+  }
+
+  /**
+   * Envoie un blob audio au backend pour extraction IA des champs du formulaire.
+   * Le fichier audio n'est jamais stocké — traitement en mémoire uniquement.
+   */
+  async parseAudio(audioBlob: Blob): Promise<ParsedAudioAlertDto> {
+    const formData = new FormData();
+    // On donne une extension cohérente avec le mimeType pour que Multer le reconnaisse
+    const ext = audioBlob.type.includes('mp4') ? 'mp4'
+              : audioBlob.type.includes('ogg') ? 'ogg'
+              : audioBlob.type.includes('webm') ? 'webm'
+              : 'wav';
+    formData.append('audio', audioBlob, `voice-recording.${ext}`);
+    return firstValueFrom(
+      this.http.post<ParsedAudioAlertDto>(`${this.API}/parse-audio`, formData)
+    );
   }
 
   async analyzeImage(image: File): Promise<any> {

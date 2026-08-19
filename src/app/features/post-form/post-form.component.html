@@ -51,6 +51,62 @@
             <!-- LEFT COLUMN -->
             <div class="form-col-main">
 
+              <!-- ── ENREGISTREMENT VOCAL (en haut, bien visible) ── -->
+              <div class="voice-recorder-block voice-recorder-top">
+                <div class="voice-recorder-header">
+                  <div class="voice-recorder-label">
+                    <i class="fas fa-microphone"></i>
+                    <span>Remplir par note vocale</span>
+                    <span class="voice-badge">IA</span>
+                  </div>
+                  <p class="voice-recorder-hint">Décrivez la situation oralement — le formulaire se remplit automatiquement.</p>
+                </div>
+
+                <!-- Erreur micro -->
+                <div class="voice-error" *ngIf="recordingError()">
+                  <i class="fas fa-circle-exclamation"></i> {{ recordingError() }}
+                </div>
+
+                <!-- État : idle -->
+                <ng-container *ngIf="recordingState() === 'idle'">
+                  <button type="button" class="btn-voice-start" (click)="startVoiceRecording()">
+                    <i class="fas fa-microphone"></i>
+                    Enregistrer une description vocale
+                  </button>
+                </ng-container>
+
+                <!-- État : enregistrement en cours -->
+                <ng-container *ngIf="recordingState() === 'recording'">
+                  <div class="voice-recording-active">
+                    <div class="voice-pulse">
+                      <span class="pulse-ring"></span>
+                      <i class="fas fa-microphone"></i>
+                    </div>
+                    <div class="voice-recording-info">
+                      <span class="voice-recording-label">Enregistrement en cours…</span>
+                      <span class="voice-timer">{{ recordingLabel }}</span>
+                      <span class="voice-timer-max">Max 2 min</span>
+                    </div>
+                    <div class="voice-recording-actions">
+                      <button type="button" class="btn-voice-stop" (click)="stopVoiceRecording()">
+                        <i class="fas fa-stop"></i> Terminer
+                      </button>
+                      <button type="button" class="btn-voice-cancel" (click)="cancelVoiceRecording()">
+                        <i class="fas fa-xmark"></i> Annuler
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- État : traitement IA -->
+                <ng-container *ngIf="recordingState() === 'processing'">
+                  <div class="voice-processing">
+                    <span class="spinner"></span>
+                    <span>L'IA analyse votre message vocal…</span>
+                  </div>
+                </ng-container>
+              </div>
+
               <!-- Type Selection -->
               <div class="type-selector form-group">
                 <label class="form-label">Type de publication <span class="required">*</span></label>
@@ -112,19 +168,64 @@
                 </span>
               </div>
 
-              <!-- Location -->
-              <div class="form-group">
+              <!-- Location — autocomplete + ville libre validée par IA -->
+              <div class="form-group location-group">
                 <label class="form-label" for="post-location">
                   Localisation <span class="required">*</span>
                 </label>
-                <div class="input-icon-wrap">
-                  <i class="fas fa-location-dot input-icon"></i>
-                  <select id="post-location" class="form-control input-with-icon" formControlName="location">
-                    <option value="">-- Sélectionnez une ville --</option>
-                    <option *ngFor="let city of camerounCities" [value]="city">{{ city }}</option>
-                  </select>
+                <div class="location-input-wrap">
+                  <div class="input-icon-wrap" style="flex:1">
+                    <i class="fas fa-location-dot input-icon"></i>
+                    <input
+                      id="post-location"
+                      type="text"
+                      class="form-control input-with-icon"
+                      [class.location-valid]="locationValid()"
+                      [class.location-invalid]="locationError()"
+                      [value]="locationInput()"
+                      (input)="onLocationInput($any($event.target).value)"
+                      (blur)="hideSuggestions()"
+                      (focus)="onLocationInput(locationInput())"
+                      placeholder="Tapez une ville camerounaise…"
+                      autocomplete="off">
+                    <!-- Icône statut -->
+                    <i class="fas fa-check location-status-ico valid" *ngIf="locationValid()"></i>
+                    <span class="spinner location-spinner" *ngIf="locationValidating()"></span>
+                  </div>
+                  <!-- Bouton valider ville libre -->
+                  <button
+                    type="button"
+                    class="btn-validate-city"
+                    *ngIf="locationInput() && !locationValid() && !locationValidating() && locationSuggestions().length === 0"
+                    (click)="validateFreeCity()">
+                    <i class="fas fa-wand-magic-sparkles"></i> Valider
+                  </button>
                 </div>
-                <span class="form-error" *ngIf="hasError('location', 'required')">
+
+                <!-- Suggestions dropdown -->
+                <div class="location-suggestions" *ngIf="showSuggestions()">
+                  <button
+                    type="button"
+                    class="location-suggestion-item"
+                    *ngFor="let city of locationSuggestions()"
+                    (mousedown)="selectLocationSuggestion(city)">
+                    <i class="fas fa-location-dot"></i>
+                    {{ city }}
+                  </button>
+                </div>
+
+                <!-- Hint validation IA -->
+                <div class="location-ai-hint" *ngIf="locationInput() && !locationValid() && !locationValidating() && locationSuggestions().length === 0 && !locationError()">
+                  <i class="fas fa-wand-magic-sparkles"></i>
+                  Ville absente de la liste — cliquez sur <strong>Valider</strong> pour vérification IA.
+                </div>
+
+                <!-- Erreur ville invalide -->
+                <div class="location-ai-error" *ngIf="locationError()">
+                  <i class="fas fa-circle-exclamation"></i> {{ locationError() }}
+                </div>
+
+                <span class="form-error" *ngIf="hasError('location', 'required') && !locationInput()">
                   <i class="fas fa-circle-exclamation"></i> Localisation requise
                 </span>
               </div>
@@ -142,6 +243,7 @@
                   </div>
                 </label>
               </div>
+
               <ng-container *ngIf="this.IsScreenShort">
                 <button type="submit" class="btn btn-danger w-full btn-lg" [disabled]="loading()">
                   <span class="spinner" *ngIf="loading()"></span>

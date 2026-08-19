@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, HostListener, inject } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -10,6 +10,8 @@ import { Router, RouterLink } from '@angular/router';
 import { PostService } from '../../core/services/post.service';
 import { PostType } from '../../core/models/post.model';
 import { TrackingService } from '../../core/services/tracking.service';
+import { AudioRecorderService, RecordingState } from '../../core/services/audio-recorder.service';
+import { ParsedAudioAlertDto } from '../../core/models/parsed-audio-alert.dto';
 
 @Component({
   selector: 'app-post-form',
@@ -18,10 +20,17 @@ import { TrackingService } from '../../core/services/tracking.service';
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.css'],
 })
-export class PostFormComponent implements OnInit {
+export class PostFormComponent implements OnInit, OnDestroy {
   IsScreenShort = false;
   ngOnInit() {
     this.tailler();
+  }
+  ngOnDestroy() {
+    // Libère le micro si le composant est détruit pendant un enregistrement
+    if (this.recordingState() === 'recording') {
+      this.audioRecorder.cancelRecording();
+    }
+    if (this.recordingTimerRef) clearInterval(this.recordingTimerRef);
   }
   @HostListener('window:resize', [])
   tailler() {
@@ -43,6 +52,20 @@ export class PostFormComponent implements OnInit {
   dragOver = signal(false);
   imageError = signal('');
   analysisStatus = signal<'idle' | 'analyzing' | 'done'>('idle');
+
+  // ── Audio recorder state ────────────────────────────────────────
+  recordingState = signal<RecordingState>('idle');
+  recordingError = signal('');
+  recordingSeconds = signal(0);
+  private recordingTimerRef: any = null;
+
+  // ── Location autocomplete state ─────────────────────────────────
+  locationInput = signal('');
+  locationSuggestions = signal<string[]>([]);
+  locationValidating = signal(false);
+  locationError = signal('');
+  locationValid = signal(false);
+  showSuggestions = signal(false);
 
   readonly MAX_SIZE = 5 * 1024 * 1024; // 5MB
   readonly ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -187,6 +210,7 @@ export class PostFormComponent implements OnInit {
     private postService: PostService,
     private router: Router,
     private tracking: TrackingService,
+    public audioRecorder: AudioRecorderService,
   ) {
     this.form = this.fb.group({
       title: [
@@ -272,6 +296,154 @@ export class PostFormComponent implements OnInit {
     return size > 1024 * 1024
       ? `${(size / 1024 / 1024).toFixed(1)} Mo`
       : `${Math.round(size / 1024)} Ko`;
+  }
+
+  // ── Méthodes localisation ───────────────────────────────────────
+
+  onLocationInput(value: string): void {
+    this.locationInput.set(value);
+    this.locationError.set('');
+    this.locationValid.set(false);
+    this.form.get('location')?.setValue(''); // invalide jusqu'à sélection/validation
+
+    const q = value.trim().toLowerCase();
+    if (q.length < 2) {
+      this.locationSuggestions.set([]);
+      this.showSuggestions.set(false);
+      return;
+    }
+
+    const matches = this.camerounCities
+      .filter(c => c.toLowerCase().includes(q))
+      .slice(0, 8);
+
+    this.locationSuggestions.set(matches);
+    this.showSuggestions.set(matches.length > 0);
+  }
+
+  selectLocationSuggestion(city: string): void {
+    this.locationInput.set(city);
+    this.form.get('location')?.setValue(city);
+    this.locationValid.set(true);
+    this.locationError.set('');
+    this.showSuggestions.set(false);
+  }
+
+  hideSuggestions(): void {
+    // Délai pour permettre le click sur une suggestion
+    setTimeout(() => this.showSuggestions.set(false), 200);
+  }
+
+  async validateFreeCity(): Promise<void> {
+    const city = this.locationInput().trim();
+    if (!city) return;
+
+    // Si la ville est déjà dans la liste, accepter directement
+    const inList = this.camerounCities.some(c => c.toLowerCase() === city.toLowerCase());
+    if (inList) {
+      this.selectLocationSuggestion(city.toLowerCase());
+      return;
+    }
+
+    this.locationValidating.set(true);
+    this.locationError.set('');
+    try {
+      const result = await this.postService.validateCity(city);
+      if (result.valid && result.normalizedName) {
+        this.locationInput.set(result.normalizedName);
+        this.form.get('location')?.setValue(result.normalizedName.toLowerCase());
+        this.locationValid.set(true);
+        this.locationError.set('');
+      } else {
+        this.locationValid.set(false);
+        this.locationError.set(`"${city}" ne semble pas être une localité du Cameroun. Veuillez vérifier ou choisir une ville dans la liste.`);
+        this.form.get('location')?.setValue('');
+      }
+    } catch {
+      this.locationError.set('Impossible de valider la ville. Veuillez réessayer.');
+    } finally {
+      this.locationValidating.set(false);
+    }
+  }
+
+  // ── Méthodes enregistrement vocal ──────────────────────────────
+
+  get recordingLabel(): string {
+    const s = this.recordingSeconds();
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+  }
+
+  async startVoiceRecording(): Promise<void> {
+    this.recordingError.set('');
+    try {
+      await this.audioRecorder.startRecording();
+      this.recordingState.set('recording');
+      this.recordingSeconds.set(0);
+      this.recordingTimerRef = setInterval(() => {
+        this.recordingSeconds.update(s => s + 1);
+        // Sécurité : limite à 2 minutes
+        if (this.recordingSeconds() >= 120) this.stopVoiceRecording();
+      }, 1000);
+    } catch (err: any) {
+      this.recordingError.set(err?.message || 'Impossible d\'accéder au microphone.');
+      this.recordingState.set('idle');
+    }
+  }
+
+  async stopVoiceRecording(): Promise<void> {
+    if (this.recordingTimerRef) {
+      clearInterval(this.recordingTimerRef);
+      this.recordingTimerRef = null;
+    }
+    this.recordingState.set('processing');
+    this.recordingError.set('');
+
+    try {
+      const audioBlob = await this.audioRecorder.stopRecording();
+      const parsed: ParsedAudioAlertDto = await this.postService.parseAudio(audioBlob);
+      this.applyAudioResult(parsed);
+    } catch (err: any) {
+      this.recordingError.set(err?.message || 'Erreur lors de l\'analyse vocale. Veuillez réessayer.');
+    } finally {
+      this.recordingState.set('idle');
+    }
+  }
+
+  async cancelVoiceRecording(): Promise<void> {
+    if (this.recordingTimerRef) {
+      clearInterval(this.recordingTimerRef);
+      this.recordingTimerRef = null;
+    }
+    await this.audioRecorder.cancelRecording();
+    this.recordingState.set('idle');
+    this.recordingError.set('');
+  }
+
+  private applyAudioResult(parsed: ParsedAudioAlertDto): void {
+    const patch: any = {};
+    if (parsed.type)    patch['type']    = parsed.type;
+    if (parsed.title)   patch['title']   = parsed.title;
+    if (parsed.content) patch['content'] = parsed.content;
+    if (parsed.isAnonymous !== null && parsed.isAnonymous !== undefined) {
+      patch['isAnonymous'] = parsed.isAnonymous;
+    }
+    if (Object.keys(patch).length > 0) this.form.patchValue(patch);
+
+    // Localisation : pré-remplir le champ texte et tenter la sélection
+    if (parsed.location) {
+      const loc = parsed.location.toLowerCase();
+      this.locationInput.set(loc);
+      const inList = this.camerounCities.some(c => c.toLowerCase() === loc);
+      if (inList) {
+        this.form.get('location')?.setValue(loc);
+        this.locationValid.set(true);
+      } else {
+        // Lancer la validation IA en arrière-plan
+        this.validateFreeCity();
+      }
+    }
   }
 
   onSubmit() {
