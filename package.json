@@ -30,6 +30,7 @@
     "@capacitor/push-notifications": "^8.1.2",
     "@capgo/capacitor-native-biometric": "^8.6.2",
     "@swimlane/ngx-charts": "^20.5.0",
+    "capacitor-voice-recorder": "^7.0.6",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"
