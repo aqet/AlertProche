@@ -475,3 +475,111 @@ select.form-control option { background: var(--bg-surface); }
 
 @media (max-width: 900px)  { .grid-3 { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 640px)  { .grid-2,.grid-3 { grid-template-columns: 1fr; } .container { padding: 0 14px; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   PWA STANDALONE & MOBILE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Safe area (notch iOS / Android) ───────────────────────────── */
+:root {
+  --safe-top:    env(safe-area-inset-top,    0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left,   0px);
+  --safe-right:  env(safe-area-inset-right,  0px);
+}
+
+/* ── Empêche le rebond iOS (overscroll bounce) ──────────────────── */
+html {
+  overscroll-behavior: none;
+}
+
+/* ── PWA standalone : ajuste le padding de la navbar (notch) ───── */
+@media (display-mode: standalone),
+       (display-mode: fullscreen) {
+  .navbar {
+    padding-top: var(--safe-top);
+    height: calc(var(--nav-height) + var(--safe-top));
+  }
+
+  /* Décale le contenu sous la navbar élargie */
+  .page-wrapper {
+    padding-top: calc(var(--nav-height) + var(--safe-top) + 16px);
+    padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 16px);
+  }
+
+  /* Bottom nav : padding pour le home indicator iOS */
+  .bottom-nav {
+    padding-bottom: var(--safe-bottom);
+    height: calc(var(--bottom-nav-h) + var(--safe-bottom));
+  }
+
+  /* Masque le footer dans l'app installée (bottom nav suffit) */
+  .app-footer { display: none; }
+
+  /* Fond système pour éviter les flashs blancs */
+  body {
+    background-color: var(--bg);
+  }
+}
+
+/* ── Mobile ≤ 768px ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Conteneur : réduit les marges latérales */
+  .container {
+    padding: 0 12px;
+  }
+
+  /* Sections */
+  .page-wrapper {
+    padding-top: calc(var(--nav-height) + 12px);
+    padding-bottom: calc(var(--bottom-nav-h) + 12px);
+  }
+
+  /* Titres plus petits */
+  .section-title { font-size: 1.15rem; }
+
+  /* Boutons principaux pleine largeur + hauteur minimale tactile */
+  .btn-lg {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+  }
+
+  /* Boutons normaux : hauteur min tactile */
+  .btn {
+    min-height: 44px;
+  }
+
+  /* Formulaires : champs plus grands pour le tactile */
+  .form-control {
+    padding: 14px 16px;
+    font-size: 1rem; /* évite le zoom auto iOS sur focus */
+  }
+
+  /* Grilles : une seule colonne */
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+
+  /* Cards : moins de padding */
+  .card { padding: 14px; }
+
+  /* Footer masqué sur mobile (remplacé par la bottom nav) */
+  .app-footer { display: none; }
+}
+
+/* ── Touch : supprime le highlight bleu au tap ──────────────────── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Inputs : désactive le zoom auto iOS ────────────────────────── */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 1rem !important;
+  }
+}

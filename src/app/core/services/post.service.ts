@@ -39,11 +39,12 @@ export class PostService {
   }
 
   /**
-   * Valide une ville saisie librement via l'IA.
+   * Valide une ville saisie librement via Gemini IA.
+   * Retourne { valid, normalizedName }
    */
-  async validateCity(city: string): Promise<{ valid: boolean; normalizedName: string | null; reason: string }> {
+  async validateCity(city: string): Promise<{ valid: boolean; normalizedName: string | null }> {
     return firstValueFrom(
-      this.http.post<{ valid: boolean; normalizedName: string | null; reason: string }>(
+      this.http.post<{ valid: boolean; normalizedName: string | null }>(
         `${this.API}/validate-city`,
         { city }
       )

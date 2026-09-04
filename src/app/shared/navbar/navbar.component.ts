@@ -1,9 +1,8 @@
-import { Component, computed, HostListener, signal } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgIf } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
-import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-navbar',
@@ -13,10 +12,17 @@ import { Capacitor } from '@capacitor/core';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent {
+  private el = inject(ElementRef);
   isOpen = false;
   menuOpen = signal(false);
   scrolled = signal(false);
-  IsMobile: boolean = false;
+
+  /**
+   * true sur mobile (largeur ≤ 1000px) OU en mode PWA standalone installée.
+   * Contrôle l'affichage de la bottom nav.
+   */
+  IsMobile = false;
+
   isAuth = computed(() => this.auth.isAuthenticated());
   user = computed(() => this.auth.currentUser());
   isDark = computed(() => this.theme.currentTheme() === 'dark');
@@ -29,11 +35,23 @@ export class NavbarComponent {
     public auth: AuthService,
     public theme: ThemeService,
   ) {
-    if (Capacitor.isNativePlatform()) {
-      this.IsMobile=true
-    }
-    console.log(this.IsMobile);
-    
+    this.checkMobile();
+  }
+
+  private checkMobile(): void {
+    // PWA installée (standalone ou fullscreen, ou Safari iOS)
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      (window.navigator as any).standalone === true;
+
+    // Bottom nav : PWA installée ET taille smartphone (≤ 768px)
+    this.IsMobile = isStandalone && window.innerWidth <= 768;
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.checkMobile();
   }
 
   @HostListener('window:scroll')

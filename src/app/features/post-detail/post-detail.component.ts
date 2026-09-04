@@ -121,7 +121,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     const url = window.location.href;
     const description = `${post.type} - ${post.location} | ${post.content.slice(0, 160)}`;
     const image =
-      (post as any).image_url || 'https://alertproche.com/favicon.ico';
+      (post as any).image_url || 'https://alertproche.com/icon/favicon-96x96.png';
 
     this.titleService.setTitle(`${post.title} - AlertProche`);
 
