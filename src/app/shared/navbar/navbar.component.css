@@ -336,6 +336,14 @@
   .navbar-inner { padding: 0 14px; }
 }
 
+/* PWA installée sur grand écran : masque les liens desktop, garde hamburger */
+/* @media not all and (max-width: 1000px) { */
+  /* :host-context(body.pwa-standalone) .nav-links  { display: none; } */
+  /* :host-context(body.pwa-standalone) .nav-actions { display: none; } */
+  /* :host-context(body.pwa-standalone) .hamburger  { display: flex; } */
+  /* :host-context(body.pwa-standalone) .mobile-menu { display: block; } */
+/* } */
+
 /* ═══════════════════════════════════════════════
    BOTTOM NAV - Mobile uniquement (≤ 1000px)
    Barre d'onglets fixe en bas de l'écran
@@ -349,6 +357,8 @@
   background: var(--bg-card);
   border-top: 2px solid var(--green);
   box-shadow: 0 -2px 12px rgba(26,158,42,0.12);
+  /* Safe area Android/iOS */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .bottom-nav-inner {
@@ -363,22 +373,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   padding: 6px 4px;
   text-decoration: none;
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   transition: color var(--transition);
   cursor: pointer;
   background: none;
   border: none;
   font-family: var(--font);
+  position: relative;
+  min-height: 48px; /* zone tactile minimale */
 }
 
 .bn-item i {
-  font-size: 1.2rem;
-  transition: color var(--transition);
+  font-size: 1.25rem;
+  transition: color var(--transition), transform var(--transition);
 }
 
 .bn-item:hover,
@@ -388,15 +400,16 @@
 
 .bn-item.active i {
   color: var(--green);
+  transform: scale(1.1);
 }
 
-/* Indicateur actif - petit point vert */
+/* Indicateur actif - barre verte en haut */
 .bn-item.active::before {
   content: '';
   position: absolute;
-  top: 6px;
-  width: 4px; height: 4px;
-  border-radius: 50%;
+  top: 0; left: 20%; right: 20%;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
   background: var(--green);
 }
 
@@ -406,23 +419,30 @@
 }
 
 .bn-item.bn-publish i {
-  width: 46px; height: 46px;
+  width: 48px; height: 48px;
   background: var(--green);
   color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   box-shadow: var(--shadow-green);
-  margin-top: -10px;
+  margin-top: -12px;
+  transition: background var(--transition), transform var(--transition);
 }
 
 .bn-item.bn-publish:hover i,
 .bn-item.bn-publish.active i {
   background: var(--green-hover);
+  transform: scale(1.08);
 }
 
 @media (max-width: 1000px) {
-  .bottom-nav { display: block; }
+  .bottom-nav { display: none; }
+}
+
+/* Bottom nav uniquement en mode PWA installée */
+:host-context(body.pwa-standalone) .bottom-nav {
+  display: block;
 }

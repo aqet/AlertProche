@@ -34,7 +34,7 @@
 .form-col-main, .form-col-side {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 20px;
 }
 
 /* ---- TYPE SELECTOR ---- */
@@ -375,17 +375,46 @@
 
 /* ---- RESPONSIVE ---- */
 @media (max-width: 900px) {
+  .moderation-card { display: none; }
+  .form-grid { grid-template-columns: 1fr; }
 
-  .moderation-card{
-    display: none;
+  /* La colonne principale (avec le bouton vocal) reste en premier */
+  .form-col-main { order: 2; }
+  .form-col-side  { order: 1; }
+}
+
+@media (max-width: 640px) {
+  /* Bouton vocal : encore plus grand sur mobile */
+  .btn-voice-start {
+    padding: 16px 20px;
+    font-size: 0.95rem;
+  }
+  .voice-recorder-top {
+    padding: 18px 16px;
+  }
+  .voice-badge {
+    font-size: 0.7rem;
+    padding: 3px 9px;
   }
 
-  .form-grid { grid-template-columns: 1fr; }
-  .form-col-side { order: -1; }
+  /* Timer enregistrement */
+  .voice-timer { font-size: 1.3rem; }
+  .btn-voice-stop,
+  .btn-voice-cancel { padding: 10px 18px; font-size: 0.88rem; }
+
+  /* Location */
+  .location-input-wrap { flex-direction: column; }
+  .btn-validate-city { width: 100%; justify-content: center; padding: 12px; }
 }
 
 @media (max-width: 480px) {
   .type-cards { flex-direction: column; }
+
+  /* Enregistrement actif : empile verticalement */
+  .voice-recording-active { flex-direction: column; align-items: flex-start; }
+  .voice-recording-actions { width: 100%; }
+  .btn-voice-stop,
+  .btn-voice-cancel { flex: 1; justify-content: center; }
 }
 
 /* ── Rapport notification push ──────────────────────────────── */

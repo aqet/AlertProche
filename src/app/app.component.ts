@@ -109,6 +109,22 @@ export class AppComponent implements OnInit {
     this.initDeepLinking();
     this.notificationService.initialiserPush();
     this.appInit.initializeApp();
+    this.applyPwaBodyClass();
+  }
+
+  /** Ajoute 'pwa-standalone' sur <body> si l'app est installée */
+  private applyPwaBodyClass(): void {
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      (window.navigator as any).standalone === true;
+    if (isStandalone) {
+      document.body.classList.add('pwa-standalone');
+    }
+    // Écoute les changements (ex: passage de l'onglet navigateur à l'app installée)
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', e => {
+      document.body.classList.toggle('pwa-standalone', e.matches);
+    });
   }
 
   initDeepLinking() {
