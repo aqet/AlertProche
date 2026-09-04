@@ -28,8 +28,8 @@
                 <data android:scheme="https" android:host="alertproche.com" />
                 <data android:scheme="http"  android:host="alertproche.com" />
 
-                <data android:scheme="https" android:host="alert-proche-api.vercel.app/" />
-                <data android:scheme="http"  android:host="alert-proche-api.vercel.app/" />
+                <data android:scheme="https" android:host="api.alertproche.com/" />
+                <data android:scheme="http"  android:host="api.alertproche.com/" />
             </intent-filter>
 
             <!-- ══ Custom URL Scheme (fonctionne SANS assetlinks.json) ════════ -->
