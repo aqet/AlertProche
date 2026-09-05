@@ -1,6 +1,5 @@
 export const environment = {
-  production: true,
-  // apiUrl: 'https://api.alertproche.com',
+  production: false,
   apiUrl: 'http://localhost:3000',
-  // apiUrl: 'https://hp3v5282-3000.usw3.devtunnels.ms/',
+  vapidPublicKey: 'BDveejGknuKxkctpO6jBWcBcOpP3pC9EZOFBT3rOa3YPitAn0XEoZhuMPSaQcY1-n2ek6YKyMeMuiOCL_WmUz0Y',
 };
