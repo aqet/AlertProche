@@ -5,11 +5,6 @@ import { SwPush } from '@angular/service-worker';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
-/**
- * Clé publique VAPID pour Web Push (PWA).
- * Chargée depuis le backend via GET /auth/vapid-public-key.
- * Fallback sur environment.vapidPublicKey si disponible.
- */
 const VAPID_PUBLIC_KEY = environment.vapidPublicKey ?? '';
 
 @Injectable({ providedIn: 'root' })
@@ -21,6 +16,7 @@ export class NotificationService {
   private swPush = inject(SwPush);
 
   private sosSoundAudio: HTMLAudioElement | null = null;
+  private sosSoundPreloaded = false;
 
   private getSession(): { token: string; user: { _id: string } } | null {
     try {
@@ -31,6 +27,21 @@ export class NotificationService {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Précharge le son SOS dès le démarrage pour contourner les restrictions autoplay.
+   * Doit être appelé lors d'une interaction utilisateur (clic, tap).
+   */
+  preloadSosSound(): void {
+    if (this.sosSoundPreloaded) return;
+    try {
+      this.sosSoundAudio = new Audio('/sounds/sos-alert.mp3');
+      this.sosSoundAudio.preload = 'auto';
+      this.sosSoundAudio.volume = 1.0;
+      this.sosSoundAudio.load();
+      this.sosSoundPreloaded = true;
+    } catch { /* ignore */ }
   }
 
   /**
@@ -69,6 +80,8 @@ export class NotificationService {
     try {
       const sub = await this.swPush.requestSubscription({ serverPublicKey: vapidKey });
       if (session) await this.sendSubscriptionToBackend(sub, session.token);
+      // Précharger le son après permission (interaction utilisateur faite)
+      this.preloadSosSound();
     } catch (err) {
       console.warn('[Push] Permission refusée ou erreur VAPID:', err);
     }
@@ -80,6 +93,8 @@ export class NotificationService {
       if (data.type === 'SOS_TRUSTED' || data.type === 'SOS_PROXIMITY') {
         if (data.threatLevel === 'CRITICAL' || data.threatLevel === 'HIGH') {
           this.playSosSound('/sounds/sos-alert.mp3');
+        } else {
+          this.playSosSound();
         }
       }
     });
@@ -99,11 +114,7 @@ export class NotificationService {
     sub: PushSubscription,
     jwtToken: string,
   ): Promise<void> {
-    // On envoie le JSON complet de la subscription comme "token"
-    // Le backend stocke cette valeur dans user.token[]
-    // Le backend devra détecter si c'est un objet JSON (Web Push) ou une string (FCM legacy)
     const tokenValue = JSON.stringify(sub);
-
     this.http
       .post(
         `${this.apiUrl}/auth/fcm-token`,
@@ -118,9 +129,9 @@ export class NotificationService {
 
   /** Gère la navigation au clic sur une notification */
   private handleNotificationClick(action: string, data: any): void {
-    const sosId   = data.sosId;
-    const postId  = data.postId;
-    const type    = data.type as string;
+    const sosId  = data.sosId;
+    const postId = data.postId;
+    const type   = data.type as string;
 
     if (action === 'respond' && sosId) {
       this.router.navigate(['/sos', sosId]);
@@ -150,7 +161,6 @@ export class NotificationService {
   /** Écoute les messages postMessage() depuis le Service Worker custom */
   private listenSwMessages(): void {
     if (typeof navigator === 'undefined' || !navigator.serviceWorker) return;
-
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (event.data?.type === 'PLAY_SOS_SOUND') {
         const url = event.data?.soundUrl || '/sounds/sos-alert.mp3';
@@ -159,7 +169,7 @@ export class NotificationService {
     });
   }
 
-  /** Joue le son SOS d'urgence */
+  /** Joue le son SOS d'urgence — avec retry sur interaction si autoplay bloqué */
   playSosSound(url = '/sounds/sos-alert.mp3'): void {
     try {
       if (!this.sosSoundAudio || this.sosSoundAudio.src !== url) {
@@ -167,13 +177,11 @@ export class NotificationService {
         this.sosSoundAudio.loop = false;
         this.sosSoundAudio.volume = 1.0;
         this.sosSoundAudio.preload = 'auto';
+        this.sosSoundPreloaded = true;
       }
-      // Repart depuis le début si déjà en cours
       this.sosSoundAudio.currentTime = 0;
       this.sosSoundAudio.play().catch(err => {
-        // Autoplay bloqué — sera joué lors de la prochaine interaction utilisateur
         console.warn('[Push] Autoplay son SOS bloqué (interaction requise):', err.message);
-        // Deuxième tentative au prochain clic
         const retry = () => {
           this.sosSoundAudio?.play().catch(() => {});
           document.removeEventListener('click', retry);
@@ -198,7 +206,7 @@ export class NotificationService {
   async requestMicrophonePermission(): Promise<boolean> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop()); // libère immédiatement
+      stream.getTracks().forEach(t => t.stop());
       return true;
     } catch {
       return false;
