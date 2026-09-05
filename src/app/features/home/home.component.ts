@@ -8,13 +8,14 @@ import { PostCardComponent } from '../../shared/post-card/post-card.component';
 import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { TrackingService } from '../../core/services/tracking.service';
+import { PwaInstallService } from '../../core/services/pwa-install.service';
+import { InstallModalComponent } from '../../shared/components/install-modal/install-modal.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PostCardComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PostCardComponent, InstallModalComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
@@ -25,8 +26,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   error = signal('');
   appDownloadCount = signal(0);
   appDownloadLoading = signal(false);
-  showApkModal = signal(false);
-
   findSimilar = signal<any>(null);
 
   filterType = signal<string>('');
@@ -240,6 +239,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     private http: HttpClient,
     private tracking: TrackingService,
+    public pwa: PwaInstallService,
   ) {}
 
   ngOnInit(): void {
@@ -302,11 +302,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onAppDownloadClick(): void {
-    this.showApkModal.set(true);
+    this.pwa.handleInstallClick();
   }
 
   closeApkModal(): void {
-    this.showApkModal.set(false);
+    this.pwa.closeIosModal();
   }
 
   onImageSearchUpload(event: Event) {
