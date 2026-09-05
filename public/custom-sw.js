@@ -29,9 +29,9 @@ self.addEventListener('push', (event) => {
     badge: '/icons/favicon-96x96.png',
     tag: data.sosId || data.postId || 'alertproche',
     renotify: true,
-    requireInteraction: isSos, // Garde la notif ouverte jusqu'à interaction si SOS
+    requireInteraction: isSos,
     vibrate: isSos ? [300, 100, 300, 100, 300] : [200, 100, 200],
-    data: data,
+    data: { ...data, soundUrl: isSos ? '/sounds/sos-alert.mp3' : null },
     actions: isSos ? [
       { action: 'respond', title: "J'arrive" },
       { action: 'dismiss', title: 'Ignorer' },
@@ -53,9 +53,15 @@ async function playSosSound() {
     // Ouvrir un client existant et lui demander de jouer le son
     // (AudioContext ne fonctionne pas directement dans le SW)
     const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    clients.forEach(client => {
-      client.postMessage({ type: 'PLAY_SOS_SOUND' });
-    });
+    if (clients.length > 0) {
+      clients.forEach(client => {
+        client.postMessage({ type: 'PLAY_SOS_SOUND', soundUrl: '/sounds/sos-alert.mp3' });
+      });
+    } else {
+      // Aucune fenêtre ouverte — on tente via fetch pour garder le SW éveillé
+      // Le son sera joué à l'ouverture de la notification
+      console.log('[SW] Aucun client ouvert pour jouer le son SOS.');
+    }
   } catch (e) {
     console.warn('[SW] Impossible d\'envoyer le message de son SOS:', e);
   }
