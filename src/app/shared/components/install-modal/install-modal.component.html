@@ -1,0 +1,63 @@
+<div class="install-overlay" *ngIf="pwa.showIosModal()" (click)="pwa.closeIosModal()">
+  <div class="install-modal" (click)="$event.stopPropagation()">
+
+    <button class="install-modal-close" (click)="pwa.closeIosModal()">
+      <i class="fas fa-xmark"></i>
+    </button>
+
+    <!-- iOS -->
+    <ng-container *ngIf="pwa.platform === 'ios'">
+      <div class="install-modal-icon ios">
+        <i class="fab fa-apple"></i>
+      </div>
+      <h3>Installer AlertProche sur iPhone / iPad</h3>
+      <p class="install-modal-sub">Suivez ces 3 étapes dans Safari pour ajouter l'app à votre écran d'accueil :</p>
+
+      <ol class="install-steps">
+        <li class="install-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Appuyez sur le bouton Partager</strong>
+            <span>L'icône <i class="fas fa-arrow-up-from-bracket"></i> en bas de Safari</span>
+          </div>
+        </li>
+        <li class="install-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Faites défiler et appuyez sur</strong>
+            <span>« Sur l'écran d'accueil »</span>
+          </div>
+        </li>
+        <li class="install-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Appuyez sur « Ajouter »</strong>
+            <span>L'icône AlertProche apparaîtra sur votre écran d'accueil</span>
+          </div>
+        </li>
+      </ol>
+
+      <div class="install-modal-hint">
+        <i class="fas fa-circle-info"></i>
+        Fonctionne uniquement depuis <strong>Safari</strong> sur iOS
+      </div>
+    </ng-container>
+
+    <!-- Desktop / autre navigateur non compatible -->
+    <ng-container *ngIf="pwa.platform === 'desktop'">
+      <div class="install-modal-icon desktop">
+        <i class="fas fa-download"></i>
+      </div>
+      <h3>Installer AlertProche</h3>
+      <p class="install-modal-sub">Pour installer l'application, ouvrez ce site dans Chrome ou Edge sur Android, puis appuyez sur "Ajouter à l'écran d'accueil".</p>
+      <div class="install-modal-hint">
+        <i class="fas fa-mobile-screen"></i>
+        URL : <strong>alertproche.com</strong>
+      </div>
+    </ng-container>
+
+    <button class="btn btn-primary install-modal-btn" (click)="pwa.closeIosModal()">
+      <i class="fas fa-check"></i> Compris
+    </button>
+  </div>
+</div>
