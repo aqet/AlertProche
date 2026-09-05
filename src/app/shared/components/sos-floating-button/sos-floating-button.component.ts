@@ -2,11 +2,9 @@ import {
   Component, OnInit, OnDestroy, signal, computed, inject, NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Geolocation } from '@capacitor/geolocation';
-import { Network } from '@capacitor/network';
-import { Device } from '@capacitor/device';
 import { SosService } from '../../../core/services/sos.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 type SosState =
   | 'idle'          // Bouton au repos
@@ -26,9 +24,10 @@ const CANCEL_DURATION = 5000;  // 5 secondes de décompte avant envoi
   styleUrls:   ['./sos-floating-button.component.css'],
 })
 export class SosFloatingButtonComponent implements OnInit, OnDestroy {
-  private sosService = inject(SosService);
-  private authService = inject(AuthService);
-  private zone       = inject(NgZone);
+  private sosService    = inject(SosService);
+  private authService   = inject(AuthService);
+  private notifService  = inject(NotificationService);
+  private zone          = inject(NgZone);
 
   // ── État ────────────────────────────────────────────────────────────────
   state            = signal<SosState>('idle');
@@ -136,21 +135,26 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
     this.state.set('active');
     this.errorMsg.set('');
 
-    // Vérifier connectivité
-    try {
-      const { connected } = await Network.getStatus();
-      if (!connected) {
-        this.fallbackSms();
-        return;
-      }
-    } catch { /* Web/desktop : continuer */ }
+    // Jouer le son SOS immédiatement au déclenchement
+    this.notifService.playSosSound();
 
-    // Obtenir position GPS
+    // Vérifier connectivité via API web native
+    if (!navigator.onLine) {
+      this.fallbackSms();
+      return;
+    }
+
+    // Obtenir position GPS via API web native
     let lat = this.lastPosition?.lat ?? 0;
     let lng = this.lastPosition?.lng ?? 0;
 
     try {
-      const pos = await Geolocation.getCurrentPosition({ timeout: 2000, enableHighAccuracy: true });
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 2000,
+          enableHighAccuracy: true,
+        })
+      );
       lat = pos.coords.latitude;
       lng = pos.coords.longitude;
       this.lastPosition = { lat, lng };
@@ -178,7 +182,12 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
   private startLocationUpdates(sosId: string): void {
     this.locationInterval = setInterval(async () => {
       try {
-        const pos = await Geolocation.getCurrentPosition({ timeout: 3000, enableHighAccuracy: true });
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 3000,
+            enableHighAccuracy: true,
+          })
+        );
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         this.lastPosition = { lat, lng };
@@ -206,14 +215,15 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
   }
 
   // ── SURVEILLANCE BATTERIE TOUTES LES 30 SECONDES ────────────────────────
-  private startBatteryMonitor(sosId: string): void {    this.batteryInterval = setInterval(async () => {
+  private startBatteryMonitor(sosId: string): void {
+    this.batteryInterval = setInterval(async () => {
       try {
-        const info = await Device.getBatteryInfo();
-        if (info.batteryLevel !== undefined && info.batteryLevel < 0.10) {
+        const battery = await (navigator as any).getBattery?.();
+        if (battery && battery.level < 0.10) {
           this.sosService.lowBattery(sosId).subscribe();
           clearInterval(this.batteryInterval);
         }
-      } catch { /* ignore sur web */ }
+      } catch { /* ignore si non supporté */ }
     }, 30_000);
   }
 
@@ -231,7 +241,9 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
   // ── CACHE POSITION AU CHARGEMENT ────────────────────────────────────────
   private async cacheLastPosition(): Promise<void> {
     try {
-      const pos = await Geolocation.getCurrentPosition({ timeout: 5000 });
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+      );
       this.lastPosition = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     } catch { /* pas de GPS disponible */ }
   }

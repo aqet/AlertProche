@@ -97,6 +97,18 @@ export class AppComponent implements OnInit {
     this.applyPwaBodyClass();
     this.appInit.initializeApp();
     this.requestPermissionsOnStart();
+    this.setupSosSoundPreload();
+  }
+
+  /** Précharge le son SOS dès la première interaction utilisateur */
+  private setupSosSoundPreload(): void {
+    const preload = () => {
+      this.notifSvc.preloadSosSound();
+      document.removeEventListener('click', preload);
+      document.removeEventListener('touchstart', preload);
+    };
+    document.addEventListener('click', preload, { once: true, passive: true });
+    document.addEventListener('touchstart', preload, { once: true, passive: true });
   }
 
   /** Demande les permissions Notifications et Micro dès le démarrage */

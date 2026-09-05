@@ -5,12 +5,193 @@ import { SwPush } from '@angular/service-worker';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
-/**
- * Clé publique VAPID pour Web Push (PWA).
- * Chargée depuis le backend via GET /auth/vapid-public-key.
- * Fallback sur environment.vapidPublicKey si disponible.
- */
 const VAPID_PUBLIC_KEY = environment.vapidPublicKey ?? '';
+
+@Injectable({ providedIn: 'root' })
+export class NotificationService {
+  private apiUrl = `${environment.apiUrl}`;
+
+  private http   = inject(HttpClient);
+  private router = inject(Router);
+  private swPush = inject(SwPush);
+
+  private sosSoundAudio: HTMLAudioElement | null = null;
+  private sosSoundPreloaded = false;
+
+  private getSession(): { token: string; user: { _id: string } } | null {
+    try {
+      const stored = localStorage.getItem('ap_session');
+      if (!stored) return null;
+      const parsed = JSON.parse(stored);
+      return parsed?.token && parsed?.user?._id ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Précharge le son SOS dès le démarrage pour contourner les restrictions autoplay.
+   * Doit être appelé lors d'une interaction utilisateur (clic, tap).
+   */
+  preloadSosSound(): void {
+    if (this.sosSoundPreloaded) return;
+    try {
+      this.sosSoundAudio = new Audio('/sounds/sos-alert.mp3');
+      this.sosSoundAudio.preload = 'auto';
+      this.sosSoundAudio.volume = 1.0;
+      this.sosSoundAudio.load();
+      this.sosSoundPreloaded = true;
+    } catch { /* ignore */ }
+  }
+
+  async initialiserPush(): Promise<void> {
+    if (!this.swPush.isEnabled) {
+      console.warn('[Push] SwPush non disponible (dev mode ou SW non enregistré).');
+      this.listenSwMessages();
+      return;
+    }
+
+    const session = this.getSession();
+
+    // Récupérer la clé VAPID
+    let vapidKey = VAPID_PUBLIC_KEY;
+    if (!vapidKey) {
+      try {
+        const res = await firstValueFrom(
+          this.http.get<{ key: string | null }>(`${this.apiUrl}/auth/vapid-public-key`)
+        );
+        vapidKey = res.key ?? '';
+      } catch {
+        console.warn('[Push] Impossible de charger la clé VAPID.');
+      }
+    }
+
+    if (!vapidKey) {
+      console.warn('[Push] Clé VAPID manquante — notifications Web Push désactivées.');
+      this.listenSwMessages();
+      return;
+    }
+
+    // Souscription VAPID
+    try {
+      const sub = await this.swPush.requestSubscription({ serverPublicKey: vapidKey });
+      if (session) await this.sendSubscriptionToBackend(sub, session.token);
+      // Précharger le son après permission (interaction utilisateur faite)
+      this.preloadSosSound();
+    } catch (err) {
+      console.warn('[Push] Permission refusée ou erreur VAPID:', err);
+    }
+
+    // Foreground : notification reçue → jouer le son immédiatement
+    this.swPush.messages.subscribe((msg: any) => {
+      const data = msg?.data || msg?.notification?.data || {};
+      if (data.type === 'SOS_TRUSTED' || data.type === 'SOS_PROXIMITY') {
+        this.playSosSound();
+      }
+    });
+
+    // Tap sur notification
+    this.swPush.notificationClicks.subscribe(({ action, notification }) => {
+      const data = (notification as any).data || {};
+      this.handleNotificationClick(action, data);
+    });
+
+    this.listenSwMessages();
+  }
+
+  private async sendSubscriptionToBackend(sub: PushSubscription, jwtToken: string): Promise<void> {
+    const tokenValue = JSON.stringify(sub);
+    this.http
+      .post(
+        `${this.apiUrl}/auth/fcm-token`,
+        { token: tokenValue },
+        { headers: { Authorization: `Bearer ${jwtToken}` } },
+      )
+      .subscribe({
+        next: () => console.log('[Push] Subscription Web Push enregistrée.'),
+        error: (err) => console.error('[Push] Erreur enregistrement subscription:', err),
+      });
+  }
+
+  private handleNotificationClick(action: string, data: any): void {
+    const sosId  = data.sosId;
+    const postId = data.postId;
+    const type   = data.type as string;
+
+    if (action === 'respond' && sosId) { this.router.navigate(['/sos', sosId]); return; }
+
+    switch (type) {
+      case 'SOS_TRUSTED':
+      case 'SOS_PROXIMITY':
+      case 'SOS_RESOLVED':
+      case 'LOW_BATTERY':
+        if (sosId) this.router.navigate(['/sos', sosId]);
+        break;
+      case 'TRUSTED_CONTACT_INVITE':
+      case 'TRUSTED_CONTACT_RESPONSE':
+        this.router.navigate(['/dashboard'], { queryParams: { tab: 'sos' } });
+        break;
+      case 'NEW_POST':
+        if (postId) this.router.navigate(['/posts', postId]);
+        break;
+      default:
+        if (sosId) this.router.navigate(['/sos', sosId]);
+        break;
+    }
+  }
+
+  private listenSwMessages(): void {
+    if (typeof navigator === 'undefined' || !navigator.serviceWorker) return;
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'PLAY_SOS_SOUND') {
+        this.playSosSound();
+      }
+    });
+  }
+
+  /** Joue le son SOS — avec retry sur interaction si autoplay bloqué */
+  playSosSound(): void {
+    try {
+      if (!this.sosSoundAudio) {
+        this.sosSoundAudio = new Audio('/sounds/sos-alert.mp3');
+        this.sosSoundAudio.volume = 1.0;
+        this.sosSoundAudio.preload = 'auto';
+      }
+      this.sosSoundAudio.currentTime = 0;
+      const playPromise = this.sosSoundAudio.play();
+      if (playPromise) {
+        playPromise.catch(() => {
+          // Autoplay bloqué → retry au prochain tap/clic
+          const retry = () => {
+            this.sosSoundAudio!.play().catch(() => {});
+            document.removeEventListener('click', retry);
+            document.removeEventListener('touchstart', retry);
+          };
+          document.addEventListener('click', retry, { once: true });
+          document.addEventListener('touchstart', retry, { once: true });
+        });
+      }
+    } catch (e) {
+      console.warn('[Push] Impossible de jouer le son SOS:', e);
+    }
+  }
+
+  async requestNotificationPermission(): Promise<NotificationPermission> {
+    if (!('Notification' in window)) return 'denied';
+    if (Notification.permission === 'granted') return 'granted';
+    return Notification.requestPermission();
+  }
+
+  async requestMicrophonePermission(): Promise<boolean> {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(t => t.stop());
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
