@@ -79,7 +79,7 @@ export class NotificationService {
       const data = msg?.data || msg?.notification?.data || {};
       if (data.type === 'SOS_TRUSTED' || data.type === 'SOS_PROXIMITY') {
         if (data.threatLevel === 'CRITICAL' || data.threatLevel === 'HIGH') {
-          this.playSosSound();
+          this.playSosSound('/sounds/sos-alert.mp3');
         }
       }
     });
@@ -153,24 +153,34 @@ export class NotificationService {
 
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (event.data?.type === 'PLAY_SOS_SOUND') {
-        this.playSosSound();
+        const url = event.data?.soundUrl || '/sounds/sos-alert.mp3';
+        this.playSosSound(url);
       }
     });
   }
 
   /** Joue le son SOS d'urgence */
-  playSosSound(): void {
+  playSosSound(url = '/sounds/sos-alert.mp3'): void {
     try {
-      if (!this.sosSoundAudio) {
-        this.sosSoundAudio = new Audio('/sounds/sos-alert.mp3');
+      if (!this.sosSoundAudio || this.sosSoundAudio.src !== url) {
+        this.sosSoundAudio = new Audio(url);
         this.sosSoundAudio.loop = false;
         this.sosSoundAudio.volume = 1.0;
+        this.sosSoundAudio.preload = 'auto';
       }
       // Repart depuis le début si déjà en cours
       this.sosSoundAudio.currentTime = 0;
       this.sosSoundAudio.play().catch(err => {
-        // Autoplay bloqué par le navigateur — sera joué lors de la prochaine interaction
-        console.warn('[Push] Autoplay son SOS bloqué:', err.message);
+        // Autoplay bloqué — sera joué lors de la prochaine interaction utilisateur
+        console.warn('[Push] Autoplay son SOS bloqué (interaction requise):', err.message);
+        // Deuxième tentative au prochain clic
+        const retry = () => {
+          this.sosSoundAudio?.play().catch(() => {});
+          document.removeEventListener('click', retry);
+          document.removeEventListener('touchstart', retry);
+        };
+        document.addEventListener('click', retry, { once: true });
+        document.addEventListener('touchstart', retry, { once: true });
       });
     } catch (e) {
       console.warn('[Push] Impossible de jouer le son SOS:', e);
