@@ -1,0 +1,111 @@
+<div class="create-post-card" *ngIf="user()">
+  <!-- Header -->
+  <div class="create-post-header">
+    <div class="cp-avatar">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
+    <textarea
+      class="cp-textarea"
+      placeholder="Partagez quelque chose avec la communauté..."
+      [ngModel]="content()"
+      (ngModelChange)="content.set($event)"
+      maxlength="2000"
+      rows="3">
+    </textarea>
+  </div>
+
+  <!-- Erreur -->
+  <div class="cp-error" *ngIf="error()">
+    <i class="fas fa-circle-exclamation"></i> {{ error() }}
+  </div>
+
+  <!-- Previews médias -->
+  <div class="cp-previews" *ngIf="previews().length > 0">
+    <div class="cp-preview-item" *ngFor="let p of previews(); let i = index">
+      <img *ngIf="p.type === 'image'" [src]="p.url" alt="Aperçu">
+      <!-- Vidéo : pas de controls en preview, juste vignette -->
+      <video *ngIf="p.type === 'video'" [src]="p.url" preload="metadata" muted playsinline></video>
+      <div *ngIf="p.type === 'video'" class="cp-video-icon">
+        <i class="fas fa-video"></i>
+      </div>
+      <button class="cp-remove-btn" (click)="removeFile(i)" title="Retirer">
+        <i class="fas fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Localisation avec autocomplétion + validation IA -->
+  <div class="cp-location-wrap" *ngIf="showLocationField()">
+    <div class="cp-location-input-wrap">
+      <i class="fas fa-location-dot cp-loc-icon"></i>
+      <input
+        type="text"
+        class="cp-location-input"
+        placeholder="Ville, pays..."
+        [value]="locationInput()"
+        (input)="onLocationInput($any($event.target).value)"
+        (blur)="onLocationBlur()"
+        maxlength="100">
+      <div class="spinner cp-loc-spinner" *ngIf="locationValidating()"></div>
+      <i class="fas fa-check cp-loc-valid" *ngIf="locationValid()"></i>
+    </div>
+    <div class="cp-location-suggestions" *ngIf="showSuggestions() && locationSuggestions().length > 0">
+      <div
+        class="cp-loc-suggestion"
+        *ngFor="let city of locationSuggestions()"
+        (mousedown)="selectLocation(city)">
+        <i class="fas fa-location-dot"></i> {{ city }}
+      </div>
+    </div>
+    <p class="cp-loc-error" *ngIf="locationError()">
+      <i class="fas fa-circle-exclamation"></i> {{ locationError() }}
+    </p>
+  </div>
+
+  <!-- Footer actions -->
+  <div class="cp-footer">
+    <div class="cp-actions">
+      <!-- Bouton ajout média -->
+      <button
+        class="cp-action-btn"
+        (click)="openFilePicker()"
+        [disabled]="loading() || files().length >= 4"
+        title="Ajouter photo ou vidéo">
+        <i class="fas fa-image"></i>
+        <span>Photo / Vidéo</span>
+      </button>
+
+      <!-- Localisation toggle -->
+      <button
+        class="cp-action-btn"
+        (click)="toggleLocationField()"
+        [class.cp-action-btn-active]="showLocationField()"
+        title="Ajouter localisation">
+        <i class="fas fa-location-dot"></i>
+        <span>Lieu</span>
+      </button>
+    </div>
+
+    <!-- Compteur + Publier -->
+    <div class="cp-submit-area">
+      <span class="cp-char-count" [class.cp-char-warn]="charCount() > 1800">
+        {{ charCount() }}/2000
+      </span>
+      <button
+        class="cp-submit-btn"
+        (click)="submit()"
+        [disabled]="loading() || (content().trim().length === 0 && files().length === 0)">
+        <span class="spinner cp-spinner" *ngIf="loading()"></span>
+        <i class="fas fa-paper-plane" *ngIf="!loading()"></i>
+        {{ loading() ? 'Publication...' : 'Publier' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Input fichier caché -->
+  <input
+    #fileInput
+    type="file"
+    accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"
+    multiple
+    style="display:none"
+    (change)="onFilesSelected($event)">
+</div>

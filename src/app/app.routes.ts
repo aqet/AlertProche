@@ -9,6 +9,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
   },
   {
+    path: 'feed',
+    loadComponent: () => import('./features/feed/feed.component').then(m => m.FeedComponent)
+  },
+  {
     path: 'auth',
     loadComponent: () => import('./features/auth/auth.component').then(m => m.AuthComponent)
   },
