@@ -356,7 +356,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
         this.locationError.set('');
       } else {
         this.locationValid.set(false);
-        this.locationError.set(`"${city}" ne semble pas être une localité du Cameroun. Veuillez vérifier ou choisir une ville dans la liste.`);
+        this.locationError.set(`"${city}" ne semble pas être une localité valide. Veuillez vérifier le nom ou choisir une ville dans la liste.`);
         this.form.get('location')?.setValue('');
       }
     } catch {

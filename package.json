@@ -29,6 +29,7 @@
     "@capacitor/push-notifications": "^8.1.2",
     "@capgo/capacitor-native-biometric": "^8.6.2",
     "@swimlane/ngx-charts": "^20.5.0",
+    "browser-image-compression": "^2.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"

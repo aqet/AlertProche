@@ -17,6 +17,11 @@
           Accueil
         </a>
       </li>
+      <li>
+        <a routerLink="/feed" routerLinkActive="active" class="nav-link">
+          <i class="fas fa-rss"></i> Fil d'actualité
+        </a>
+      </li>
       <li *ngIf="isAuth()">
         <a routerLink="/sos/history" routerLinkActive="active" class="nav-link" *ngIf="isAuth()"><i
             class="fas fa-clock-rotate-left"></i> Historique </a>
@@ -83,6 +88,9 @@
   <div class="mobile-menu" *ngIf="isOpen">
     <div class="mobile-menu-inner">
       <a routerLink="/" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> Accueil</a>
+      <a routerLink="/feed" routerLinkActive="active" (click)="closeMenu()" class="m-link">
+        <i class="fas fa-rss"></i> Fil d'actualité
+      </a>
       <a routerLink="/sos/history" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
           class="fas fa-clock-rotate-left"></i> Historique </a>
       <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-circle-info"></i> À propos</a>
@@ -118,6 +126,12 @@
       (click)="closeMenu()">
       <i class="fas fa-house"></i>
       <span>Accueil</span>
+    </a>
+
+    <!-- Feed -->
+    <a routerLink="/feed" routerLinkActive="active" class="bn-item" (click)="closeMenu()">
+      <i class="fas fa-rss"></i>
+      <span>Actualité</span>
     </a>
 
     <!-- Alertes / Historique SOS -->
