@@ -3,16 +3,17 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { SosFloatingButtonComponent } from './shared/components/sos-floating-button/sos-floating-button.component';
 import { UpdateModalComponent } from './shared/components/update-modal/update-modal.component';
-import { Router } from '@angular/router';
-import { NotificationService } from './core/services/notification.service';
+import { PermissionBannerComponent } from './shared/components/permission-banner/permission-banner.component';
+import { PermissionService } from './core/services/permission.service';
 import { AppInitService } from './core/services/app-init.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent, UpdateModalComponent],
+  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent, UpdateModalComponent, PermissionBannerComponent],
   template: `
     <app-navbar></app-navbar>
+    <app-permission-banner></app-permission-banner>
     <router-outlet></router-outlet>
     <app-sos-floating-button></app-sos-floating-button>
     <app-update-modal></app-update-modal>
@@ -89,35 +90,16 @@ import { AppInitService } from './core/services/app-init.service';
 })
 export class AppComponent implements OnInit {
 
-  private router   = inject(Router);
-  private appInit  = inject(AppInitService);
-  private notifSvc = inject(NotificationService);
+  private appInit   = inject(AppInitService);
+  private permSvc   = inject(PermissionService);
 
   ngOnInit() {
     this.applyPwaBodyClass();
     this.appInit.initializeApp();
-    this.requestPermissionsOnStart();
-    this.setupSosSoundPreload();
-  }
 
-  /** Précharge le son SOS dès la première interaction utilisateur */
-  private setupSosSoundPreload(): void {
-    const preload = () => {
-      this.notifSvc.preloadSosSound();
-      document.removeEventListener('click', preload);
-      document.removeEventListener('touchstart', preload);
-    };
-    document.addEventListener('click', preload, { once: true, passive: true });
-    document.addEventListener('touchstart', preload, { once: true, passive: true });
-  }
-
-  /** Demande les permissions Notifications et Micro dès le démarrage */
-  private async requestPermissionsOnStart(): Promise<void> {
-    await this.notifSvc.requestNotificationPermission();
-    await this.notifSvc.initialiserPush();
-    this.notifSvc.requestMicrophonePermission().then(granted => {
-      if (granted) console.log('[App] Permission micro accordée.');
-    });
+    // Vérifier l'état des permissions au chargement (sans demander)
+    // La bannière s'affichera si une permission manque
+    this.permSvc.checkPermissionsOnLoad();
   }
 
   /** Ajoute 'pwa-standalone' sur <body> si l'app est installée */

@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { SosService } from '../../../core/services/sos.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { PermissionService } from '../../../core/services/permission.service';
 
 type SosState =
   | 'idle'          // Bouton au repos
@@ -27,6 +28,7 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
   private sosService    = inject(SosService);
   private authService   = inject(AuthService);
   private notifService  = inject(NotificationService);
+  private permService   = inject(PermissionService);
   private zone          = inject(NgZone);
 
   // ── État ────────────────────────────────────────────────────────────────
@@ -144,21 +146,28 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Obtenir position GPS via API web native
+    // S'assurer que la géoloc est accordée (on est dans un geste utilisateur)
+    if (this.permService.geolocationStatus() !== 'granted') {
+      await this.permService.requestGeolocation();
+    }
+
+    // Obtenir position GPS
     let lat = this.lastPosition?.lat ?? 0;
     let lng = this.lastPosition?.lng ?? 0;
 
-    try {
-      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          timeout: 2000,
-          enableHighAccuracy: true,
-        })
-      );
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
-      this.lastPosition = { lat, lng };
-    } catch { /* Utilise la position en cache */ }
+    if (this.permService.geolocationStatus() === 'granted') {
+      try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 3000,
+            enableHighAccuracy: true,
+          })
+        );
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+        this.lastPosition = { lat, lng };
+      } catch { /* Utilise la position en cache */ }
+    }
 
     this.sosService.trigger({ latitude: lat, longitude: lng }).subscribe({
       next: (sos) => {
@@ -240,9 +249,21 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
 
   // ── CACHE POSITION AU CHARGEMENT ────────────────────────────────────────
   private async cacheLastPosition(): Promise<void> {
+    // Si la géoloc n'est pas encore accordée, on demande via PermissionService
+    // (qui gère le bon contexte iOS/Android)
+    if (this.permService.geolocationStatus() !== 'granted') {
+      await this.permService.requestGeolocation();
+    }
+
+    if (this.permService.geolocationStatus() !== 'granted') return;
+
     try {
       const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 5000,
+          enableHighAccuracy: false,
+          maximumAge: 30_000,
+        })
       );
       this.lastPosition = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     } catch { /* pas de GPS disponible */ }
