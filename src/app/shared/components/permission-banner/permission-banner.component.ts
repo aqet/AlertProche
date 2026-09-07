@@ -51,6 +51,7 @@ import { PermissionService } from '../../../core/services/permission.service';
   `,
   styles: [`
     .perm-banner {
+      margin-top: 60px;
       position: sticky;
       top: 0;
       z-index: 900;
