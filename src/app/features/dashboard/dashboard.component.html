@@ -6,7 +6,10 @@
       <aside class="dash-sidebar">
         <!-- Profil compact -->
         <div class="dash-profile-card">
-          <div class="dash-avatar-lg">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
+          <div class="dash-avatar-lg">
+            <img *ngIf="user()?.photoUrl" [src]="user()?.photoUrl!" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            <span *ngIf="!user()?.photoUrl">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</span>
+          </div>
           <div class="dash-profile-info">
             <span class="dash-profile-name">{{ user()?.pseudo }}</span>
             <span class="dash-profile-role" [class.role-mod]="user()?.role === 'Moderateur'"
@@ -211,7 +214,27 @@
             <div class="profile-main">
               <div class="profile-card">
                 <div class="profile-header">
-                  <div class="profile-avatar-lg">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</div>
+                  <!-- Avatar cliquable pour changer la photo -->
+                  <div class="profile-avatar-wrap">
+                    <div class="profile-avatar-lg">
+                      <img *ngIf="photoPreview() || user()?.photoUrl"
+                           [src]="photoPreview() || user()?.photoUrl!"
+                           alt="Photo de profil"
+                           class="profile-avatar-img">
+                      <span *ngIf="!photoPreview() && !user()?.photoUrl">
+                        {{ user()?.pseudo?.charAt(0)?.toUpperCase() }}
+                      </span>
+                    </div>
+                    <label class="profile-avatar-overlay" title="Changer la photo">
+                      <span class="spinner profile-photo-spinner" *ngIf="photoLoading()"></span>
+                      <i class="fas fa-camera" *ngIf="!photoLoading()"></i>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        style="display:none"
+                        (change)="onPhotoSelected($event)">
+                    </label>
+                  </div>
                   <div>
                     <h2 class="profile-name">{{ user()?.pseudo }}</h2>
                     <p class="profile-email">{{ user()?.email }}</p>
@@ -219,6 +242,9 @@
                       [class.badge-abus]="user()?.role === 'Moderateur'"
                       [class.badge-disparition]="user()?.role === 'Admin'">{{ user()?.role }}</span>
                   </div>
+                </div>
+                <div class="photo-error" *ngIf="photoError()">
+                  <i class="fas fa-circle-exclamation"></i> {{ photoError() }}
                 </div>
                 <div class="divider"></div>
                 <div class="alert-banner success" *ngIf="profileSuccess()">

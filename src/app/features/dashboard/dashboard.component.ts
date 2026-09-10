@@ -33,7 +33,12 @@ export class DashboardComponent implements OnInit {
   profileForm: FormGroup;
   profileLoading = signal(false);
   profileSuccess = signal('');
-  profileError = signal('');
+  profileError   = signal('');
+
+  // ── Photo de profil ────────────────────────────────────────────────────
+  photoLoading   = signal(false);
+  photoError     = signal('');
+  photoPreview   = signal<string | null>(null);
 
   postEditForm: FormGroup;
   editLoading = signal(false);
@@ -340,6 +345,45 @@ export class DashboardComponent implements OnInit {
         this.profileLoading.set(false);
         this.profileError.set(err?.error?.message || 'Erreur lors de la mise à jour.');
       }
+    });
+  }
+
+  // ── Photo de profil ────────────────────────────────────────────────────
+
+  onPhotoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) {
+      this.photoError.set('Format non supporté. Acceptés : JPG, PNG, WebP.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.photoError.set('La photo dépasse 5 Mo.');
+      return;
+    }
+
+    this.photoError.set('');
+    // Aperçu local immédiat
+    const reader = new FileReader();
+    reader.onload = () => this.photoPreview.set(reader.result as string);
+    reader.readAsDataURL(file);
+
+    // Upload
+    this.photoLoading.set(true);
+    this.auth.updatePhoto(file).subscribe({
+      next: () => {
+        this.photoLoading.set(false);
+        this.photoPreview.set(null);
+        this.profileSuccess.set('Photo de profil mise à jour.');
+        setTimeout(() => this.profileSuccess.set(''), 3000);
+      },
+      error: (err) => {
+        this.photoLoading.set(false);
+        this.photoPreview.set(null);
+        this.photoError.set(err?.error?.message || 'Erreur lors de l\'upload.');
+      },
     });
   }
 

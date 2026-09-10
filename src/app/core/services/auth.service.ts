@@ -61,8 +61,32 @@ export class AuthService {
         const session = localStorage.getItem(SESSION_KEY);
         if (session) {
           const parsed = JSON.parse(session);
-          parsed.user = user;
+          parsed.user = { ...parsed.user, ...user };
           localStorage.setItem(SESSION_KEY, JSON.stringify(parsed));
+        }
+      })
+    );
+  }
+
+  updatePhoto(file: File): Observable<{ photoUrl: string; user: User }> {
+    const formData = new FormData();
+    formData.append('photo', file);
+    return this.http.patch<{ photoUrl: string; user: User }>(
+      `${this.API}/profile/photo`,
+      formData
+    ).pipe(
+      tap(res => {
+        // Mettre à jour le signal et la session
+        const current = this.currentUser();
+        if (current) {
+          const updated = { ...current, photoUrl: res.photoUrl };
+          this.currentUser.set(updated);
+          const session = localStorage.getItem(SESSION_KEY);
+          if (session) {
+            const parsed = JSON.parse(session);
+            parsed.user = { ...parsed.user, photoUrl: res.photoUrl };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(parsed));
+          }
         }
       })
     );

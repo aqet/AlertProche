@@ -407,6 +407,14 @@
   margin-bottom: 24px;
 }
 
+/* Wrapper avatar pour le bouton de changement */
+.profile-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+}
+
 .profile-avatar-lg {
   width: 64px; height: 64px;
   background: var(--green);
@@ -417,7 +425,56 @@
   font-size: 1.6rem;
   font-weight: 800;
   color: #fff;
-  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Overlay caméra au survol */
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.18s;
+}
+
+.profile-avatar-wrap:hover .profile-avatar-overlay { opacity: 1; }
+
+.profile-avatar-overlay i {
+  color: #fff;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.profile-photo-spinner {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+/* Message d'erreur photo */
+.photo-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--urgent-dim);
+  border: 1px solid var(--urgent-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--urgent);
+  margin-bottom: 16px;
 }
 
 .profile-name  { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }

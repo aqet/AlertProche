@@ -7,6 +7,7 @@ export interface User {
   createdAt?: string;
   location?: string;
   token?: string[];
+  photoUrl?: string | null;
 }
 
 export interface AuthResponse {
