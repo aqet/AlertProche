@@ -269,7 +269,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
 
     try {
-      const airesponse = await this.postService.analyzeImage(file);
+      const airesponse = await this.postService.analyzeImage(file);      
       this.form.patchValue({
         publicationType: airesponse.completion.publicationType,
         title: airesponse.completion.alertTitle,
@@ -277,6 +277,24 @@ export class PostFormComponent implements OnInit, OnDestroy {
         location: airesponse.completion.cityName,
         type: airesponse.completion.publicationType,
       });
+
+      // Synchroniser le signal locationInput qui pilote l'input affiché
+      if (airesponse.completion.cityName) {
+        const city = airesponse.completion.cityName;
+        this.locationInput.set(city);
+        // Vérifier si la ville est dans la liste locale
+        const inList = this.camerounCities.some(
+          c => c.toLowerCase() === city.toLowerCase()
+        );
+        if (inList) {
+          this.form.get('location')?.setValue(city.toLowerCase());
+          this.locationValid.set(true);
+        } else {
+          // Lancer la validation IA en arrière-plan
+          this.validateFreeCity();
+        }
+      }
+      // console.log(this.form);
       this.analysisStatus.set('done');
     } catch (error) {
       console.error('Erreur pendant l’analyse IA de l’image :', error);
