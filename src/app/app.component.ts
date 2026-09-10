@@ -4,19 +4,21 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
 import { SosFloatingButtonComponent } from './shared/components/sos-floating-button/sos-floating-button.component';
 import { UpdateModalComponent } from './shared/components/update-modal/update-modal.component';
 import { PermissionBannerComponent } from './shared/components/permission-banner/permission-banner.component';
+import { ChatbotComponent } from './shared/components/chatbot/chatbot.component';
 import { PermissionService } from './core/services/permission.service';
 import { AppInitService } from './core/services/app-init.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent, UpdateModalComponent, PermissionBannerComponent],
+  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent, UpdateModalComponent, PermissionBannerComponent, ChatbotComponent],
   template: `
     <app-navbar></app-navbar>
     <app-permission-banner></app-permission-banner>
     <router-outlet></router-outlet>
     <app-sos-floating-button></app-sos-floating-button>
     <app-update-modal></app-update-modal>
+    <app-chatbot></app-chatbot>
     <footer class="app-footer">
       <div class="footer-inner">
         <div class="footer-brand">

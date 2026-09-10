@@ -1,0 +1,115 @@
+<!-- ── FAB bouton gauche ────────────────────────────────────── -->
+<button
+  class="chat-fab"
+  [class.chat-fab-open]="isOpen()"
+  (click)="toggle()"
+  title="Assistant AlertProche"
+  aria-label="Ouvrir l'assistant">
+  <i class="fas fa-comment-dots" *ngIf="!isOpen()"></i>
+  <i class="fas fa-xmark" *ngIf="isOpen()"></i>
+</button>
+
+<!-- ── Fenêtre de chat ─────────────────────────────────────── -->
+<div class="chat-window" *ngIf="isOpen()" role="dialog" aria-label="Assistant AlertProche">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="chat-bot-avatar">
+      <i class="fas fa-shield-heart"></i>
+    </div>
+    <div class="chat-bot-info">
+      <div class="chat-bot-name">Assistant AlertProche</div>
+      <div class="chat-bot-status">
+        <span class="chat-status-dot"></span>
+        En ligne
+      </div>
+    </div>
+    <button class="chat-close-btn" (click)="toggle()" aria-label="Fermer">
+      <i class="fas fa-xmark"></i>
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" #messagesContainer>
+
+    <!-- Chargement historique -->
+    <div class="chat-history-loading" *ngIf="historyLoading()">
+      <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
+      <span>Chargement de l'historique...</span>
+    </div>
+
+    <!-- Message d'accueil si historique vide -->
+    <div class="chat-welcome" *ngIf="messages().length === 0 && !historyLoading()">
+      <div class="chat-bot-icon-lg">
+        <i class="fas fa-shield-heart"></i>
+      </div>
+      <p>Bonjour ! Je suis votre assistant AlertProche.<br>Comment puis-je vous aider ?</p>
+      <div class="chat-suggestions">
+        <button
+          *ngFor="let s of suggestions"
+          class="chat-suggestion"
+          (click)="sendMessage(s)">
+          {{ s }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Liste des messages -->
+    <div
+      *ngFor="let msg of messages()"
+      class="chat-msg-wrap"
+      [class.user-wrap]="msg.role === 'user'"
+      [class.assistant-wrap]="msg.role === 'assistant'">
+
+      <!-- Avatar assistant -->
+      <div class="chat-msg-avatar" *ngIf="msg.role === 'assistant'">
+        <i class="fas fa-shield-heart"></i>
+      </div>
+
+      <div class="chat-bubble" [class.user-bubble]="msg.role === 'user'" [class.assistant-bubble]="msg.role === 'assistant'">
+        <p>{{ msg.text }}</p>
+        <!-- Bouton attach_link -->
+        <button
+          *ngIf="msg.action?.type === 'attach_link'"
+          class="chat-link-btn"
+          (click)="navigate(msg.action!.route)">
+          <i class="fas fa-arrow-right"></i> Accéder
+        </button>
+      </div>
+    </div>
+
+    <!-- Indicateur de frappe -->
+    <div class="chat-typing-wrap" *ngIf="loading()">
+      <div class="chat-msg-avatar">
+        <i class="fas fa-shield-heart"></i>
+      </div>
+      <div class="chat-typing">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Zone de saisie -->
+  <div class="chat-input-row">
+    <input
+      type="text"
+      class="chat-input"
+      [(ngModel)]="inputText"
+      (keydown.enter)="onSend()"
+      placeholder="Votre message..."
+      [disabled]="loading()"
+      maxlength="500"
+      autocomplete="off">
+    <button
+      class="chat-send-btn"
+      (click)="onSend()"
+      [disabled]="loading() || !inputText.trim()"
+      title="Envoyer">
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
+
+</div>
