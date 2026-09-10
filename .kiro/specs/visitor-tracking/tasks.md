@@ -270,7 +270,7 @@ Implémentation complète du système de tracking pour AlertProche (Angular 18 +
     - Graphique linéaire avec deux séries
     - _Requirements: 6.5_
   
-  - [~] 12.8 Implémenter filtres de période
+  - [ ] 12.8 Implémenter filtres de période
     - Boutons 7d / 30d / 90d
     - Recharger toutes les données lors du changement de période
     - _Requirements: 6.11_
