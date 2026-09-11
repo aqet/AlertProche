@@ -138,14 +138,14 @@
     </a>
 
     <!-- Alertes / Historique SOS -->
-    <a routerLink="/sos/history" routerLinkActive="active" class="bn-item" (click)="closeMenu()" *ngIf="isAuth()">
+    <!-- <a routerLink="/sos/history" routerLinkActive="active" class="bn-item" (click)="closeMenu()" *ngIf="isAuth()">
       <i class="fas fa-clock-rotate-left"></i>
       <span>Historique</span>
     </a>
     <a routerLink="/avis" routerLinkActive="active" class="bn-item" (click)="closeMenu()" *ngIf="!isAuth()">
       <i class="fas fa-gauge"></i>
       <span>Avis</span>
-    </a>
+    </a> -->
 
     <!-- Publier - bouton central vert -->
     <a routerLink="/posts/new" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="isAuth()">

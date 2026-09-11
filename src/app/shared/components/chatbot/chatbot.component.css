@@ -44,8 +44,8 @@
 /* ── Fenêtre de chat ─────────────────────────────────────────── */
 .chat-window {
   position: fixed;
-  bottom: 88px;
-  left: 24px;
+  bottom: 25px;
+  left: 80px;
   width: 340px;
   max-height: 520px;
   border-radius: 16px;
@@ -54,7 +54,7 @@
   box-shadow: 0 8px 40px rgba(0,0,0,0.22);
   display: flex;
   flex-direction: column;
-  z-index: 849;
+  z-index: 9999;
   overflow: hidden;
   animation: slideUp 0.22s ease;
 }
@@ -337,12 +337,12 @@
   .chat-window {
     width: calc(100vw - 32px);
     left: 16px;
-    bottom: 84px;
+    bottom: 140px;
     max-height: 70vh;
   }
 
   .chat-fab {
-    bottom: 20px;
+    bottom: 80px;
     left: 20px;
     width: 48px;
     height: 48px;

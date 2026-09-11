@@ -6,7 +6,7 @@
 /* ── Conteneur principal ───────────────────────────── */
 .sos-fab-container {
   position: fixed;
-  bottom: 80px; /* Au-dessus de la bottom nav */
+  bottom: 50px; /* Au-dessus de la bottom nav */
   right: 16px;
   z-index: 99999;
   display: flex;
