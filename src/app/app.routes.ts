@@ -13,6 +13,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/feed/feed.component').then(m => m.FeedComponent)
   },
   {
+    path: 'feed/:id',
+    loadComponent: () => import('./features/feed/feed-detail/feed-detail.component').then(m => m.FeedDetailComponent)
+  },
+  {
     path: 'auth',
     loadComponent: () => import('./features/auth/auth.component').then(m => m.AuthComponent)
   },
