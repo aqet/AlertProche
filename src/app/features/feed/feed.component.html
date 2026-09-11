@@ -10,9 +10,7 @@
     </div>
 
     <!-- ── Créer un post ──────────────────────────────── -->
-    <app-create-feed-post
-      *ngIf="isAuth()"
-      (posted)="onPostCreated($event)">
+    <app-create-feed-post *ngIf="isAuth()" (posted)="onPostCreated($event)">
     </app-create-feed-post>
 
     <!-- Invitation à se connecter -->
@@ -46,9 +44,7 @@
     <!-- ── Liste des posts ────────────────────────────── -->
     <div class="feed-list" *ngIf="!loading()">
 
-      <article
-        class="feed-post-card"
-        *ngFor="let post of posts(); trackBy: trackByPost"
+      <article class="feed-post-card" *ngFor="let post of posts(); trackBy: trackByPost"
         [class.is-deleting]="deletingId() === post._id">
 
         <!-- Colonne gauche : avatar -->
@@ -61,84 +57,58 @@
 
         <!-- Colonne droite : tout le contenu -->
         <div class="post-main">
+          <div [routerLink]="['/feed', post._id]">
 
-          <!-- Header : pseudo · temps · localisation · menu -->
-          <div class="post-header">
-            <span class="post-pseudo">{{ post.author.pseudo }}</span>
-            <span class="post-sep">·</span>
-            <span class="post-time">{{ getTimeAgo(post.createdAt) }}</span>
-            <span class="post-location" *ngIf="post.location">
+            <!-- Header : pseudo · temps · localisation · menu -->
+            <div class="post-header">
+              <span class="post-pseudo">{{ post.author.pseudo }}</span>
               <span class="post-sep">·</span>
-              <i class="fas fa-location-dot"></i> {{ post.location }}
-            </span>
-            <span class="post-header-spacer"></span>
-            <div class="post-menu" *ngIf="canDelete(post)">
-              <button
-                class="post-menu-btn"
-                *ngIf="deletingId() !== post._id"
-                (click)="confirmDelete(post._id)"
-                title="Supprimer">
-                <i class="fas fa-trash"></i>
-              </button>
-              <div class="confirm-delete" *ngIf="deletingId() === post._id">
-                <span>Supprimer ?</span>
-                <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">Oui</button>
-                <button class="btn btn-ghost btn-sm" (click)="cancelDelete()">Non</button>
+              <span class="post-time">{{ getTimeAgo(post.createdAt) }}</span>
+              <span class="post-location" *ngIf="post.location">
+                <span class="post-sep">·</span>
+                <i class="fas fa-location-dot"></i> {{ post.location }}
+              </span>
+              <span class="post-header-spacer"></span>
+              <div class="post-menu" *ngIf="canDelete(post)">
+                <button class="post-menu-btn" *ngIf="deletingId() !== post._id" (click)="confirmDelete(post._id)"
+                  title="Supprimer">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <div class="confirm-delete" *ngIf="deletingId() === post._id">
+                  <span>Supprimer ?</span>
+                  <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">Oui</button>
+                  <button class="btn btn-ghost btn-sm" (click)="cancelDelete()">Non</button>
+                </div>
               </div>
+            </div>
+
+            <!-- Contenu texte avec troncature -->
+            <div class="post-content-wrap" *ngIf="post.content">
+              <p class="post-content" style="cursor:pointer">{{ getDisplayText(post) }}</p>
+              <button *ngIf="isTextLong(post)" class="post-expand-btn" (click)="toggleExpand(post._id)">
+                {{ isExpanded(post._id) ? 'Voir moins' : 'Voir plus' }}
+              </button>
             </div>
           </div>
 
-          <!-- Contenu texte avec troncature -->
-          <div class="post-content-wrap" *ngIf="post.content">
-            <p class="post-content">{{ getDisplayText(post) }}</p>
-            <button
-              *ngIf="isTextLong(post)"
-              class="post-expand-btn"
-              (click)="toggleExpand(post._id)">
-              {{ isExpanded(post._id) ? 'Voir moins' : 'Voir plus' }}
-            </button>
-          </div>
 
           <!-- Médias -->
           <div class="post-media" *ngIf="post.mediaUrls.length > 0">
 
             <ng-container *ngIf="post.mediaUrls.length === 1">
-              <img
-                *ngIf="getMediaType(post, 0) === 'image'"
-                [src]="post.mediaUrls[0]"
-                [alt]="post.content || 'Image'"
-                class="post-media-single"
-                loading="lazy"
-                style="cursor:pointer"
-                (click)="openLightbox(post, 0)">
-              <video
-                *ngIf="getMediaType(post, 0) === 'video'"
-                [src]="post.mediaUrls[0]"
-                controls
-                preload="metadata"
-                class="post-media-video"
-                playsinline
-                muted>
+              <img *ngIf="getMediaType(post, 0) === 'image'" [src]="post.mediaUrls[0]" [alt]="post.content || 'Image'"
+                class="post-media-single" loading="lazy" style="cursor:pointer" (click)="openLightbox(post, 0)">
+              <video *ngIf="getMediaType(post, 0) === 'video'" [src]="post.mediaUrls[0]" controls preload="metadata"
+                class="post-media-video" playsinline muted>
               </video>
             </ng-container>
 
-            <div
-              *ngIf="post.mediaUrls.length > 1"
-              class="post-media-grid"
-              [class.grid-2]="post.mediaUrls.length === 2"
-              [class.grid-3]="post.mediaUrls.length === 3"
-              [class.grid-4]="post.mediaUrls.length >= 4">
+            <div *ngIf="post.mediaUrls.length > 1" class="post-media-grid" [class.grid-2]="post.mediaUrls.length === 2"
+              [class.grid-3]="post.mediaUrls.length === 3" [class.grid-4]="post.mediaUrls.length >= 4">
               <ng-container *ngFor="let url of post.mediaUrls; let i = index">
-                <img
-                  *ngIf="getMediaType(post, i) === 'image'"
-                  [src]="url"
-                  [alt]="post.content || 'Image'"
-                  loading="lazy"
-                  (click)="openLightbox(post, i)">
-                <div
-                  *ngIf="getMediaType(post, i) === 'video'"
-                  class="post-video-thumb"
-                  (click)="openLightbox(post, i)">
+                <img *ngIf="getMediaType(post, i) === 'image'" [src]="url" [alt]="post.content || 'Image'"
+                  loading="lazy" (click)="openLightbox(post, i)">
+                <div *ngIf="getMediaType(post, i) === 'video'" class="post-video-thumb" (click)="openLightbox(post, i)">
                   <video [src]="url" preload="metadata" playsinline></video>
                   <div class="video-play-overlay"><i class="fas fa-play"></i></div>
                 </div>
@@ -149,20 +119,14 @@
 
           <!-- Footer : actions -->
           <div class="post-footer">
-            <button
-              class="post-action-btn"
-              [class.liked]="isLiked(post._id)"
-              (click)="toggleLike(post)"
+            <button class="post-action-btn" [class.liked]="isLiked(post._id)" (click)="toggleLike(post)"
               [disabled]="!isAuth()">
               <i class="fas fa-heart"></i>
               <span>{{ post.likesCount }}</span>
             </button>
 
-            <button
-              class="post-action-btn"
-              (click)="openComments(post._id)"
-              [class.active]="commentingPostId() === post._id"
-              [disabled]="!isAuth()">
+            <button class="post-action-btn" (click)="openComments(post._id)"
+              [class.active]="commentingPostId() === post._id" [disabled]="!isAuth()">
               <i class="fas fa-comment"></i>
               <span>{{ post.commentsCount }}</span>
             </button>
@@ -203,13 +167,8 @@
 
             <div class="comment-input-row" *ngIf="isAuth()">
               <div class="cp-avatar-sm">{{ currentUserInitial() }}</div>
-              <input
-                type="text"
-                class="comment-input"
-                placeholder="Répondre..."
-                [value]="getCommentText(post._id)"
-                (input)="setCommentText(post._id, $any($event.target).value)"
-                (keydown.enter)="submitComment(post._id)">
+              <input type="text" class="comment-input" placeholder="Répondre..." [value]="getCommentText(post._id)"
+                (input)="setCommentText(post._id, $any($event.target).value)" (keydown.enter)="submitComment(post._id)">
               <button class="comment-send-btn" (click)="submitComment(post._id)">
                 <i class="fas fa-paper-plane"></i>
               </button>
@@ -259,43 +218,29 @@
 
     <!-- Média actuel -->
     <ng-container *ngIf="lightboxCurrent">
-      <img
-        *ngIf="lightboxCurrent.type === 'image'"
-        [src]="lightboxCurrent.url"
-        class="lightbox-media"
+      <img *ngIf="lightboxCurrent.type === 'image'" [src]="lightboxCurrent.url" class="lightbox-media"
         alt="Média en plein écran">
-      <video
-        *ngIf="lightboxCurrent.type === 'video'"
-        [src]="lightboxCurrent.url"
-        controls
-        autoplay
+      <video *ngIf="lightboxCurrent.type === 'video'" [src]="lightboxCurrent.url" controls autoplay
         class="lightbox-media">
       </video>
     </ng-container>
 
     <!-- Flèche gauche -->
-    <button
-      class="lightbox-nav lightbox-prev"
-      *ngIf="lightboxHasPrev"
+    <button class="lightbox-nav lightbox-prev" *ngIf="lightboxHasPrev"
       (click)="$event.stopPropagation(); lightboxPrev()">
       <i class="fas fa-chevron-left"></i>
     </button>
 
     <!-- Flèche droite -->
-    <button
-      class="lightbox-nav lightbox-next"
-      *ngIf="lightboxHasNext"
+    <button class="lightbox-nav lightbox-next" *ngIf="lightboxHasNext"
       (click)="$event.stopPropagation(); lightboxNext()">
       <i class="fas fa-chevron-right"></i>
     </button>
 
     <!-- Points indicateurs -->
     <div class="lightbox-dots" *ngIf="lightboxItems().length > 1">
-      <span
-        *ngFor="let item of lightboxItems(); let i = index"
-        class="lightbox-dot"
-        [class.active]="i === lightboxIndex()"
-        (click)="$event.stopPropagation(); lightboxIndex.set(i)">
+      <span *ngFor="let item of lightboxItems(); let i = index" class="lightbox-dot"
+        [class.active]="i === lightboxIndex()" (click)="$event.stopPropagation(); lightboxIndex.set(i)">
       </span>
     </div>
 
@@ -303,10 +248,6 @@
 </div>
 
 <!-- ── Bouton retour en haut ──────────────────────────────── -->
-<button
-  class="scroll-top-btn"
-  *ngIf="showScrollTop()"
-  (click)="scrollToTop()"
-  title="Retour en haut">
+<button class="scroll-top-btn" *ngIf="showScrollTop()" (click)="scrollToTop()" title="Retour en haut">
   <i class="fas fa-arrow-up"></i>
 </button>

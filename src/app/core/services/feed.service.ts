@@ -42,6 +42,10 @@ export class FeedService {
     return this.http.get<FeedPage>(`${this.API}?page=${page}&limit=${limit}`);
   }
 
+  getPostById(postId: string): Observable<FeedPost> {
+    return this.http.get<FeedPost>(`${this.API}/${postId}`);
+  }
+
   createPost(formData: FormData): Observable<FeedPost> {
     return this.http.post<FeedPost>(this.API, formData);
   }
