@@ -181,6 +181,14 @@ export class PostService {
     return this.http.delete<void>(`${this.API}/${id}`);
   }
 
+  resolvePost(id: string): Observable<Post> {
+    return this.http.patch<Post>(`${this.API}/${id}/resolve`, {});
+  }
+
+  unresolvePost(id: string): Observable<Post> {
+    return this.http.patch<Post>(`${this.API}/${id}/unresolve`, {});
+  }
+
   // Méthode de compatibilité pour le composant modération (sync)
   isReported(id: string): boolean {
     // Avec le backend, isReported est un champ du post lui-même

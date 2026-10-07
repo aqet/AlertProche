@@ -56,6 +56,10 @@
             <span class="nav-label">Contacts SOS</span>
             <span class="dash-nav-badge" *ngIf="acceptedContactsCount() > 0">{{ acceptedContactsCount() }}/5</span>
           </button>
+          <button class="dash-nav-item" [class.active]="activeTab() === 'cagnotte'" (click)="setTab('cagnotte')">
+            <i class="fas fa-hand-holding-heart"></i>
+            <span class="nav-label">Mes Cagnottes</span>
+          </button>
         </nav>
 
         <!-- Actions rapides -->
@@ -135,10 +139,23 @@
                   <span><i class="fas fa-comment"></i> {{ post.commentCount || 0 }}</span>
                   <span *ngIf="post.isAnonymous"><i class="fas fa-eye-slash"></i> Anonyme</span>
                 </div>
+                <!-- Badge statut alerte -->
+                <app-alert-status-badge [post]="post"></app-alert-status-badge>
               </div>
               <div class="post-row-actions">
                 <button class="btn btn-ghost btn-sm" (click)="startEditPost(post)">
                   <i class="fas fa-pen"></i>
+                </button>
+                <!-- Marquer résolue / Réouvrir -->
+                <button class="btn btn-sm btn-resolve-sm" *ngIf="!post.isResolved"
+                  (click)="resolvePost(post)"
+                  title="Marquer comme résolue">
+                  <i class="fas fa-circle-check"></i>
+                </button>
+                <button class="btn btn-sm btn-reopen-sm" *ngIf="post.isResolved"
+                  (click)="unresolvePost(post)"
+                  title="Réouvrir cette alerte">
+                  <i class="fas fa-rotate-left"></i>
                 </button>
                 <button class="btn btn-sm" [class.btn-warning]="post.isActive !== false"
                   [class.btn-success-sm]="post.isActive === false" (click)="togglePostActive(post)"
@@ -536,6 +553,113 @@
 
           </ng-container>
 
+        </div>
+
+        <!-- ── MES CAGNOTTES ────────────────────────── -->
+        <div *ngIf="activeTab() === 'cagnotte'" class="animate-fade-in">
+          <div class="dash-section-header">
+            <h2>Mes Cagnottes</h2>
+          </div>
+
+          <div class="loading-state" *ngIf="loadingCagnottes()">
+            <div class="spinner"></div> Chargement...
+          </div>
+
+          <!-- Succès / Erreur payout -->
+          <div class="alert-banner success" *ngIf="payoutSuccess()">
+            <i class="fas fa-circle-check"></i> {{ payoutSuccess() }}
+          </div>
+          <div class="alert-banner error" *ngIf="payoutError()">
+            <i class="fas fa-circle-exclamation"></i> {{ payoutError() }}
+          </div>
+
+          <div *ngIf="!loadingCagnottes()">
+
+            <!-- Liste des alertes avec cagnotte -->
+            <div class="cagnotte-list" *ngIf="cagnottes().length > 0; else noCagnotte">
+              <div class="cagnotte-row" *ngFor="let c of cagnottes()">
+                <div class="cagnotte-info">
+                  <span class="badge" [ngClass]="getBadgeClass(c.type)">{{ c.type }}</span>
+                  <h3 class="cagnotte-title">{{ c.title }}</h3>
+                  <div class="cagnotte-amounts">
+                    <div class="amount-chip">
+                      <span class="amount-label">Collecté</span>
+                      <span class="amount-val green">{{ c.raisedAmount | number }} XAF</span>
+                    </div>
+                    <div class="amount-chip">
+                      <span class="amount-label">Retiré</span>
+                      <span class="amount-val">{{ c.withdrawnAmount | number }} XAF</span>
+                    </div>
+                    <div class="amount-chip">
+                      <span class="amount-label">Disponible</span>
+                      <span class="amount-val green bold">{{ c.availableAmount | number }} XAF</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  [disabled]="c.availableAmount < 100"
+                  (click)="selectCagnotte(c)">
+                  <i class="fas fa-money-bill-transfer"></i> Retirer
+                </button>
+              </div>
+            </div>
+
+            <ng-template #noCagnotte>
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                <h3>Aucune cagnotte</h3>
+                <p>Vos alertes recevront des dons dès que des soutiens seront versés.</p>
+              </div>
+            </ng-template>
+
+            <!-- Formulaire de retrait -->
+            <div class="payout-form-panel" *ngIf="selectedCagnotte() as c">
+              <div class="payout-form-header">
+                <h3><i class="fas fa-money-bill-transfer"></i> Demande de retrait</h3>
+                <button class="btn btn-ghost btn-sm" (click)="selectedCagnotte.set(null)">
+                  <i class="fas fa-xmark"></i>
+                </button>
+              </div>
+              <p class="payout-hint">
+                Solde disponible : <strong>{{ c.availableAmount | number }} XAF</strong>
+              </p>
+              <form [formGroup]="payoutForm" (ngSubmit)="submitPayout()">
+                <div class="form-group">
+                  <label class="form-label">Montant à retirer (XAF) *</label>
+                  <input type="number" class="form-control" formControlName="amount"
+                    [max]="c.availableAmount" min="100" placeholder="Min. 100 XAF">
+                  <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'required')">Montant requis</span>
+                  <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">Minimum 100 XAF</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Opérateur *</label>
+                  <select class="form-control" formControlName="accountBankCode">
+                    <option value="MTN">MTN Mobile Money</option>
+                    <option value="ORANGEMONEY">Orange Money</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Numéro (format 237XXXXXXXXX) *</label>
+                  <input type="text" class="form-control" formControlName="accountNumber"
+                    placeholder="237XXXXXXXXX">
+                  <span class="form-error" *ngIf="hasError(payoutForm, 'accountNumber', 'pattern')">
+                    Format invalide (ex: 237691234567)
+                  </span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nom du titulaire *</label>
+                  <input type="text" class="form-control" formControlName="receiverName"
+                    placeholder="Prénom NOM">
+                </div>
+                <button type="submit" class="btn btn-primary w-full" [disabled]="payoutLoading()">
+                  <span class="spinner" *ngIf="payoutLoading()"></span>
+                  <span *ngIf="!payoutLoading()"><i class="fas fa-paper-plane"></i> Envoyer la demande</span>
+                </button>
+              </form>
+            </div>
+
+          </div>
         </div>
 
       </main>

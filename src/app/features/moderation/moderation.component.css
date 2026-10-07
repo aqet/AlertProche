@@ -523,3 +523,18 @@
   .mod-tab { width: 100%; min-width: auto; }
   .perm-list { flex-direction: column; }
 }
+
+/* ── Boutons résolution modération ─────────────────────────────── */
+.btn-mod-resolve {
+  background: var(--green-dim);
+  color: var(--green-dark);
+  border: 1px solid var(--green-border);
+}
+.btn-mod-resolve:hover { background: var(--green-pale); }
+
+.btn-mod-reopen {
+  background: rgba(245,124,0,0.08);
+  color: #E65100;
+  border: 1px solid rgba(245,124,0,0.28);
+}
+.btn-mod-reopen:hover { background: rgba(245,124,0,0.15); }

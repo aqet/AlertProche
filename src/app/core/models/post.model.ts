@@ -12,6 +12,9 @@ export interface Post {
   type: PostType;
   image_url?: string;
   isActive?: boolean;
+  isResolved?: boolean;
+  resolvedAt?: string | null;
+  resolvedBy?: string | null;
   createdAt: string;
   commentCount?: number;
   reportReasons?: any

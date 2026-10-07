@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   imageSearchFile = signal<File | null>(null);
   imageSearchPreview = signal<string | null>(null);
   searching = signal(false);
+  showResolved = signal<boolean>(false);
   private searchTimeout: any;
 
   isAuth = computed(() => this.auth.isAuthenticated());
@@ -129,6 +130,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   filteredPosts = computed(() => {
     let result = this.posts();
+    // Masquer les résolues par défaut
+    if (!this.showResolved()) {
+      result = result.filter(p => p.isResolved !== true);
+    }
     if (this.filterType())
       result = result.filter((p) => p.type === this.filterType());
     if (this.filterLocation())
@@ -158,6 +163,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       (p) => p.type === 'Disparition' || p.type === "Appel à l'aide",
     ),
   );
+
+  resolvedCount = computed(() => this.posts().filter(p => p.isResolved === true).length);
 
   stats = computed(() => ({
     total: this.posts().length,
@@ -273,7 +280,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.imageSearchFile.set(null);
     this.imageSearchPreview.set(null);
     this.findSimilar.set(null);
+    this.showResolved.set(false);
     this.startSearch();
+  }
+
+  toggleShowResolved(): void {
+    this.showResolved.set(!this.showResolved());
   }
 
   onSearchQueryChange(value: string) {
