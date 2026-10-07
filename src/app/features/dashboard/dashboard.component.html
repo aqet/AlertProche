@@ -146,17 +146,19 @@
                 <button class="btn btn-ghost btn-sm" (click)="startEditPost(post)">
                   <i class="fas fa-pen"></i>
                 </button>
-                <!-- Marquer résolue / Réouvrir -->
-                <button class="btn btn-sm btn-resolve-sm" *ngIf="!post.isResolved"
-                  (click)="resolvePost(post)"
-                  title="Marquer comme résolue">
-                  <i class="fas fa-circle-check"></i>
-                </button>
-                <button class="btn btn-sm btn-reopen-sm" *ngIf="post.isResolved"
-                  (click)="unresolvePost(post)"
-                  title="Réouvrir cette alerte">
-                  <i class="fas fa-rotate-left"></i>
-                </button>
+                <!-- Marquer résolue / Réouvrir (anonymes : admin/mod uniquement) -->
+                <ng-container *ngIf="canMarkResolved(post)">
+                  <button class="btn btn-sm btn-resolve-sm" *ngIf="!post.isResolved"
+                    (click)="resolvePost(post)"
+                    title="Marquer comme résolue">
+                    <i class="fas fa-circle-check"></i>
+                  </button>
+                  <button class="btn btn-sm btn-reopen-sm" *ngIf="post.isResolved"
+                    (click)="unresolvePost(post)"
+                    title="Réouvrir cette alerte">
+                    <i class="fas fa-rotate-left"></i>
+                  </button>
+                </ng-container>
                 <button class="btn btn-sm" [class.btn-warning]="post.isActive !== false"
                   [class.btn-success-sm]="post.isActive === false" (click)="togglePostActive(post)"
                   *ngIf="canModerate()">

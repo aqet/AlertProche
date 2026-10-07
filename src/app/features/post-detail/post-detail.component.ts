@@ -55,11 +55,11 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     const user = this.currentUser();
     const p = this.post();
     if (!user || !p) return false;
-    return (
-      user._id === p.author_id ||
-      user.role === 'Admin' ||
-      user.role === 'Moderateur'
-    );
+    const isAdminOrMod = user.role === 'Admin' || user.role === 'Moderateur';
+    // Les posts anonymes ne peuvent être résolus que par un admin ou modérateur
+    if (p.isAnonymous === true) return isAdminOrMod;
+    const isAuthor = user._id === p.author_id;
+    return isAuthor || isAdminOrMod;
   });
 
   markResolved(): void {

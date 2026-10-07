@@ -357,6 +357,16 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  canMarkResolved(post: Post): boolean {
+    const u = this.user();
+    if (!u) return false;
+    const isAdminOrMod = u.role === 'Admin' || u.role === 'Moderateur';
+    // Les posts anonymes ne peuvent être résolus/réouverts que par un admin ou modérateur
+    if (post.isAnonymous === true) return isAdminOrMod;
+    // Pour les posts non-anonymes, l'auteur (tous les posts ici appartiennent à l'utilisateur), admin ou modérateur
+    return true;
+  }
+
   resolvePost(post: Post): void {
     this.postService.resolvePost(post._id).subscribe({
       next: (updated) => {
