@@ -29,7 +29,7 @@ const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
         placeholder="Autre montant (min. 100 XAF)"
         [value]="customAmount()"
         (input)="onCustomInput($any($event.target).value)"
-        min="1">
+        min="100">
     </div>
 
     <div class="donation-phone">
