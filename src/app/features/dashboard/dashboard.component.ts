@@ -275,18 +275,17 @@ export class DashboardComponent implements OnInit {
   loadCagnottes(): void {
     this.loadingCagnottes.set(true);
     this.txHistoryLoading.set(true);
-    Promise.all([
-      this.paymentService.getMyCagnottes(),
-      this.paymentService.getMyTransactions(),
-    ]).then(([cagnottes, transactions]) => {
-      this.cagnottes.set(cagnottes);
-      this.myTransactions.set(transactions);
-      this.loadingCagnottes.set(false);
-      this.txHistoryLoading.set(false);
-    }).catch(() => {
-      this.loadingCagnottes.set(false);
-      this.txHistoryLoading.set(false);
-    });
+
+    // Appels séparés : l'échec de l'un ne bloque pas l'autre
+    this.paymentService.getMyCagnottes()
+      .then(cagnottes => this.cagnottes.set(cagnottes))
+      .catch(() => this.cagnottes.set([]))
+      .finally(() => this.loadingCagnottes.set(false));
+
+    this.paymentService.getMyTransactions()
+      .then(transactions => this.myTransactions.set(transactions))
+      .catch(() => this.myTransactions.set([]))
+      .finally(() => this.txHistoryLoading.set(false));
   }
 
   selectCagnotte(c: Cagnotte): void {
@@ -297,29 +296,35 @@ export class DashboardComponent implements OnInit {
   }
 
   async submitPayout(): Promise<void> {
-    if (this.payoutForm.invalid) { this.payoutForm.markAllAsTouched(); return; }
+    if (this.payoutForm.invalid) {
+      this.payoutForm.markAllAsTouched();
+      this.payoutError.set('Veuillez remplir tous les champs correctement.');
+      return;
+    }
     const c = this.selectedCagnotte();
     if (!c) return;
     const val = this.payoutForm.value;
-    if (val.amount > c.availableAmount) {
+    if (Number(val.amount) > c.availableAmount) {
       this.payoutError.set(`Montant demandé (${val.amount} XAF) supérieur au disponible (${c.availableAmount} XAF).`);
       return;
     }
     this.payoutLoading.set(true);
     this.payoutError.set('');
+    this.payoutSuccess.set('');
     try {
       await this.paymentService.requestPayout({
         alertId: c._id,
-        amount: val.amount,
+        amount: Number(val.amount),
         accountBankCode: val.accountBankCode,
         accountNumber: val.accountNumber,
         receiverName: val.receiverName,
       });
       this.payoutSuccess.set('Demande de retrait envoyée. Elle sera traitée par notre équipe.');
       this.selectedCagnotte.set(null);
+      this.payoutForm.reset({ accountBankCode: 'MTN' });
       this.loadCagnottes();
     } catch (err: any) {
-      this.payoutError.set(err?.error?.message ?? 'Erreur lors de la demande.');
+      this.payoutError.set(err?.error?.message ?? 'Erreur lors de la demande. Vérifiez vos informations.');
     } finally {
       this.payoutLoading.set(false);
     }
