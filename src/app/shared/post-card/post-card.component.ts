@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Post } from '../../core/models/post.model';
@@ -18,13 +18,11 @@ export class PostCardComponent {
 
   private offlineService = inject(OfflineService);
 
-  get isSaved(): boolean {
-    return this.offlineService.isPostSaved(this.post._id);
-  }
+  isSaved = computed(() => this.offlineService.isPostSaved(this.post._id));
 
   toggleSave(event: MouseEvent): void {
     event.stopPropagation();
-    if (this.isSaved) {
+    if (this.isSaved()) {
       this.offlineService.removeSavedPost(this.post._id);
     } else {
       this.offlineService.savePostOffline(this.post);

@@ -475,6 +475,13 @@ export class PostFormComponent implements OnInit, OnDestroy {
 
     // Mode hors-ligne : mettre le post en attente
     if (!this.offlineService.online()) {
+      // Avertir l'utilisateur si une image est sélectionnée (l'image sera perdue)
+      if (this.selectedFile()) {
+        this.error.set(
+          "Vous êtes hors-ligne. L'image jointe ne peut pas être sauvegardée hors-ligne. Supprimez l'image pour mettre votre post en attente, ou attendez d'être reconnecté."
+        );
+        return;
+      }
       const v = this.form.value;
       this.offlineService.queuePost({
         title: v.title,

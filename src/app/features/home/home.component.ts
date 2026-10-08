@@ -255,9 +255,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     public pwa: PwaInstallService,
     private offlineService: OfflineService,
   ) {
-    // Relancer l'appel API quand la connexion revient pour ne pas laisser la liste vide
+    // Relancer l'appel API quand la connexion revient pour ne pas laisser la liste vide.
+    // _initialized flag évite le double appel au premier rendu (effect() s'exécute immédiatement).
+    let _initialized = false;
     effect(() => {
-      if (this.offlineService.online()) {
+      const online = this.offlineService.online();
+      if (!_initialized) {
+        _initialized = true;
+        return; // Ignorer le premier déclenchement synchrone
+      }
+      if (online) {
         this.loadPosts();
       }
     });

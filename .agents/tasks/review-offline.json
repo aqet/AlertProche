@@ -1,0 +1,27 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": 1,
+      "label": "Double appel API au chargement",
+      "description": "L'effect() dans le constructeur de HomeComponent s'exécute immédiatement (online() === true), puis ngOnInit appelle loadPosts() une deuxième fois. Résultat : deux requêtes GET /posts en rafale à chaque chargement de la page d'accueil online. Supprimer l'appel explicite loadPosts() dans ngOnInit (conserver le guard offline) ou introduire un flag d'initialisation dans l'effect.",
+      "severity": "blocking",
+      "confidence": "confirmed"
+    },
+    {
+      "id": 2,
+      "label": "isSaved getter non réactif (fragilité future)",
+      "description": "isSaved est un getter ordinaire qui lit un signal via isPostSaved(). Fonctionne avec ChangeDetectionStrategy.Default mais cassera silencieusement si le composant passe en OnPush. Convertir en computed(() => this.offlineService.isPostSaved(this.post._id)) pour rendre la réactivité explicite.",
+      "severity": "warning",
+      "confidence": "likely"
+    },
+    {
+      "id": 3,
+      "label": "Image perdue silencieusement en mode hors-ligne",
+      "description": "PendingPost ne contient pas de champ image. Si l'utilisateur attache une image et soumet hors-ligne, l'image est abandonnée sans avertissement. Au minimum, informer l'utilisateur que l'image sera ignorée. Idéalement, inclure imageDataUrl dans PendingPost ou bloquer l'envoi hors-ligne quand une image est sélectionnée.",
+      "severity": "blocking",
+      "confidence": "confirmed"
+    }
+  ],
+  "reviewDoc": "c:\\code\\New folder (3) - Copy\\AlertProche\\.agents\\tasks\\review-offline.md"
+}
