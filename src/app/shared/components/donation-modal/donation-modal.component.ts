@@ -47,7 +47,7 @@ export class DonationModalComponent {
     const custom = parseInt(this.customAmount(), 10);
     return this.selectedAmount() ?? (isNaN(custom) ? 0 : custom);
   }
-
+// ici
   get isValid(): boolean {
     const phoneDigits = this.phone().replace(/\D/g, '');
     return this.effectiveAmount >= 100 && phoneDigits.length >= 8;
@@ -56,7 +56,7 @@ export class DonationModalComponent {
   close(): void {
     this.closed.emit();
   }
-
+// ici
   async submit(): Promise<void> {
     if (this.effectiveAmount < 100) {
       this.error.set('Le montant minimum est 100 XAF.');

@@ -244,3 +244,18 @@
 .post-card.card-resolved:hover {
   opacity: 1;
 }
+
+/* ── Bouton sauvegarder hors-ligne ──────────────────────────── */
+.save-offline-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  color: var(--text-muted, #9ca3af);
+  font-size: 1rem;
+  transition: color 0.2s ease;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.save-offline-btn:hover { color: var(--color-accent, var(--green)); }
+.save-offline-btn .fa-bookmark.saved { color: var(--color-accent, var(--green)); }

@@ -188,34 +188,34 @@
 
 | Route | Garde | Composant |
 |---|---|---|
-| `/` | — | HomeComponent |
-| `/feed` | — | FeedComponent |
-| `/feed/:id` | — | FeedDetailComponent |
-| `/auth` | — | AuthComponent |
+| `/` | - | HomeComponent |
+| `/feed` | - | FeedComponent |
+| `/feed/:id` | - | FeedDetailComponent |
+| `/auth` | - | AuthComponent |
 | `/posts/new` | auth | PostFormComponent |
-| `/posts/:id` | — | PostDetailComponent |
+| `/posts/:id` | - | PostDetailComponent |
 | `/dashboard` | auth | DashboardComponent |
 | `/moderation` | auth + moderator | ModerationComponent |
 | `/admin` | auth + admin | AdminComponent |
 | `/admin/analytics` | auth + admin | AnalyticsComponent |
 | `/sos/history` | auth | SosHistoryComponent |
 | `/sos/:sosId` | auth | SosResponseComponent |
-| `/payments/callback` | — | PaymentCallbackComponent |
-| `/avis` | — | ReviewsComponent |
-| `/a-propos` | — | AboutComponent |
-| `/confidentialite` | — | PrivacyComponent |
+| `/payments/callback` | - | PaymentCallbackComponent |
+| `/avis` | - | ReviewsComponent |
+| `/a-propos` | - | AboutComponent |
+| `/confidentialite` | - | PrivacyComponent |
 
 ---
 
 ## 5. Points forts et observations
 
-1. **Architecture solide** : standalone components, lazy-loading, signals pour le state local — pas de surcouche inutile.
+1. **Architecture solide** : standalone components, lazy-loading, signals pour le state local - pas de surcouche inutile.
 2. **IA multi-modale** : Gemini est utilisé sur 3 surfaces (audio → formulaire, image → formulaire, photo → recherche similaire). C'est un avantage différenciant rare pour une app citoyenne africaine.
-3. **SOS bien pensé** : mise à jour GPS live, niveaux de menace, son d'alerte, réponse des contacts, historique — le flux est complet.
-4. **Monétisation présente** : cagnottes + dons plateforme + Mobile Money — rare et bien intégré pour un contexte camerounais.
-5. **Modération à deux niveaux** : automatique (front-end) + humaine (espace modération) — bonne approche de défense en profondeur.
+3. **SOS bien pensé** : mise à jour GPS live, niveaux de menace, son d'alerte, réponse des contacts, historique - le flux est complet.
+4. **Monétisation présente** : cagnottes + dons plateforme + Mobile Money - rare et bien intégré pour un contexte camerounais.
+5. **Modération à deux niveaux** : automatique (front-end) + humaine (espace modération) - bonne approche de défense en profondeur.
 6. **Côté feed** : le fil social est fonctionnel mais relativement basique (pas de retweet/partage interne, pas de hashtags, pas de mentions).
-7. **Tableau de bord analytique robuste** : tracking sessionné, géo, devices, sources — niveau production.
+7. **Tableau de bord analytique robuste** : tracking sessionné, géo, devices, sources - niveau production.
 
 ---
 
@@ -223,19 +223,19 @@
 
 ### Priorité haute (impact direct sur la mission principale)
 
-#### F1 — Carte interactive des alertes actives
+#### F1 - Carte interactive des alertes actives
 **Justification** : Les alertes ont toutes une `location` (ville). Afficher une carte choroplèthe ou une carte de points (Leaflet ou Google Maps) permettrait une compréhension géographique immédiate des zones à risque. Les parents et bénévoles pourraient visualiser en un coup d'œil les disparitions dans leur région.  
 **Périmètre** : Nouveau composant `map.component` sur la page d'accueil (onglet "Carte" en plus de la grille actuelle), utilisant les données déjà disponibles via `post.service.ts::getAllPosts`. Aucune dépendance lourde : Leaflet (~40kb) ou intégration Google Maps Embed.
 
-#### F2 — Alerte résolue : marquage et archivage
+#### F2 - Alerte résolue : marquage et archivage
 **Justification** : Il n'existe pas de mécanisme clair pour signaler qu'une personne disparue a été retrouvée. Les alertes restent actives indéfiniment. Un bouton "Marquer comme résolu" (par l'auteur ou un modérateur) avec un champ motif (retrouvée, hospitalisation terminée…) et un archivage visuel ("Cas résolu ✅") donnerait une vision plus juste du flux et motiverait la communauté.  
-**Périmètre** : Nouveau champ `resolvedAt` + `resolvedReason` sur `Post`, bouton dans `post-detail.component` et dans l'espace modération. Le modèle `Post` a déjà `isActive` — étendre sans casser l'existant.
+**Périmètre** : Nouveau champ `resolvedAt` + `resolvedReason` sur `Post`, bouton dans `post-detail.component` et dans l'espace modération. Le modèle `Post` a déjà `isActive` - étendre sans casser l'existant.
 
-#### F3 — Notifications push géolocalisées (proximité)
+#### F3 - Notifications push géolocalisées (proximité)
 **Justification** : Le type `SOS_PROXIMITY` est déjà défini dans `notification.service.ts` mais semble non exposé à l'utilisateur. Permettre à l'utilisateur de s'abonner aux alertes dans un rayon configurable (ex. "me notifier pour toute Disparition dans ma ville") augmenterait drastiquement l'utilité de la plateforme.  
 **Périmètre** : Panneau de préférences de notifications dans le dashboard (tab "Notifications"), envoyé au backend pour filtrage géographique des push.
 
-#### F4 — Partage d'alerte enrichi avec carte d'aperçu (OG/WhatsApp)
+#### F4 - Partage d'alerte enrichi avec carte d'aperçu (OG/WhatsApp)
 **Justification** : Le vecteur de diffusion principal au Cameroun est WhatsApp. Une image de partage générée dynamiquement (Open Graph) avec le type, le titre, la localisation et une carte miniature augmenterait considérablement le taux de partage et la portée des alertes.  
 **Périmètre** : Méta-tags Open Graph dynamiques dans `post-detail.component` + route backend de génération d'image OG (ou service tiers type Vercel OG). L'infrastructure de partage côté frontend (`sharePost` dans le feed) est déjà en place.
 
@@ -243,51 +243,51 @@
 
 ### Priorité moyenne (enrichissement communautaire)
 
-#### F5 — Fil d'actualité : hashtags et mentions
+#### F5 - Fil d'actualité : hashtags et mentions
 **Justification** : Le feed social est fonctionnel mais manque de discoverabilité. Les hashtags (`#Yaoundé`, `#Disparition`) permettraient de naviguer par thème. Les mentions (`@pseudo`) déclencheraient des notifications et créeraient du lien social.  
 **Périmètre** : Parsing côté front du contenu des `FeedPost`, ajout d'un champ `hashtags[]` et `mentions[]` dans le modèle, page `/feed/tag/:tag`.
 
-#### F6 — Messagerie directe entre utilisateurs
+#### F6 - Messagerie directe entre utilisateurs
 **Justification** : Quand un témoin veut contacter discrètement l'auteur d'une alerte (sans exposer les infos en commentaire public), il n'a aucun canal. Une messagerie privée simple (ou basée sur le chatbot existant) permettrait cet échange sécurisé. Le service `chat.service.ts` avec `threadId` est déjà architecturé pour accueillir des threads directs.  
 **Périmètre** : Route `/messages/:userId`, nouveau tab "Messages" dans le dashboard, réutilisation du `ChatService` avec un `threadId` = `userId1_userId2`.
 
-#### F7 — Profil public des utilisateurs
+#### F7 - Profil public des utilisateurs
 **Justification** : Il est impossible de voir le profil et les contributions d'un autre utilisateur. Un profil public `/profil/:pseudo` affichant les alertes publiées (non anonymes), le score de réputation, et le statut "contact de confiance disponible" renforcerait la confiance dans la communauté.  
 **Périmètre** : Nouveau composant `public-profile.component`, nouvelle route `/profil/:pseudo`, endpoint backend `GET /auth/users/:pseudo`.
 
-#### F8 — Témoins : signalement d'information complémentaire sur une alerte
-**Justification** : Actuellement, les commentaires servent à tout. Permettre à un témoin de soumettre une "mise à jour d'information" structurée (dernière localisation vue, date, description) — distincte d'un commentaire — permettrait à l'auteur et aux modérateurs de centraliser les indices utiles.  
+#### F8 - Témoins : signalement d'information complémentaire sur une alerte
+**Justification** : Actuellement, les commentaires servent à tout. Permettre à un témoin de soumettre une "mise à jour d'information" structurée (dernière localisation vue, date, description) - distincte d'un commentaire - permettrait à l'auteur et aux modérateurs de centraliser les indices utiles.  
 **Périmètre** : Nouveau type `Witness` lié à un `Post`, formulaire dans `post-detail.component`, tab "Témoignages" dans la vue détail.
 
 ---
 
 ### Priorité basse (aller plus loin)
 
-#### F9 — Mode hors-ligne partiel pour le SOS
+#### F9 - Mode hors-ligne partiel pour le SOS
 **Justification** : Dans les zones à faible couverture réseau (fréquentes au Cameroun), le SOS peut échouer. Stocker le dernier état connu en IndexedDB et envoyer automatiquement dès le retour de connexion (via `@capacitor/network` déjà installé) réduirait ce risque.  
 **Périmètre** : `sos-floating-button.component` + écoute des événements `@capacitor/network::getStatus` pour un mode queue offline.
 
-#### F10 — Tableau de bord des organisations (ONG, associations)
+#### F10 - Tableau de bord des organisations (ONG, associations)
 **Justification** : Créer un rôle `Organisation` permettrait à des ONG de protection de l'enfance de gérer plusieurs alertes, accéder à des statistiques agrégées sur leur périmètre géographique, et être affichées comme partenaires de confiance sur les alertes qu'elles suivent.  
 **Périmètre** : Nouveau rôle dans `User.role`, panneau dédié dans l'admin, badge "Suivi par [ONG]" sur les post-cards.
 
-#### F11 — Gamification : badges et réputation
+#### F11 - Gamification : badges et réputation
 **Justification** : Encourager la participation active est un défi pour toute plateforme citoyenne. Des badges ("Premier signalement", "10 commentaires utiles", "Contact SOS de confiance de 3 personnes") et un score de réputation affiché sur le profil créeraient une dynamique d'engagement.  
 **Périmètre** : Champ `badges[]` dans `User`, service `badge.service.ts`, affichage dans le dashboard et le profil public.
 
-#### F12 — Internationalisation (i18n) : anglais + langues locales
+#### F12 - Internationalisation (i18n) : anglais + langues locales
 **Justification** : Le Cameroun est bilingue (français/anglais). La page `about.component.html` mentionne déjà une expansion géographique prévue. L'ajout de `@angular/localize` avec au minimum l'anglais doublerait l'audience potentielle dans les régions anglophones du pays.  
 **Périmètre** : `@angular/localize`, extraction des chaînes, fichiers `.xlf` pour `fr` (existant) et `en`. Les données (titres, contenus des posts) restent en langue de publication.
 
-#### F13 — Signalement vocal direct depuis la page d'accueil
+#### F13 - Signalement vocal direct depuis la page d'accueil
 **Justification** : Pour un utilisateur peu alphabétisé ou en situation d'urgence, ouvrir le formulaire, remplir les champs, puis lancer l'enregistrement vocal est trop long. Un bouton "SOS écrit" dédié sur la page d'accueil ouvrant directement le recorder vocal (déjà opérationnel dans `post-form`) permettrait de créer une alerte en moins de 30 secondes.  
 **Périmètre** : Bouton CTA sur `home.component` naviguant vers `/posts/new?autoRecord=true`, le `post-form.component` démarrant l'enregistrement automatiquement si le paramètre est présent.
 
-#### F14 — Centre de ressources (guide de sécurité, contacts d'urgence officiels)
+#### F14 - Centre de ressources (guide de sécurité, contacts d'urgence officiels)
 **Justification** : La page `about.component.html` est informative mais il manque un espace centralisé avec les numéros d'urgence camerounais (police, gendarmerie, SOS Enfants, numéros locaux), des guides pratiques ("que faire si un enfant disparaît") et des liens vers les ONG partenaires.  
 **Périmètre** : Nouvelle route `/ressources`, composant statique + CMS minimal géré depuis l'interface admin (simple liste de ressources JSON).
 
-#### F15 — Authentification avec compte Google / Apple
+#### F15 - Authentification avec compte Google / Apple
 **Justification** : L'inscription en 3 étapes (OTP → code → formulaire) est sécurisée mais crée de la friction. Ajouter OAuth Google (très utilisé en Afrique subsaharienne) réduirait ce friction et augmenterait les taux de conversion.  
 **Périmètre** : `@angular/fire` ou SDK Google Identity Services côté front, endpoint OAuth dans le backend, modification de `auth.service.ts::register` pour accepter un token OAuth.
 
@@ -295,8 +295,8 @@
 
 ## 7. Recommandations techniques
 
-1. **Mise à jour GPS SOS** : `sos.service.ts::updateLocation` est défini mais aucun composant lisant ce code ne montre d'intervalle de pooling — vérifier que la mise à jour en direct est bien active dans `sos-floating-button` ou `sos-response.component`.
+1. **Mise à jour GPS SOS** : `sos.service.ts::updateLocation` est défini mais aucun composant lisant ce code ne montre d'intervalle de pooling - vérifier que la mise à jour en direct est bien active dans `sos-floating-button` ou `sos-response.component`.
 2. **Modération front-end seulement** : `moderation.service.ts` filtre uniquement en client-side. Le backend devrait dupliquer ce filtre pour être résilient aux appels API directs.
 3. **Limite contacts SOS codée en dur à 5** : si des plans premium sont envisagés (F10), cette limite devrait être déplacée côté backend et configurable par rôle.
 4. **Pas de tests automatisés visibles** : le projet a Jasmine/Karma (`package.json`) mais aucun fichier `.spec.ts` n'a été trouvé. Ajouter des tests unitaires sur `moderation.service.ts`, `sos.service.ts`, et `auth.service.ts` réduirait les régressions.
-5. **Rôle section FAQ commenté** dans `about.component.html` (balise `<!-- ... -->`) — probablement à réactiver quand le rôle Modérateur sera communiqué publiquement.
+5. **Rôle section FAQ commenté** dans `about.component.html` (balise `<!-- ... -->`) - probablement à réactiver quand le rôle Modérateur sera communiqué publiquement.

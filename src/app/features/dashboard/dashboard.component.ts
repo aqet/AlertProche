@@ -74,6 +74,8 @@ export class DashboardComponent implements OnInit {
   payoutSuccess      = signal('');
   payoutError        = signal('');
   selectedCagnotte   = signal<Cagnotte | null>(null);
+  myTransactions     = signal<any[]>([]);
+  txHistoryLoading   = signal(false);
 
   user = computed(() => this.auth.currentUser());
 
@@ -214,7 +216,7 @@ export class DashboardComponent implements OnInit {
     });
 
     this.payoutForm = this.fb.group({
-      amount:          ['', [Validators.required, Validators.min(100)]],
+      amount:          ['', [Validators.required, Validators.min(1)]],
       accountBankCode: ['MTN', Validators.required],
       accountNumber:   ['', [Validators.required, Validators.pattern(/^237[0-9]{9}$/)]],
       receiverName:    ['', Validators.required],
@@ -272,10 +274,18 @@ export class DashboardComponent implements OnInit {
 
   loadCagnottes(): void {
     this.loadingCagnottes.set(true);
-    this.paymentService.getMyCagnottes().then(data => {
-      this.cagnottes.set(data);
-      this.loadingCagnottes.set(false);
-    }).catch(() => this.loadingCagnottes.set(false));
+    this.txHistoryLoading.set(true);
+
+    // Appels séparés : l'échec de l'un ne bloque pas l'autre
+    this.paymentService.getMyCagnottes()
+      .then(cagnottes => this.cagnottes.set(cagnottes))
+      .catch(() => this.cagnottes.set([]))
+      .finally(() => this.loadingCagnottes.set(false));
+
+    this.paymentService.getMyTransactions()
+      .then(transactions => this.myTransactions.set(transactions))
+      .catch(() => this.myTransactions.set([]))
+      .finally(() => this.txHistoryLoading.set(false));
   }
 
   selectCagnotte(c: Cagnotte): void {
@@ -283,32 +293,45 @@ export class DashboardComponent implements OnInit {
     this.payoutForm.patchValue({ amount: '' });
     this.payoutSuccess.set('');
     this.payoutError.set('');
+    // Update max validator dynamically based on available balance
+    this.payoutForm.get('amount')?.setValidators([
+      Validators.required,
+      Validators.min(1),
+      Validators.max(c.availableAmount),
+    ]);
+    this.payoutForm.get('amount')?.updateValueAndValidity();
   }
 
   async submitPayout(): Promise<void> {
-    if (this.payoutForm.invalid) { this.payoutForm.markAllAsTouched(); return; }
+    if (this.payoutForm.invalid) {
+      this.payoutForm.markAllAsTouched();
+      this.payoutError.set('Veuillez remplir tous les champs correctement.');
+      return;
+    }
     const c = this.selectedCagnotte();
     if (!c) return;
     const val = this.payoutForm.value;
-    if (val.amount > c.availableAmount) {
+    if (Number(val.amount) > c.availableAmount) {
       this.payoutError.set(`Montant demandé (${val.amount} XAF) supérieur au disponible (${c.availableAmount} XAF).`);
       return;
     }
     this.payoutLoading.set(true);
     this.payoutError.set('');
+    this.payoutSuccess.set('');
     try {
       await this.paymentService.requestPayout({
         alertId: c._id,
-        amount: val.amount,
+        amount: Number(val.amount),
         accountBankCode: val.accountBankCode,
         accountNumber: val.accountNumber,
         receiverName: val.receiverName,
       });
       this.payoutSuccess.set('Demande de retrait envoyée. Elle sera traitée par notre équipe.');
       this.selectedCagnotte.set(null);
+      this.payoutForm.reset({ accountBankCode: 'MTN' });
       this.loadCagnottes();
     } catch (err: any) {
-      this.payoutError.set(err?.error?.message ?? 'Erreur lors de la demande.');
+      this.payoutError.set(err?.error?.message ?? 'Erreur lors de la demande. Vérifiez vos informations.');
     } finally {
       this.payoutLoading.set(false);
     }
@@ -372,7 +395,10 @@ export class DashboardComponent implements OnInit {
       next: (updated) => {
         this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },
-      error: () => {}
+      error: (err) => {
+        this.editError.set(err?.error?.message || 'Erreur lors de la résolution de la publication.');
+        setTimeout(() => this.editError.set(''), 5000);
+      }
     });
   }
 
@@ -381,7 +407,10 @@ export class DashboardComponent implements OnInit {
       next: (updated) => {
         this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },
-      error: () => {}
+      error: (err) => {
+        this.editError.set(err?.error?.message || 'Erreur lors de la réouverture de la publication.');
+        setTimeout(() => this.editError.set(''), 5000);
+      }
     });
   }
 

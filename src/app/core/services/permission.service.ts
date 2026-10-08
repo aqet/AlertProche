@@ -8,7 +8,7 @@ import { NotificationService } from './notification.service';
  *
  * Règles :
  *  - Les demandes de permission doivent TOUJOURS être déclenchées par un
- *    geste utilisateur (clic) — jamais automatiquement au chargement.
+ *    geste utilisateur (clic) - jamais automatiquement au chargement.
  *  - iOS/Safari : les Web Push ne fonctionnent qu'en mode PWA standalone
  *    (l'app doit être installée via "Ajouter à l'écran d'accueil").
  *  - On affiche une bannière persistante tant qu'une permission est manquante.

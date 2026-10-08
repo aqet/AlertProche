@@ -1,0 +1,13 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    {
+      "id": 1,
+      "label": "Sync concurrente possible sur reconnexions rapides",
+      "description": "syncPendingPosts() n'est pas protégé contre les appels multiples simultanés. Sur certains navigateurs, l'événement 'online' se déclenche plusieurs fois en rafale, ce qui peut entraîner une double publication des posts en attente. Ajouter un flag _syncing pour ignorer les appels si une sync est déjà en cours.",
+      "severity": "non-blocking",
+      "confidence": "possible"
+    }
+  ],
+  "reviewDoc": "c:\\code\\New folder (3) - Copy\\AlertProche\\.agents\\tasks\\review-offline.md"
+}

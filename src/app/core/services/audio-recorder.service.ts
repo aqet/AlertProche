@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 export type RecordingState = 'idle' | 'recording' | 'processing';
 
 /**
- * Service d'enregistrement audio — PWA uniquement (MediaRecorder HTML5).
+ * Service d'enregistrement audio - PWA uniquement (MediaRecorder HTML5).
  * Aucun fichier n'est écrit sur le disque : tout est traité en mémoire.
  */
 @Injectable({ providedIn: 'root' })

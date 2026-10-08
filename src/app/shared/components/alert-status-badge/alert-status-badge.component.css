@@ -12,14 +12,14 @@
   white-space: nowrap;
 }
 
-/* En cours — orange, cohérent avec badge-abus existant */
+/* En cours - orange, cohérent avec badge-abus existant */
 .status-active {
   background: #FFF3E0;
   color: #E65100;
   border-color: #FFE0B2;
 }
 
-/* Résolue — vert, cohérent avec le vert principal du design system */
+/* Résolue - vert, cohérent avec le vert principal du design system */
 .status-resolved {
   background: var(--green-pale);
   color: var(--green-dark);

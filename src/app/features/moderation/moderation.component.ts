@@ -24,6 +24,8 @@ export class ModerationComponent implements OnInit {
   allPosts = signal<Post[]>([]);
 
   loading = signal(true);
+  actionError = signal('');
+  actionSuccess = signal('');
 
   user = computed(() => this.auth.currentUser());
   isAdmin = computed(() => this.user()?.role === 'Admin');
@@ -103,8 +105,13 @@ export class ModerationComponent implements OnInit {
         this.allPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.reportedPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.disabledPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+        this.actionSuccess.set('Alerte marquée résolue.');
+        setTimeout(() => this.actionSuccess.set(''), 3000);
       },
-      error: () => {}
+      error: (err) => {
+        this.actionError.set(err?.error?.message || 'Erreur lors de la résolution.');
+        setTimeout(() => this.actionError.set(''), 5000);
+      }
     });
   }
 
@@ -114,8 +121,13 @@ export class ModerationComponent implements OnInit {
         this.allPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.reportedPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.disabledPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+        this.actionSuccess.set('Alerte réouverte.');
+        setTimeout(() => this.actionSuccess.set(''), 3000);
       },
-      error: () => {}
+      error: (err) => {
+        this.actionError.set(err?.error?.message || 'Erreur lors de la réouverture.');
+        setTimeout(() => this.actionError.set(''), 5000);
+      }
     });
   }
 

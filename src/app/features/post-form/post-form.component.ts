@@ -12,6 +12,7 @@ import { PostType } from '../../core/models/post.model';
 import { TrackingService } from '../../core/services/tracking.service';
 import { AudioRecorderService, RecordingState } from '../../core/services/audio-recorder.service';
 import { ParsedAudioAlertDto } from '../../core/models/parsed-audio-alert.dto';
+import { OfflineService } from '../../core/services/offline.service';
 
 @Component({
   selector: 'app-post-form',
@@ -42,6 +43,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
   loading = signal(false);
   error = signal('');
   success = signal(false);
+  offlineQueued = signal(false);
 
   // Rapport de notification push reçu après la création du post
   notifReport = signal<{ sent: number; failed: number; totalTokens: number; error: string | null } | null>(null);
@@ -211,6 +213,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private tracking: TrackingService,
     public audioRecorder: AudioRecorderService,
+    private offlineService: OfflineService,
   ) {
     this.form = this.fb.group({
       title: [
@@ -469,6 +472,31 @@ export class PostFormComponent implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
+
+    // Mode hors-ligne : mettre le post en attente
+    if (!this.offlineService.online()) {
+      // Avertir l'utilisateur si une image est sélectionnée (l'image sera perdue)
+      if (this.selectedFile()) {
+        this.error.set(
+          "Vous êtes hors-ligne. L'image jointe ne peut pas être sauvegardée hors-ligne. Supprimez l'image pour mettre votre post en attente, ou attendez d'être reconnecté."
+        );
+        return;
+      }
+      const v = this.form.value;
+      this.offlineService.queuePost({
+        title: v.title,
+        content: v.content,
+        location: v.location,
+        type: v.type,
+        isAnonymous: v.isAnonymous ?? false,
+        createdAt: new Date().toISOString(),
+      });
+      this.offlineQueued.set(true);
+      this.error.set('');
+      setTimeout(() => this.router.navigate(['/']), 2500);
+      return;
+    }
+
     this.loading.set(true);
     this.error.set('');
     this.postService

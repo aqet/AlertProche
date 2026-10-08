@@ -12,7 +12,7 @@ export class AppInitService {
    * Vérifie la version de l'app et synchronise les infos device si connecté.
    */
   async initializeApp(): Promise<void> {
-    const appVersion = '1.0.0'; // Version PWA statique — à synchroniser avec package.json si besoin
+    const appVersion = '1.0.0'; // Version PWA statique - à synchroniser avec package.json si besoin
 
     // Vérification de version (même si non connecté)
     this.versionCheckService.checkVersion(appVersion).subscribe({

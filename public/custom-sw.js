@@ -58,7 +58,7 @@ async function playSosSound() {
         client.postMessage({ type: 'PLAY_SOS_SOUND', soundUrl: '/sounds/sos-alert.mp3' });
       });
     } else {
-      // Aucune fenêtre ouverte — on tente via fetch pour garder le SW éveillé
+      // Aucune fenêtre ouverte - on tente via fetch pour garder le SW éveillé
       // Le son sera joué à l'ouverture de la notification
       console.log('[SW] Aucun client ouvert pour jouer le son SOS.');
     }

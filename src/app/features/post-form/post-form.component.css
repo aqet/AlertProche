@@ -475,7 +475,7 @@
   margin-top: 4px;
 }
 
-/* Bloc vocal en haut — plus prominent */
+/* Bloc vocal en haut - plus prominent */
 .voice-recorder-top {
   border-color: var(--green-border);
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--green-dim) 100%);

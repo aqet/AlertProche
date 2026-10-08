@@ -1,5 +1,5 @@
 /**
- * Interface partagée — résultat de l'analyse audio par Gemini.
+ * Interface partagée - résultat de l'analyse audio par Gemini.
  * Miroir exact du ParsedAudioAlertDto côté backend.
  */
 export interface ParsedAudioAlertDto {

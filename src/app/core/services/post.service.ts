@@ -53,7 +53,7 @@ export class PostService {
 
   /**
    * Envoie un blob audio au backend pour extraction IA des champs du formulaire.
-   * Le fichier audio n'est jamais stocké — traitement en mémoire uniquement.
+   * Le fichier audio n'est jamais stocké - traitement en mémoire uniquement.
    */
   async parseAudio(audioBlob: Blob): Promise<ParsedAudioAlertDto> {
     const formData = new FormData();

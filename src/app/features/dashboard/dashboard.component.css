@@ -1,4 +1,4 @@
-﻿/* ── Layout principal deux colonnes ─────────────────────────── */
+/* -- Layout principal deux colonnes --------------------------- */
 .dash-layout {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -6,7 +6,7 @@
   align-items: start;
 }
 
-/* ── Sidebar ────────────────────────────────────────────────── */
+/* -- Sidebar -------------------------------------------------- */
 .dash-sidebar {
   position: sticky;
   top: calc(var(--nav-height) + 20px);
@@ -64,7 +64,7 @@
 .dash-profile-role.role-mod   { color: var(--warning); }
 .dash-profile-role.role-admin { color: var(--urgent); }
 
-/* Métriques compactes */
+/* M�triques compactes */
 .dash-metrics {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -134,7 +134,7 @@
   flex-shrink: 0;
 }
 
-/* Label texte — prend l'espace disponible, se tronque si besoin */
+/* Label texte � prend l'espace disponible, se tronque si besoin */
 .nav-label {
   flex: 1;
   min-width: 0;
@@ -192,7 +192,7 @@
 }
 .btn-mod-link:hover { background: rgba(255,152,0,0.22); color: var(--warning); }
 
-/* ── Contenu principal ──────────────────────────────────────── */
+/* -- Contenu principal ---------------------------------------- */
 .dash-main {
   min-width: 0;
 }
@@ -207,7 +207,7 @@
   color: var(--text);
 }
 
-/* ── Edit panel ─────────────────────────────────────────────── */
+/* -- Edit panel ----------------------------------------------- */
 .edit-panel {
   background: var(--bg-card);
   border: 1px solid var(--green-border);
@@ -233,7 +233,7 @@
 
 .edit-actions { display: flex; gap: 10px; margin-top: 6px; }
 
-/* ── Posts list ─────────────────────────────────────────────── */
+/* -- Posts list ----------------------------------------------- */
 .posts-list { display: flex; flex-direction: column; gap: 12px; }
 
 .post-row {
@@ -338,7 +338,7 @@
 }
 .confirm-delete span { font-size: 0.78rem; color: var(--urgent); font-weight: 600; white-space: nowrap; }
 
-/* ── Comments list ──────────────────────────────────────────── */
+/* -- Comments list -------------------------------------------- */
 .comments-list { display: flex; flex-direction: column; gap: 10px; }
 
 .comment-row {
@@ -386,7 +386,7 @@
 
 .comment-row-actions { flex-shrink: 0; }
 
-/* ── Profile ────────────────────────────────────────────────── */
+/* -- Profile -------------------------------------------------- */
 .profile-layout {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -435,7 +435,7 @@
   border-radius: 50%;
 }
 
-/* Overlay caméra au survol */
+/* Overlay cam�ra au survol */
 .profile-avatar-overlay {
   position: absolute;
   inset: 0;
@@ -545,7 +545,7 @@
 
 .my-role-desc { font-size: 0.8rem; color: var(--text-sub); line-height: 1.5; margin: 0 0 12px; }
 
-/* ── States ─────────────────────────────────────────────────── */
+/* -- States --------------------------------------------------- */
 .loading-state {
   display: flex;
   align-items: center;
@@ -580,7 +580,7 @@
 .empty-state h3 { font-size: 0.95rem; color: var(--text-sub); }
 .empty-state p  { font-size: 0.82rem; color: var(--text-muted); }
 
-/* ── Responsive ─────────────────────────────────────────────── */
+/* -- Responsive ----------------------------------------------- */
 @media (max-width: 900px) {
   .dash-layout  { grid-template-columns: 1fr; }
   .dash-sidebar { position: static; }
@@ -608,7 +608,7 @@
 }
 
 @media (max-width: 480px) {
-  /* Sur très petits écrans : icône + badge seulement, label raccourci */
+  /* Sur tr�s petits �crans : ic�ne + badge seulement, label raccourci */
   .dash-nav-item {
     flex-direction: column;
     gap: 3px;
@@ -621,9 +621,9 @@
   }
 }
 
-/* ═══════════════════════════════════════════════════════
+/* -------------------------------------------------------
    SOS - Contacts de Confiance
-   ═══════════════════════════════════════════════════════ */
+   ------------------------------------------------------- */
 
 /* Sous-titre de section dans le header */
 .dash-section-sub {
@@ -672,7 +672,7 @@
   font-weight: 700;
 }
 
-/* Panel invitations reçues */
+/* Panel invitations re�ues */
 .sos-invitations-panel {
   background: var(--bg-card);
   border: 1px solid var(--urgent-border);
@@ -709,7 +709,7 @@
   flex-shrink: 0;
 }
 
-/* Section ajout contact — action principale, mise en avant */
+/* Section ajout contact � action principale, mise en avant */
 .sos-add-contact {
   background: var(--bg-card);
   border: 1px solid var(--green-border);
@@ -720,7 +720,7 @@
 
 .sos-search-wrap { position: relative; }
 
-/* Champ de recherche contact — redesign propre */
+/* Champ de recherche contact � redesign propre */
 .search-input-wrap {
   position: relative;
   display: flex;
@@ -777,7 +777,7 @@
   pointer-events: none;
 }
 
-/* Résultats recherche */
+/* R�sultats recherche */
 .sos-search-results {
   margin-top: 8px;
   background: var(--bg-card);
@@ -976,7 +976,7 @@
 
 .sos-trusted-by-empty i { color: var(--green); }
 
-/* Bannière info collapsible — discrète, en bas */
+/* Banni�re info collapsible � discr�te, en bas */
 .sos-info-details {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -1031,9 +1031,9 @@
   .sos-contact-row { flex-wrap: wrap; }
 }
 
-/* ═══════════════════════════════════════════════════════
+/* -------------------------------------------------------
    HISTORIQUE SOS
-   ═══════════════════════════════════════════════════════ */
+   ------------------------------------------------------- */
 
 /* Sous-onglets */
 .history-tabs {
@@ -1191,7 +1191,7 @@
   gap: 8px;
 }
 
-/* Profil émetteur */
+/* Profil �metteur */
 .history-emitter {
   display: flex;
   align-items: center;
@@ -1229,7 +1229,7 @@
 
 .history-stat i { color: var(--green); font-size: 0.72rem; }
 
-/* Raison clôture */
+/* Raison cl�ture */
 .history-resolve-reason {
   display: flex;
   align-items: center;
@@ -1259,9 +1259,9 @@
   .history-stats { gap: 10px; }
 }
 
-/* ── Je suis contact de confiance de... supprimé (déplacé dans bloc SOS ci-dessus) ── */
+/* -- Je suis contact de confiance de... supprim� (d�plac� dans bloc SOS ci-dessus) -- */
 
-/* ── Cagnottes ───────────────────────────────────────────────── */
+/* -- Cagnottes ------------------------------------------------- */
 .cagnotte-list {
   display: flex;
   flex-direction: column;
@@ -1368,7 +1368,7 @@
   .cagnotte-amounts { gap: 10px; }
 }
 
-/* ── Boutons résolution dashboard ──────────────────────────────── */
+/* -- Boutons r�solution dashboard -------------------------------- */
 .btn-resolve-sm {
   color: var(--green-dark);
   border-color: var(--green-border);
@@ -1382,3 +1382,111 @@
   background: rgba(245,124,0,0.08);
 }
 .btn-reopen-sm:hover { background: rgba(245,124,0,0.15); }
+
+/* -- MODALE RETRAIT CAGNOTTE ----------------------------------- */
+.payout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: overlay-in 0.2s ease;
+}
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.payout-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 22px 22px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  animation: modal-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.88) translateY(16px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.payout-modal-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 28px; height: 28px;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text-sub);
+  font-size: 0.8rem;
+  transition: background var(--transition), color var(--transition);
+}
+.payout-modal-close:hover { background: var(--urgent-dim); color: var(--urgent); }
+.payout-modal-icon {
+  width: 44px; height: 44px;
+  background: var(--primary-dim, rgba(59,130,246,0.12));
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  color: var(--primary);
+  align-self: center;
+}
+.payout-modal-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+  text-align: center;
+}
+.payout-modal-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  margin: -4px 0 0;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.payout-modal-balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  color: var(--green);
+  justify-content: center;
+}
+.payout-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.payout-modal-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.payout-modal-submit {
+  width: 100%;
+  min-height: 44px;
+  justify-content: center;
+  font-size: 0.92rem;
+}

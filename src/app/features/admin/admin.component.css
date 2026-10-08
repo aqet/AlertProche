@@ -857,7 +857,7 @@
 .notif-test-stat.warn { color: var(--warning);  background: var(--warning-dim);  }
 .notif-test-stat.err  { color: var(--urgent);   background: var(--urgent-dim);   }
 
-/* ── Responsive tabs — petits écrans ───────────────────────────────────── */
+/* ── Responsive tabs - petits écrans ───────────────────────────────────── */
 
 /* Tablette étroite : texte plus court, icône visible */
 @media (max-width: 640px) {

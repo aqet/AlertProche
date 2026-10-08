@@ -1,4 +1,4 @@
-# Plan d'implémentation — Marquage « Alerte Résolue »
+# Plan d'implémentation - Marquage « Alerte Résolue »
 
 ## Contexte et décisions d'architecture
 
@@ -8,13 +8,13 @@
 
 **State management** : Angular Signals. Tous les signals locaux sont dans le composant. Pas de store global.
 
-**Décision — nouveau champ statut** : On étend le modèle `Post` avec `isResolved: boolean`, `resolvedAt: string | null` et `resolvedBy: string | null` (id utilisateur). On n'utilise pas un enum `status` pour ne pas casser les guards existants qui vérifient `isActive`. Les deux champs coexistent indépendamment.
+**Décision - nouveau champ statut** : On étend le modèle `Post` avec `isResolved: boolean`, `resolvedAt: string | null` et `resolvedBy: string | null` (id utilisateur). On n'utilise pas un enum `status` pour ne pas casser les guards existants qui vérifient `isActive`. Les deux champs coexistent indépendamment.
 
-**Décision — nouveau endpoint** : `PATCH /posts/:id/resolve` et `PATCH /posts/:id/unresolve`. La séparation des endpoints rend l'autorisation backend plus lisible (l'auteur ou un modérateur peut PATCH `/resolve`, seul l'auteur ou un admin peut PATCH `/unresolve`).
+**Décision - nouveau endpoint** : `PATCH /posts/:id/resolve` et `PATCH /posts/:id/unresolve`. La séparation des endpoints rend l'autorisation backend plus lisible (l'auteur ou un modérateur peut PATCH `/resolve`, seul l'auteur ou un admin peut PATCH `/unresolve`).
 
-**Décision — AlertStatusBadgeComponent** : composant standalone partagé dans `src/app/shared/components/alert-status-badge/`. Il reçoit `@Input() post: Post` et s'affiche en badge coloré. Réutilisé dans `post-card`, `post-detail`, `dashboard`, `moderation`.
+**Décision - AlertStatusBadgeComponent** : composant standalone partagé dans `src/app/shared/components/alert-status-badge/`. Il reçoit `@Input() post: Post` et s'affiche en badge coloré. Réutilisé dans `post-card`, `post-detail`, `dashboard`, `moderation`.
 
-**Décision — filtre « Afficher les résolues »** : toggle dans `home.component` uniquement. Par défaut les alertes résolues sont masquées (comportement le plus pertinent — la liste d'accueil doit afficher les cas actifs en priorité). Le toggle est un `signal<boolean>(false)`.
+**Décision - filtre « Afficher les résolues »** : toggle dans `home.component` uniquement. Par défaut les alertes résolues sont masquées (comportement le plus pertinent - la liste d'accueil doit afficher les cas actifs en priorité). Le toggle est un `signal<boolean>(false)`.
 
 ---
 
@@ -22,24 +22,24 @@
 
 | Fichier | Action |
 |---|---|
-| `src/app/core/models/post.model.ts` | Modifier — ajouter 3 champs au modèle |
-| `src/app/core/services/post.service.ts` | Modifier — ajouter 2 méthodes HTTP |
+| `src/app/core/models/post.model.ts` | Modifier - ajouter 3 champs au modèle |
+| `src/app/core/services/post.service.ts` | Modifier - ajouter 2 méthodes HTTP |
 | `src/app/shared/components/alert-status-badge/alert-status-badge.component.ts` | Créer |
 | `src/app/shared/components/alert-status-badge/alert-status-badge.component.html` | Créer |
 | `src/app/shared/components/alert-status-badge/alert-status-badge.component.css` | Créer |
-| `src/app/shared/post-card/post-card.component.ts` | Modifier — importer le badge |
-| `src/app/shared/post-card/post-card.component.html` | Modifier — afficher le badge |
-| `src/app/shared/post-card/post-card.component.css` | Modifier — style badge résolu sur la card |
-| `src/app/features/post-detail/post-detail.component.ts` | Modifier — logique résolution/réouverture |
-| `src/app/features/post-detail/post-detail.component.html` | Modifier — bouton + badge |
-| `src/app/features/post-detail/post-detail.component.css` | Modifier — styles resolve |
-| `src/app/features/home/home.component.ts` | Modifier — toggle filtre résolues |
-| `src/app/features/home/home.component.html` | Modifier — afficher le toggle |
-| `src/app/features/home/home.component.css` | Modifier — style du toggle |
-| `src/app/features/dashboard/dashboard.component.ts` | Modifier — action résoudre/réouvrir dans "Mes Publications" |
-| `src/app/features/dashboard/dashboard.component.html` | Modifier — bouton + badge dans la liste |
-| `src/app/features/moderation/moderation.component.ts` | Modifier — action résoudre dans les deux onglets |
-| `src/app/features/moderation/moderation.component.html` | Modifier — bouton + badge dans les listes |
+| `src/app/shared/post-card/post-card.component.ts` | Modifier - importer le badge |
+| `src/app/shared/post-card/post-card.component.html` | Modifier - afficher le badge |
+| `src/app/shared/post-card/post-card.component.css` | Modifier - style badge résolu sur la card |
+| `src/app/features/post-detail/post-detail.component.ts` | Modifier - logique résolution/réouverture |
+| `src/app/features/post-detail/post-detail.component.html` | Modifier - bouton + badge |
+| `src/app/features/post-detail/post-detail.component.css` | Modifier - styles resolve |
+| `src/app/features/home/home.component.ts` | Modifier - toggle filtre résolues |
+| `src/app/features/home/home.component.html` | Modifier - afficher le toggle |
+| `src/app/features/home/home.component.css` | Modifier - style du toggle |
+| `src/app/features/dashboard/dashboard.component.ts` | Modifier - action résoudre/réouvrir dans "Mes Publications" |
+| `src/app/features/dashboard/dashboard.component.html` | Modifier - bouton + badge dans la liste |
+| `src/app/features/moderation/moderation.component.ts` | Modifier - action résoudre dans les deux onglets |
+| `src/app/features/moderation/moderation.component.html` | Modifier - bouton + badge dans les listes |
 
 ---
 
@@ -60,7 +60,7 @@
 
   **Fichiers** : `src/app/core/models/post.model.ts`
 
-  **Vérification** : `cd "c:\code\New folder (3) - Copy\AlertProche" && npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur TypeScript.
+  **Vérification** : `cd "c:\code\New folder (3) - Copy\AlertProche" && npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur TypeScript.
 
 ---
 
@@ -80,7 +80,7 @@
 
   **Fichiers** : `src/app/core/services/post.service.ts`
 
-  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur.
+  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur.
 
 ---
 
@@ -124,7 +124,7 @@
     <i class="fas" [class.fa-circle-check]="isResolved" [class.fa-circle-dot]="!isResolved"></i>
     {{ isResolved ? 'Résolue' : 'En cours' }}
     <span *ngIf="showDate && isResolved && post.resolvedAt" class="resolved-date">
-      — {{ getResolvedDate() }}
+      - {{ getResolvedDate() }}
     </span>
   </span>
   ```
@@ -145,14 +145,14 @@
     white-space: nowrap;
   }
 
-  /* En cours — orange, cohérent avec badge-abus existant */
+  /* En cours - orange, cohérent avec badge-abus existant */
   .status-active {
     background: #FFF3E0;
     color: #E65100;
     border-color: #FFE0B2;
   }
 
-  /* Résolue — vert, cohérent avec le vert principal du design system */
+  /* Résolue - vert, cohérent avec le vert principal du design system */
   .status-resolved {
     background: var(--green-pale);
     color: var(--green-dark);
@@ -172,7 +172,7 @@
   - `src/app/shared/components/alert-status-badge/alert-status-badge.component.html`
   - `src/app/shared/components/alert-status-badge/alert-status-badge.component.css`
 
-  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur.
+  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur.
 
 ---
 
@@ -186,7 +186,7 @@
   <app-alert-status-badge [post]="post"></app-alert-status-badge>
   ```
 
-  **post-card.component.css** : ajouter un style pour griser visuellement les cartes résolues (sans les masquer — le filtre est géré par le composant parent) :
+  **post-card.component.css** : ajouter un style pour griser visuellement les cartes résolues (sans les masquer - le filtre est géré par le composant parent) :
   ```css
   /* Carte résolue : légèrement atténuée */
   .post-card.card-resolved {
@@ -207,7 +207,7 @@
   - `src/app/shared/post-card/post-card.component.html`
   - `src/app/shared/post-card/post-card.component.css`
 
-  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur.
+  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur.
 
 ---
 
@@ -275,9 +275,9 @@
   </div>
   ```
 
-  Boutons de résolution — ajouter dans `.topbar-actions` (après le bouton "Signaler") :
+  Boutons de résolution - ajouter dans `.topbar-actions` (après le bouton "Signaler") :
   ```html
-  <!-- Bouton résolution — visible uniquement si l'utilisateur peut résoudre -->
+  <!-- Bouton résolution - visible uniquement si l'utilisateur peut résoudre -->
   <ng-container *ngIf="canResolve()">
     <!-- Marquer comme résolue -->
     <button *ngIf="!post()!.isResolved"
@@ -343,7 +343,7 @@
   - `src/app/features/post-detail/post-detail.component.html`
   - `src/app/features/post-detail/post-detail.component.css`
 
-  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur.
+  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur.
 
 ---
 
@@ -393,7 +393,7 @@
   - `src/app/features/home/home.component.html`
   - `src/app/features/home/home.component.css`
 
-  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur. Vérifier manuellement que le toggle apparaît uniquement s'il y a au moins une alerte résolue.
+  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur. Vérifier manuellement que le toggle apparaît uniquement s'il y a au moins une alerte résolue.
 
 ---
 
@@ -427,7 +427,7 @@
      ```html
      <app-alert-status-badge [post]="post"></app-alert-status-badge>
      ```
-  2. Dans `.post-row-actions`, après le bouton d'édition (bouton `fa-pen`), ajouter les boutons résolution (réservés à l'auteur — dans le dashboard, toutes les publications appartiennent à l'utilisateur courant, donc le bouton est toujours affiché) :
+  2. Dans `.post-row-actions`, après le bouton d'édition (bouton `fa-pen`), ajouter les boutons résolution (réservés à l'auteur - dans le dashboard, toutes les publications appartiennent à l'utilisateur courant, donc le bouton est toujours affiché) :
      ```html
      <!-- Marquer résolue / Réouvrir -->
      <button class="btn btn-sm btn-resolve-sm" *ngIf="!post.isResolved"
@@ -464,13 +464,13 @@
   - `src/app/features/dashboard/dashboard.component.html`
   - `src/app/features/dashboard/dashboard.component.css`
 
-  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur.
+  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur.
 
 ---
 
 - [ ] 8. Ajouter le badge et les boutons dans `ModerationComponent`.
 
-  Les modérateurs et admins doivent pouvoir résoudre depuis l'espace modération — à la fois dans l'onglet "Signalés" et dans l'onglet "Désactivés".
+  Les modérateurs et admins doivent pouvoir résoudre depuis l'espace modération - à la fois dans l'onglet "Signalés" et dans l'onglet "Désactivés".
 
   **moderation.component.ts** :
   1. Importer `AlertStatusBadgeComponent` dans `imports`.
@@ -538,7 +538,7 @@
   - `src/app/features/moderation/moderation.component.html`
   - `src/app/features/moderation/moderation.component.css`
 
-  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` — aucune erreur.
+  **Vérification** : `npx ng build --configuration development 2>&1 | Select-String -Pattern "error TS"` - aucune erreur.
 
 ---
 
@@ -570,7 +570,7 @@
 
 4. **Aucune modification des guards de route** (`authGuard`, `moderatorGuard`, `adminGuard`) : la vérification de permission pour résoudre est faite dans les composants via `computed()`.
 
-5. **`DatePipe` requis dans `post-detail`** : ne pas oublier de l'ajouter au tableau `imports` du composant (standalone — pas d'import dans un module).
+5. **`DatePipe` requis dans `post-detail`** : ne pas oublier de l'ajouter au tableau `imports` du composant (standalone - pas d'import dans un module).
 
 6. **Pas de modification de `app.routes.ts`** : aucune nouvelle route n'est nécessaire pour cette fonctionnalité.
 

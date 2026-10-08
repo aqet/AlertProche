@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { TrackingService } from '../../core/services/tracking.service';
 import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { InstallModalComponent } from '../../shared/components/install-modal/install-modal.component';
+import { OfflineService } from '../../core/services/offline.service';
 
 @Component({
   selector: 'app-home',
@@ -38,6 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private searchTimeout: any;
 
   isAuth = computed(() => this.auth.isAuthenticated());
+  isOffline = computed(() => !this.offlineService.online());
 
   // Mock data for demo (will be replaced by API)
   // private mockPosts: Post[] = [
@@ -129,6 +131,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ];
 
   filteredPosts = computed(() => {
+    // Mode hors-ligne : retourner uniquement les posts sauvegardés
+    if (this.isOffline()) {
+      return this.offlineService.getSavedPosts();
+    }
     let result = this.posts();
     // Masquer les résolues par défaut
     if (!this.showResolved()) {
@@ -247,18 +253,42 @@ export class HomeComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private tracking: TrackingService,
     public pwa: PwaInstallService,
-  ) {}
+    private offlineService: OfflineService,
+  ) {
+    // Relancer l'appel API quand la connexion revient pour ne pas laisser la liste vide.
+    // _initialized flag évite le double appel au premier rendu (effect() s'exécute immédiatement).
+    let _initialized = false;
+    effect(() => {
+      const online = this.offlineService.online();
+      if (!_initialized) {
+        _initialized = true;
+        return; // Ignorer le premier déclenchement synchrone
+      }
+      if (online) {
+        this.loadPosts();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.startSlider();
     this.loadAppDownloadCount();
+    if (!this.offlineService.online()) {
+      this.posts.set(this.offlineService.getSavedPosts());
+      this.loading.set(false);
+      return;
+    }
+    this.loadPosts();
+  }
+
+  private loadPosts(): void {
+    this.loading.set(true);
     this.postService.getAllPosts().subscribe({
       next: (posts) => {
         this.posts.set(posts);
         this.loading.set(false);
       },
-      error: (err) => {
-        // this.posts.set(this.mockPosts);
+      error: () => {
         this.loading.set(false);
       },
     });

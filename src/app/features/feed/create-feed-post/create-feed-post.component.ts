@@ -9,7 +9,7 @@ import { FeedService, FeedPost } from '../../../core/services/feed.service';
 import { environment } from '../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
-// browser-image-compression est optionnel — on le charge dynamiquement
+// browser-image-compression est optionnel - on le charge dynamiquement
 type ImageCompression = (file: File, options: object) => Promise<File>;
 
 const MAX_IMAGE_MB  = 5;
