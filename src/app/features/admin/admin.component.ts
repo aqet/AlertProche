@@ -48,6 +48,13 @@ export class AdminComponent implements OnInit {
   allTransactions = signal<any[]>([]);
   paymentsLoading = signal(false);
   approveLoading = signal<string | null>(null);
+  txFilterType = '';
+  txFilterStatus = '';
+  showPlatformPayoutForm = signal(false);
+  platformPayoutLoading = signal(false);
+  platformPayoutAmount: number | null = null;
+  selectedUserTransactions = signal<any[] | null>(null);
+  userTxLoading = signal(false);
 
   // Actions
   confirmDeleteUserId = signal<string | null>(null);
@@ -297,11 +304,15 @@ export class AdminComponent implements OnInit {
   async loadPaymentStats(): Promise<void> {
     this.paymentsLoading.set(true);
     try {
+      const params: Record<string, string> = {};
+      if (this.txFilterType)   params['type']   = this.txFilterType;
+      if (this.txFilterStatus) params['status'] = this.txFilterStatus;
+
       const [donations, support, payouts, allTx] = await Promise.all([
         firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions?type=DONATION_ALERT&status=SUCCESS`)).catch(() => []),
         firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions?type=PLATFORM_SUPPORT&status=SUCCESS`)).catch(() => []),
         firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/payout-requests`)).catch(() => []),
-        firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions`)).catch(() => []),
+        firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions`, { params })).catch(() => []),
       ]);
       const sum = (arr: any[]) => arr.reduce((acc, t) => acc + (t.amount ?? 0), 0);
       this.paymentStats.set({
@@ -348,6 +359,45 @@ export class AdminComponent implements OnInit {
       alert(err?.error?.message ?? 'Erreur lors de la récupération.');
     } finally {
       this.approveLoading.set(null);
+    }
+  }
+
+  async executePlatformPayout(): Promise<void> {
+    if (!this.platformPayoutAmount || this.platformPayoutAmount < 1) {
+      alert('Montant invalide (minimum 1 XAF).');
+      return;
+    }
+    this.platformPayoutLoading.set(true);
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.API}/admin/payments/payout-to-platform`, {
+          amount: this.platformPayoutAmount,
+          narration: 'Retrait administrateur vers compte AlertProche',
+        })
+      );
+      this.showPlatformPayoutForm.set(false);
+      this.platformPayoutAmount = null;
+      await this.loadPaymentStats();
+      this.showSuccess('Payout vers AlertProche effectué avec succès.');
+    } catch (err: any) {
+      alert(err?.error?.message ?? 'Erreur lors du payout.');
+    } finally {
+      this.platformPayoutLoading.set(false);
+    }
+  }
+
+  async viewUserTransactions(userId: string): Promise<void> {
+    this.userTxLoading.set(true);
+    this.selectedUserTransactions.set([]);
+    try {
+      const tx = await firstValueFrom(
+        this.http.get<any[]>(`${this.API}/admin/payments/transactions`, { params: { userId } })
+      );
+      this.selectedUserTransactions.set(tx);
+    } catch {
+      this.selectedUserTransactions.set([]);
+    } finally {
+      this.userTxLoading.set(false);
     }
   }
 }

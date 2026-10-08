@@ -74,6 +74,8 @@ export class DashboardComponent implements OnInit {
   payoutSuccess      = signal('');
   payoutError        = signal('');
   selectedCagnotte   = signal<Cagnotte | null>(null);
+  myTransactions     = signal<any[]>([]);
+  txHistoryLoading   = signal(false);
 
   user = computed(() => this.auth.currentUser());
 
@@ -214,7 +216,7 @@ export class DashboardComponent implements OnInit {
     });
 
     this.payoutForm = this.fb.group({
-      amount:          ['', [Validators.required, Validators.min(100)]],
+      amount:          ['', [Validators.required, Validators.min(1)]],
       accountBankCode: ['MTN', Validators.required],
       accountNumber:   ['', [Validators.required, Validators.pattern(/^237[0-9]{9}$/)]],
       receiverName:    ['', Validators.required],
@@ -272,10 +274,19 @@ export class DashboardComponent implements OnInit {
 
   loadCagnottes(): void {
     this.loadingCagnottes.set(true);
-    this.paymentService.getMyCagnottes().then(data => {
-      this.cagnottes.set(data);
+    this.txHistoryLoading.set(true);
+    Promise.all([
+      this.paymentService.getMyCagnottes(),
+      this.paymentService.getMyTransactions(),
+    ]).then(([cagnottes, transactions]) => {
+      this.cagnottes.set(cagnottes);
+      this.myTransactions.set(transactions);
       this.loadingCagnottes.set(false);
-    }).catch(() => this.loadingCagnottes.set(false));
+      this.txHistoryLoading.set(false);
+    }).catch(() => {
+      this.loadingCagnottes.set(false);
+      this.txHistoryLoading.set(false);
+    });
   }
 
   selectCagnotte(c: Cagnotte): void {

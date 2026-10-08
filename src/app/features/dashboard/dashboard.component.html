@@ -600,7 +600,7 @@
                 </div>
                 <button
                   class="btn btn-primary btn-sm"
-                  [disabled]="c.availableAmount < 100"
+                  [disabled]="c.availableAmount <= 0"
                   (click)="selectCagnotte(c)">
                   <i class="fas fa-money-bill-transfer"></i> Retirer
                 </button>
@@ -630,9 +630,9 @@
                 <div class="form-group">
                   <label class="form-label">Montant à retirer (XAF) *</label>
                   <input type="number" class="form-control" formControlName="amount"
-                    [max]="c.availableAmount" min="100" placeholder="Min. 100 XAF">
+                    [max]="c.availableAmount" min="1" placeholder="Min. 1 XAF">
                   <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'required')">Montant requis</span>
-                  <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">Minimum 100 XAF</span>
+                  <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">Minimum 1 XAF</span>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Opérateur *</label>
@@ -659,6 +659,45 @@
                   <span *ngIf="!payoutLoading()"><i class="fas fa-paper-plane"></i> Envoyer la demande</span>
                 </button>
               </form>
+            </div>
+
+            <!-- Historique des transactions -->
+            <div class="transactions-history" style="margin-top:32px">
+              <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">
+                <i class="fas fa-history"></i> Historique des transactions
+              </h3>
+              <div class="loading-state" *ngIf="txHistoryLoading()">
+                <div class="spinner"></div> Chargement...
+              </div>
+              <table class="admin-table" *ngIf="!txHistoryLoading() && myTransactions().length > 0">
+                <thead>
+                  <tr><th>Type</th><th>Montant</th><th>Statut</th><th>Date</th></tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let t of myTransactions()">
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'badge-green':  t.type === 'DONATION_ALERT',
+                        'badge-blue':   t.type === 'PLATFORM_SUPPORT',
+                        'badge-orange': t.type === 'PAYOUT_REQUEST'
+                      }">{{ t.type }}</span>
+                    </td>
+                    <td><strong>{{ t.amount | number }} XAF</strong></td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'badge-green':  t.status === 'SUCCESS' || t.status === 'PAYOUT_SUCCESS',
+                        'badge-orange': t.status === 'PENDING' || t.status === 'PAYOUT_PENDING',
+                        'badge-red':    t.status === 'FAILED'  || t.status === 'PAYOUT_ERROR'
+                      }">{{ t.status }}</span>
+                    </td>
+                    <td>{{ t.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="empty-state" *ngIf="!txHistoryLoading() && myTransactions().length === 0">
+                <div class="empty-icon"><i class="fas fa-receipt"></i></div>
+                <p>Aucune transaction.</p>
+              </div>
             </div>
 
           </div>

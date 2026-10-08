@@ -52,4 +52,9 @@ export class PaymentService {
   async getMyCagnottes(): Promise<Cagnotte[]> {
     return firstValueFrom(this.http.get<Cagnotte[]>(`${this.API}/my-cagnottes`));
   }
+
+  /** Mes transactions (paiements effectués + payouts de mes alertes) */
+  async getMyTransactions(): Promise<any[]> {
+    return firstValueFrom(this.http.get<any[]>(`${this.API}/my-transactions`));
+  }
 }

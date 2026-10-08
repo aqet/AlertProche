@@ -391,6 +391,10 @@
                     title="Changer le rôle" *ngIf="roleChangeUserId() !== user._id">
                     <i class="fas fa-user-pen"></i>
                   </button>
+                  <button class="btn btn-sm btn-ghost-icon" (click)="viewUserTransactions(user._id)"
+                    title="Voir les transactions">
+                    <i class="fas fa-receipt"></i>
+                  </button>
                   <button class="btn btn-sm btn-danger-icon" (click)="confirmDeleteUser(user._id)"
                     title="Supprimer le compte" *ngIf="confirmDeleteUserId() !== user._id">
                     <i class="fas fa-trash"></i>
@@ -427,6 +431,38 @@
         <button class="page-btn" [disabled]="usersPage() === usersPages()" (click)="loadUsers(usersPage() + 1)">
           <i class="fas fa-chevron-right"></i>
         </button>
+      </div>
+
+      <!-- Transactions utilisateur -->
+      <div class="user-transactions-panel" *ngIf="selectedUserTransactions() !== null" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000">
+        <div class="panel-overlay" (click)="selectedUserTransactions.set(null)" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-card,#fff);padding:24px;border-radius:12px;max-width:800px;width:90%;max-height:80vh;overflow-y:auto;z-index:1001">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="margin:0"><i class="fas fa-receipt"></i> Transactions de l'utilisateur</h3>
+            <button class="btn btn-ghost btn-sm" (click)="selectedUserTransactions.set(null)">
+              <i class="fas fa-xmark"></i>
+            </button>
+          </div>
+          <div class="loading-state" *ngIf="userTxLoading()">
+            <div class="spinner"></div> Chargement...
+          </div>
+          <table class="admin-table" *ngIf="!userTxLoading() && selectedUserTransactions()!.length > 0">
+            <thead>
+              <tr><th>Type</th><th>Montant</th><th>Statut</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of selectedUserTransactions()">
+                <td><span class="badge">{{ t.type }}</span></td>
+                <td>{{ t.amount | number }} XAF</td>
+                <td><span class="badge">{{ t.status }}</span></td>
+                <td>{{ t.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="empty-table" *ngIf="!userTxLoading() && selectedUserTransactions()!.length === 0">
+            <p>Aucune transaction pour cet utilisateur.</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -595,11 +631,32 @@
           </div>
         </div>
 
+        <!-- Admin platform payout -->
+        <div class="section-header" style="margin-top:24px">
+          <h3><i class="fas fa-building-columns"></i> Retrait vers AlertProche</h3>
+        </div>
+        <div class="admin-payout-to-platform">
+          <button class="btn btn-primary btn-sm" *ngIf="!showPlatformPayoutForm()" (click)="showPlatformPayoutForm.set(true)">
+            <i class="fas fa-money-bill-transfer"></i> Retirer vers AlertProche
+          </button>
+          <div class="platform-payout-form" *ngIf="showPlatformPayoutForm()">
+            <div class="form-inline-group" style="display:flex;gap:8px;align-items:center">
+              <input type="number" class="form-control" placeholder="Montant (XAF)" [(ngModel)]="platformPayoutAmount" min="1" style="max-width:200px">
+              <button class="btn btn-primary" [disabled]="platformPayoutLoading()" (click)="executePlatformPayout()">
+                <span class="spinner" *ngIf="platformPayoutLoading()"></span>
+                <ng-container *ngIf="!platformPayoutLoading()">
+                  <i class="fas fa-check"></i> Confirmer
+                </ng-container>
+              </button>
+              <button class="btn btn-ghost" (click)="showPlatformPayoutForm.set(false); platformPayoutAmount=null;">Annuler</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Demandes de retrait en attente -->
         <div class="section-header" style="margin-top:24px">
           <h3><i class="fas fa-money-bill-transfer"></i> Demandes de retrait en attente</h3>
         </div>
-
         <div class="admin-table-wrap">
           <table class="admin-table" *ngIf="payoutRequests().length > 0; else noPayouts">
             <thead>
@@ -644,6 +701,28 @@
         <!-- Toutes les transactions -->
         <div class="section-header" style="margin-top:32px">
           <h3><i class="fas fa-list"></i> Toutes les transactions</h3>
+        </div>
+
+        <!-- Filtres type / statut -->
+        <div class="table-toolbar" style="margin-bottom:16px">
+          <div class="filter-chips-row">
+            <label style="font-weight:500;margin-right:8px">Filtres :</label>
+            <select class="form-control" style="width:auto;margin-right:8px" [(ngModel)]="txFilterType" (ngModelChange)="loadPaymentStats()">
+              <option value="">Tous les types</option>
+              <option value="DONATION_ALERT">Dons pour alertes</option>
+              <option value="PLATFORM_SUPPORT">Soutien plateforme</option>
+              <option value="PAYOUT_REQUEST">Demandes de retrait</option>
+            </select>
+            <select class="form-control" style="width:auto" [(ngModel)]="txFilterStatus" (ngModelChange)="loadPaymentStats()">
+              <option value="">Tous les statuts</option>
+              <option value="PENDING">En attente</option>
+              <option value="SUCCESS">Réussi</option>
+              <option value="FAILED">Échoué</option>
+              <option value="PAYOUT_PENDING">Payout en attente</option>
+              <option value="PAYOUT_SUCCESS">Payout réussi</option>
+              <option value="PAYOUT_ERROR">Payout échoué</option>
+            </select>
+          </div>
         </div>
         <div class="admin-table-wrap">
           <table class="admin-table" *ngIf="allTransactions().length > 0; else noTx">
