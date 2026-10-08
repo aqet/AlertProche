@@ -1,0 +1,78 @@
+<div class="donation-overlay" (click)="close()">
+  <div class="donation-modal" (click)="$event.stopPropagation()">
+
+    <button class="donation-close" (click)="close()">
+      <i class="fas fa-xmark"></i>
+    </button>
+
+    <div class="donation-icon">
+      <i class="fas fa-hand-holding-heart"></i>
+    </div>
+
+    <h3>Soutenir cette alerte</h3>
+    <p class="donation-subtitle">{{ alertTitle }}</p>
+
+    <!-- Montants prédéfinis -->
+    <div class="donation-presets">
+      <button
+        *ngFor="let amount of presets"
+        type="button"
+        class="preset-btn"
+        [class.preset-active]="selectedAmount() === amount"
+        (click)="selectPreset(amount)">
+        {{ amount | number }} XAF
+      </button>
+    </div>
+
+    <!-- Montant libre -->
+    <div class="donation-custom">
+      <input
+        type="number"
+        class="form-control"
+        placeholder="Autre montant (min. 100 XAF)"
+        [value]="customAmount()"
+        (input)="onCustomInput($any($event.target).value)"
+        min="100">
+    </div>
+
+    <!-- Numéro Mobile Money -->
+    <div class="donation-phone">
+      <label class="donation-phone-label">
+        <i class="fas fa-mobile-alt"></i> Numéro Mobile Money (MTN / Orange)
+      </label>
+      <input
+        type="tel"
+        class="form-control"
+        placeholder="Ex: 6XXXXXXXX"
+        [value]="phone()"
+        (input)="phone.set($any($event.target).value)">
+    </div>
+
+    <!-- Récap montant -->
+    <div class="donation-recap" *ngIf="effectiveAmount >= 100">
+      <i class="fas fa-circle-check"></i>
+      <span>Don de <strong>{{ effectiveAmount | number }} XAF</strong></span>
+    </div>
+
+    <!-- Erreur -->
+    <div class="donation-error" *ngIf="error()">
+      <i class="fas fa-circle-exclamation"></i> {{ error() }}
+    </div>
+
+    <!-- Bouton valider -->
+    <button
+      class="btn btn-primary donation-submit"
+      [disabled]="!isValid || loading()"
+      (click)="submit()">
+      <span class="spinner" *ngIf="loading()"></span>
+      <ng-container *ngIf="!loading()">
+        <i class="fas fa-credit-card"></i> Valider le don
+      </ng-container>
+    </button>
+
+    <p class="donation-hint">
+      <i class="fas fa-lock"></i>
+      Paiement sécurisé via <strong>digiKUNTZ</strong> · MTN / Orange Money
+    </p>
+  </div>
+</div>
