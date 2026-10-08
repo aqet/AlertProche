@@ -71,7 +71,7 @@ export class NotificationService {
     }
 
     if (!vapidKey) {
-      console.warn('[Push] Clé VAPID manquante — notifications Web Push désactivées.');
+      console.warn('[Push] Clé VAPID manquante - notifications Web Push désactivées.');
       this.listenSwMessages();
       return;
     }
@@ -109,7 +109,7 @@ export class NotificationService {
     this.listenSwMessages();
   }
 
-  /** Envoie la PushSubscription au backend — compatible avec l'endpoint /auth/fcm-token */
+  /** Envoie la PushSubscription au backend - compatible avec l'endpoint /auth/fcm-token */
   private async sendSubscriptionToBackend(
     sub: PushSubscription,
     jwtToken: string,
@@ -169,7 +169,7 @@ export class NotificationService {
     });
   }
 
-  /** Joue le son SOS d'urgence — avec retry sur interaction si autoplay bloqué */
+  /** Joue le son SOS d'urgence - avec retry sur interaction si autoplay bloqué */
   playSosSound(url = '/sounds/sos-alert.mp3'): void {
     try {
       if (!this.sosSoundAudio || this.sosSoundAudio.src !== url) {

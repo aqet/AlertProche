@@ -19,6 +19,16 @@
           <i class="fas fa-circle-exclamation"></i> {{ error() }}
         </div>
 
+        <!-- Post mis en attente hors-ligne -->
+        <div class="notif-report offline-queued-msg" *ngIf="offlineQueued()">
+          <div class="notif-report-header">
+            <i class="fas fa-clock"></i>
+            <strong>Post mis en attente</strong>
+          </div>
+          <p class="notif-report-hint">Vous êtes hors-ligne. Votre post sera publié automatiquement lorsque vous vous reconnecterez.</p>
+          <p class="notif-report-hint">Redirection dans 2 secondes…</p>
+        </div>
+
         <!-- Succès + Rapport de notification push -->
         <div class="notif-report" *ngIf="success() && notifReport() as r">
           <div class="notif-report-header">
@@ -59,7 +69,7 @@
                     <span>Remplir par note vocale</span>
                     <span class="voice-badge">IA</span>
                   </div>
-                  <p class="voice-recorder-hint">Décrivez la situation oralement — le formulaire se remplit automatiquement.</p>
+                  <p class="voice-recorder-hint">Décrivez la situation oralement - le formulaire se remplit automatiquement.</p>
                 </div>
 
                 <!-- Erreur micro -->
@@ -168,7 +178,7 @@
                 </span>
               </div>
 
-              <!-- Location — autocomplete + ville libre validée par IA -->
+              <!-- Location - autocomplete + ville libre validée par IA -->
               <div class="form-group location-group">
                 <label class="form-label" for="post-location">
                   Localisation <span class="required">*</span>
@@ -217,7 +227,7 @@
                 <!-- Hint validation IA -->
                 <div class="location-ai-hint" *ngIf="locationInput() && !locationValid() && !locationValidating() && locationSuggestions().length === 0 && !locationError()">
                   <i class="fas fa-wand-magic-sparkles"></i>
-                  Ville absente de la liste — cliquez sur <strong>Valider</strong> pour vérification IA.
+                  Ville absente de la liste - cliquez sur <strong>Valider</strong> pour vérification IA.
                 </div>
 
                 <!-- Erreur ville invalide -->

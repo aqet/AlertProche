@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Post } from '../../core/models/post.model';
 import { MediaUrlPipe } from '../pipes/media-url.pipe';
 import { AlertStatusBadgeComponent } from '../components/alert-status-badge/alert-status-badge.component';
+import { OfflineService } from '../../core/services/offline.service';
 
 @Component({
   selector: 'app-post-card',
@@ -14,6 +15,21 @@ import { AlertStatusBadgeComponent } from '../components/alert-status-badge/aler
 })
 export class PostCardComponent {
   @Input() post!: Post;
+
+  private offlineService = inject(OfflineService);
+
+  get isSaved(): boolean {
+    return this.offlineService.isPostSaved(this.post._id);
+  }
+
+  toggleSave(event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.isSaved) {
+      this.offlineService.removeSavedPost(this.post._id);
+    } else {
+      this.offlineService.savePostOffline(this.post);
+    }
+  }
 
   getBadgeClass(): string {
     const map: Record<string, string> = {

@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgIf } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { OfflineService } from '../../core/services/offline.service';
 
 @Component({
   selector: 'app-navbar',
@@ -34,6 +35,7 @@ export class NavbarComponent {
   constructor(
     public auth: AuthService,
     public theme: ThemeService,
+    public offlineService: OfflineService,
   ) {
     this.checkMobile();
   }

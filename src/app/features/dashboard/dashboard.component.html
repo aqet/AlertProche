@@ -363,7 +363,7 @@
 
           <ng-container *ngIf="!loadingContacts()">
 
-            <!-- ① Invitations reçues — priorité haute, en premier -->
+            <!-- ① Invitations reçues - priorité haute, en premier -->
             <div class="sos-invitations-panel" *ngIf="pendingInvitations().length > 0">
               <h3 class="sos-sub-title">
                 <i class="fas fa-bell"></i>
@@ -392,7 +392,7 @@
               </div>
             </div>
 
-            <!-- ② Ajouter un contact — action principale, en avant -->
+            <!-- ② Ajouter un contact - action principale, en avant -->
             <div class="sos-add-contact" *ngIf="acceptedContactsCount() < 5">
               <h3 class="sos-sub-title">
                 <i class="fas fa-user-plus"></i>
@@ -538,7 +538,7 @@
               </div>
             </div>
 
-            <!-- ⑤ Bannière explicative — en bas, consultative -->
+            <!-- ⑤ Bannière explicative - en bas, consultative -->
             <details class="sos-info-details">
               <summary>
                 <i class="fas fa-circle-question"></i>
@@ -703,7 +703,7 @@
         <input type="tel" class="form-control" formControlName="accountNumber"
           placeholder="237XXXXXXXXX">
         <span class="form-error" *ngIf="hasError(payoutForm, 'accountNumber', 'pattern')">
-          Format invalide (ex: 237691234567)
+          Format invalide (ex: 237XXXXXXXXX)
         </span>
       </div>
       <div class="form-group">

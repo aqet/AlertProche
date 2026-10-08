@@ -225,10 +225,10 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
   // ── Partage ──────────────────────────────────────────────────────────────
 
   sharePost(post: FeedPost): void {
-    // URL OG backend — crawlée par WhatsApp, Telegram, iMessage, etc.
+    // URL OG backend - crawlée par WhatsApp, Telegram, iMessage, etc.
     const apiBase    = environment.apiUrl.replace(/\/api$/, '');
     const shareUrl   = `${apiBase}/share/feed/${post._id}`;
-    // URL frontend — destination finale pour les humains
+    // URL frontend - destination finale pour les humains
     const frontendUrl = `${window.location.origin}/feed/${post._id}`;
 
     if (navigator.share) {

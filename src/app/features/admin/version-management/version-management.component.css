@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════
-   VERSION MANAGEMENT — Admin
-   Mobile-first — corrige les débordements téléphone
+   VERSION MANAGEMENT - Admin
+   Mobile-first - corrige les débordements téléphone
    ═══════════════════════════════════════════════════ */
 
 .vm-page {
@@ -168,12 +168,12 @@
    BREAKPOINTS
    ═══════════════════════════════════════════════════ */
 
-/* Tablette — 640px+ : padding un peu plus généreux */
+/* Tablette - 640px+ : padding un peu plus généreux */
 @media (min-width: 640px) {
   .vm-card { padding: 22px 20px; }
 }
 
-/* Desktop — 960px+ : 2 colonnes côte à côte */
+/* Desktop - 960px+ : 2 colonnes côte à côte */
 @media (min-width: 960px) {
   .vm-grid {
     grid-template-columns: 1fr 1fr;

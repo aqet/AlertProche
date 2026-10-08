@@ -1,5 +1,11 @@
 <div class="home-wrap">
 
+  <!-- Bandeau mode hors-ligne -->
+  <div class="offline-banner" *ngIf="isOffline()">
+    <i class="fas fa-wifi-slash"></i>
+    Mode hors-ligne — vous consultez vos posts sauvegardés
+  </div>
+
   <!-- ══ HERO COMPACT ═══════════════════════════════════════════ -->
   <section class="hero-section">
     <div class="container">

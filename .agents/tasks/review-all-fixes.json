@@ -1,0 +1,7 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    "Attribut HTML `min=\"1\"` résiduel dans platform-support-modal — dans le template inline de `platform-support-modal.component.ts`, l'input du montant libre conserve `min=\"1\"` au lieu de `min=\"100\"`. La validation logique (`isValid` et `submit()`) est correcte à ≥ 100, mais le hint natif du navigateur indique qu'une valeur à partir de 1 XAF est valide, incohérent avec le placeholder. Corriger `min=\"1\"` en `min=\"100\"` dans le template inline."
+  ],
+  "reviewDoc": "c:\\code\\New folder (3) - Copy\\AlertProche\\.agents\\tasks\\review-all-fixes.md"
+}

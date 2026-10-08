@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════
-   FEED — Style Twitter / X
+   FEED - Style Twitter / X
    Posts séparés par ligne fine, avatar gauche, contenu droite
    ════════════════════════════════════════════════════════════ */
 
@@ -135,7 +135,7 @@
   flex-direction: column;
 }
 
-/* ── Post — structure Twitter/X ────────────────────────────── */
+/* ── Post - structure Twitter/X ────────────────────────────── */
 .feed-post-card {
   display: grid;
   grid-template-columns: 40px 1fr;
@@ -592,7 +592,7 @@
 .feed-lightbox {
   position: fixed;
   inset: 0;
-  /* Noir pur — aucun flou, isolement total quelle que soit l'image */
+  /* Noir pur - aucun flou, isolement total quelle que soit l'image */
   background: #000000e8;
   z-index: 9999;
   display: flex;
@@ -617,7 +617,7 @@
   top: -48px;
   right: 0;
   width: 38px; height: 38px;
-  /* Fond blanc semi-transparent avec contour — visible sur fond noir */
+  /* Fond blanc semi-transparent avec contour - visible sur fond noir */
   background: rgba(255,255,255,0.15);
   border: 1.5px solid rgba(255,255,255,0.5);
   border-radius: 50%;
@@ -740,7 +740,7 @@
   transform: translateY(-50%);
   width: 46px;
   height: 46px;
-  /* Fond blanc semi-transparent + contour blanc — lisible sur toute image */
+  /* Fond blanc semi-transparent + contour blanc - lisible sur toute image */
   background: rgba(255,255,255,0.18);
   border: 1.5px solid rgba(255,255,255,0.55);
   border-radius: 50%;

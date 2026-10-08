@@ -2,6 +2,6 @@
   <i class="fas" [class.fa-circle-check]="isResolved" [class.fa-circle-dot]="!isResolved"></i>
   {{ isResolved ? 'Résolue' : 'En cours' }}
   <span *ngIf="showDate && isResolved && post.resolvedAt" class="resolved-date">
-    — {{ getResolvedDate() }}
+    - {{ getResolvedDate() }}
   </span>
 </span>

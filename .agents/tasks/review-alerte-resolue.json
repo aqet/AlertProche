@@ -14,7 +14,7 @@
     {
       "severity": "INFO",
       "id": "resolvedBy-non-affiche",
-      "summary": "Le champ resolvedBy est présent dans le modèle et renvoyé par le backend, mais aucune surface UI ne l'affiche. La sidebar de post-detail montre déjà resolvedAt — afficher le pseudo associé à resolvedBy serait cohérent pour l'audit en modération."
+      "summary": "Le champ resolvedBy est présent dans le modèle et renvoyé par le backend, mais aucune surface UI ne l'affiche. La sidebar de post-detail montre déjà resolvedAt - afficher le pseudo associé à resolvedBy serait cohérent pour l'audit en modération."
     }
   ],
   "reviewDoc": "c:\\code\\New folder (3) - Copy\\AlertProche\\.agents\\tasks\\review-alerte-resolue.md"
