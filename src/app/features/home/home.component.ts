@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -254,7 +254,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     private tracking: TrackingService,
     public pwa: PwaInstallService,
     private offlineService: OfflineService,
-  ) {}
+  ) {
+    // Relancer l'appel API quand la connexion revient pour ne pas laisser la liste vide
+    effect(() => {
+      if (this.offlineService.online()) {
+        this.loadPosts();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.startSlider();
@@ -264,13 +271,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.loading.set(false);
       return;
     }
+    this.loadPosts();
+  }
+
+  private loadPosts(): void {
+    this.loading.set(true);
     this.postService.getAllPosts().subscribe({
       next: (posts) => {
         this.posts.set(posts);
         this.loading.set(false);
       },
-      error: (err) => {
-        // this.posts.set(this.mockPosts);
+      error: () => {
         this.loading.set(false);
       },
     });

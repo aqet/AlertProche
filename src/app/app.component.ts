@@ -107,10 +107,8 @@ export class AppComponent implements OnInit {
     // La bannière s'affichera si une permission manque
     this.permSvc.checkPermissionsOnLoad();
 
-    // Synchroniser les posts en attente lorsque la connexion est rétablie
-    window.addEventListener('online', () => {
-      this.offlineService.syncPendingPosts();
-    });
+    // La synchronisation des posts en attente est gérée dans OfflineService.constructor
+    // pour éviter le double enregistrement du listener 'online'.
   }
 
   /** Ajoute 'pwa-standalone' sur <body> si l'app est installée */

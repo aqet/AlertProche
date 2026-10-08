@@ -21,6 +21,9 @@ export class OfflineService {
   /** Signal interne pour posts en attente — réactif */
   private _pendingPosts = signal<PendingPost[]>(this.getPendingPosts());
 
+  /** Signal interne pour posts sauvegardés — réactif (fix: isSaved réactif) */
+  private _savedPosts = signal<Post[]>(this.loadSavedPosts());
+
   /** Statut réseau */
   online = signal(navigator.onLine);
 
@@ -30,21 +33,18 @@ export class OfflineService {
   private postService = inject(PostService);
 
   constructor() {
-    window.addEventListener('online', () => this.online.set(true));
+    window.addEventListener('online', () => {
+      this.online.set(true);
+      // Synchroniser les posts en attente dès que la connexion revient (centralisé ici)
+      this.syncPendingPosts();
+    });
     window.addEventListener('offline', () => this.online.set(false));
   }
 
   // ── Posts sauvegardés hors-ligne (lecture) ──────────────────────
 
-  savePostOffline(post: Post): void {
-    const saved = this.getSavedPosts();
-    if (!saved.find(p => p._id === post._id)) {
-      saved.push(post);
-      localStorage.setItem(this.SAVED_KEY, JSON.stringify(saved));
-    }
-  }
-
-  getSavedPosts(): Post[] {
+  /** Lit localStorage sans mettre à jour le signal (usage interne à l'init) */
+  private loadSavedPosts(): Post[] {
     try {
       return JSON.parse(localStorage.getItem(this.SAVED_KEY) ?? '[]');
     } catch {
@@ -52,13 +52,27 @@ export class OfflineService {
     }
   }
 
+  savePostOffline(post: Post): void {
+    const saved = this._savedPosts();
+    if (!saved.find(p => p._id === post._id)) {
+      const updated = [...saved, post];
+      localStorage.setItem(this.SAVED_KEY, JSON.stringify(updated));
+      this._savedPosts.set(updated);
+    }
+  }
+
+  getSavedPosts(): Post[] {
+    return this._savedPosts();
+  }
+
   removeSavedPost(postId: string): void {
-    const updated = this.getSavedPosts().filter(p => p._id !== postId);
+    const updated = this._savedPosts().filter(p => p._id !== postId);
     localStorage.setItem(this.SAVED_KEY, JSON.stringify(updated));
+    this._savedPosts.set(updated);
   }
 
   isPostSaved(postId: string): boolean {
-    return this.getSavedPosts().some(p => p._id === postId);
+    return this._savedPosts().some(p => p._id === postId);
   }
 
   // ── Posts en attente de sync (création hors-ligne) ──────────────
