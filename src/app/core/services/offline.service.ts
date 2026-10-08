@@ -24,6 +24,9 @@ export class OfflineService {
   /** Signal interne pour posts sauvegardés — réactif (fix: isSaved réactif) */
   private _savedPosts = signal<Post[]>(this.loadSavedPosts());
 
+  /** Signal public pour les posts sauvegardés — réactif dans les computed */
+  readonly savedPosts = this._savedPosts.asReadonly();
+
   /** Statut réseau */
   online = signal(navigator.onLine);
 

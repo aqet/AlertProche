@@ -131,9 +131,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ];
 
   filteredPosts = computed(() => {
-    // Mode hors-ligne : retourner uniquement les posts sauvegardés
+    // Mode hors-ligne : retourner uniquement les posts sauvegardés (signal réactif)
     if (this.isOffline()) {
-      return this.offlineService.getSavedPosts();
+      return this.offlineService.savedPosts();
     }
     let result = this.posts();
     // Masquer les résolues par défaut
