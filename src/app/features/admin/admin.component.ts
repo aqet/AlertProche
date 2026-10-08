@@ -297,9 +297,9 @@ export class AdminComponent implements OnInit {
     this.paymentsLoading.set(true);
     try {
       const [donations, support, payouts] = await Promise.all([
-        firstValueFrom(this.http.get<any[]>(`${this.API}/payments/admin/transactions?type=DONATION_ALERT&status=SUCCESS`)).catch(() => []),
-        firstValueFrom(this.http.get<any[]>(`${this.API}/payments/admin/transactions?type=PLATFORM_SUPPORT&status=SUCCESS`)).catch(() => []),
-        firstValueFrom(this.http.get<any[]>(`${this.API}/payments/admin/payout-requests`)).catch(() => []),
+        firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions?type=DONATION_ALERT&status=SUCCESS`)).catch(() => []),
+        firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions?type=PLATFORM_SUPPORT&status=SUCCESS`)).catch(() => []),
+        firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/payout-requests`)).catch(() => []),
       ]);
       const sum = (arr: any[]) => arr.reduce((acc, t) => acc + (t.amount ?? 0), 0);
       this.paymentStats.set({
