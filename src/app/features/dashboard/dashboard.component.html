@@ -605,60 +605,6 @@
                   <i class="fas fa-money-bill-transfer"></i> Retirer
                 </button>
 
-                <!-- Formulaire de retrait — s'ouvre sous le post sélectionné -->
-                <div class="payout-form-panel" *ngIf="selectedCagnotte()?._id === c._id">
-                  <div class="payout-form-header">
-                    <h3><i class="fas fa-money-bill-transfer"></i> Demande de retrait — {{ c.title }}</h3>
-                    <button class="btn btn-ghost btn-sm" (click)="selectedCagnotte.set(null)">
-                      <i class="fas fa-xmark"></i>
-                    </button>
-                  </div>
-                  <p class="payout-hint">
-                    Solde disponible : <strong>{{ c.availableAmount | number }} XAF</strong>
-                  </p>
-                  <form [formGroup]="payoutForm" (ngSubmit)="submitPayout()">
-                    <div class="form-group">
-                      <label class="form-label">Montant à retirer (XAF) *</label>
-                      <input type="number" class="form-control" formControlName="amount"
-                        [max]="c.availableAmount" min="1" placeholder="Min. 1 XAF">
-                      <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'required')">Montant requis</span>
-                      <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">Minimum 1 XAF</span>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Opérateur *</label>
-                      <select class="form-control" formControlName="accountBankCode">
-                        <option value="MTN">MTN Mobile Money</option>
-                        <option value="ORANGEMONEY">Orange Money</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Numéro (format 237XXXXXXXXX) *</label>
-                      <input type="text" class="form-control" formControlName="accountNumber"
-                        placeholder="237XXXXXXXXX">
-                      <span class="form-error" *ngIf="hasError(payoutForm, 'accountNumber', 'pattern')">
-                        Format invalide (ex: 237691234567)
-                      </span>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Nom du titulaire *</label>
-                      <input type="text" class="form-control" formControlName="receiverName"
-                        placeholder="Prénom NOM">
-                      <span class="form-error" *ngIf="hasError(payoutForm, 'receiverName', 'required')">Nom requis</span>
-                    </div>
-                    <!-- Messages succès / erreur -->
-                    <div class="alert-banner success" *ngIf="payoutSuccess()" style="margin-bottom:12px">
-                      <i class="fas fa-circle-check"></i> {{ payoutSuccess() }}
-                    </div>
-                    <div class="alert-banner error" *ngIf="payoutError()" style="margin-bottom:12px">
-                      <i class="fas fa-circle-exclamation"></i> {{ payoutError() }}
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full" [disabled]="payoutLoading()">
-                      <span class="spinner" *ngIf="payoutLoading()"></span>
-                      <span *ngIf="!payoutLoading()"><i class="fas fa-paper-plane"></i> Envoyer la demande</span>
-                    </button>
-                  </form>
-                </div>
-
               </div>
             </div>
 
@@ -714,5 +660,79 @@
 
       </main>
     </div>
+  </div>
+</div>
+
+<!-- ── MODALE RETRAIT CAGNOTTE ─────────────────────────────────── -->
+<div class="payout-modal-overlay" *ngIf="selectedCagnotte()" (click)="selectedCagnotte.set(null)">
+  <div class="payout-modal" (click)="$event.stopPropagation()" *ngIf="selectedCagnotte() as c">
+
+    <!-- Header -->
+    <button class="payout-modal-close" (click)="selectedCagnotte.set(null)">
+      <i class="fas fa-xmark"></i>
+    </button>
+    <div class="payout-modal-icon">
+      <i class="fas fa-money-bill-transfer"></i>
+    </div>
+    <h3 class="payout-modal-title">Demande de retrait</h3>
+    <p class="payout-modal-subtitle">{{ c.title }}</p>
+    <div class="payout-modal-balance">
+      <i class="fas fa-wallet"></i>
+      Solde disponible : <strong>{{ c.availableAmount | number }} XAF</strong>
+    </div>
+
+    <!-- Formulaire -->
+    <form [formGroup]="payoutForm" (ngSubmit)="submitPayout()" class="payout-modal-form">
+      <div class="form-group">
+        <label class="form-label">Montant à retirer (XAF) *</label>
+        <input type="number" class="form-control" formControlName="amount"
+          [max]="c.availableAmount" min="1" placeholder="Min. 1 XAF">
+        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'required')">Montant requis</span>
+        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">Minimum 1 XAF</span>
+        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'max')">Dépasse le solde disponible</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Opérateur *</label>
+        <select class="form-control" formControlName="accountBankCode">
+          <option value="MTN">MTN Mobile Money</option>
+          <option value="ORANGEMONEY">Orange Money</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Numéro (format 237XXXXXXXXX) *</label>
+        <input type="tel" class="form-control" formControlName="accountNumber"
+          placeholder="237XXXXXXXXX">
+        <span class="form-error" *ngIf="hasError(payoutForm, 'accountNumber', 'pattern')">
+          Format invalide (ex: 237691234567)
+        </span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom du titulaire *</label>
+        <input type="text" class="form-control" formControlName="receiverName"
+          placeholder="Prénom NOM">
+        <span class="form-error" *ngIf="hasError(payoutForm, 'receiverName', 'required')">Nom requis</span>
+      </div>
+
+      <!-- Messages -->
+      <div class="alert-banner success" *ngIf="payoutSuccess()">
+        <i class="fas fa-circle-check"></i> {{ payoutSuccess() }}
+      </div>
+      <div class="alert-banner error" *ngIf="payoutError()">
+        <i class="fas fa-circle-exclamation"></i> {{ payoutError() }}
+      </div>
+
+      <p class="payout-modal-hint">
+        <i class="fas fa-info-circle"></i>
+        La demande sera traitée par notre équipe sous 24–48h.
+      </p>
+
+      <button type="submit" class="btn btn-primary payout-modal-submit" [disabled]="payoutLoading()">
+        <span class="spinner" *ngIf="payoutLoading()"></span>
+        <ng-container *ngIf="!payoutLoading()">
+          <i class="fas fa-paper-plane"></i> Envoyer la demande
+        </ng-container>
+      </button>
+    </form>
+
   </div>
 </div>
