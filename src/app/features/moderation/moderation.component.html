@@ -98,6 +98,8 @@
               <i class="fas" [ngClass]="post.isActive !== false ? 'fa-eye' : 'fa-eye-slash'"></i>
               {{ post.isActive !== false ? 'Actif' : 'Désactivé' }}
             </span>
+            <!-- Badge statut résolution -->
+            <app-alert-status-badge [post]="post" [showDate]="true"></app-alert-status-badge>
             <span class="mod-post-time">{{ getTimeAgo(post.createdAt) }}</span>
           </div>
 
@@ -146,6 +148,14 @@
                 <i class="fas" [ngClass]="post.isActive !== false ? 'fa-eye-slash' : 'fa-eye'"></i>
                 {{ post.isActive !== false ? 'Désactiver' : 'Réactiver' }}
               </button>
+              <button class="btn btn-sm btn-mod-resolve" *ngIf="!post.isResolved"
+                (click)="resolvePost(post)" title="Marquer comme résolue">
+                <i class="fas fa-circle-check"></i> Résoudre
+              </button>
+              <button class="btn btn-sm btn-mod-reopen" *ngIf="post.isResolved"
+                (click)="unresolvePost(post)" title="Réouvrir l'alerte">
+                <i class="fas fa-rotate-left"></i> Réouvrir
+              </button>
               <button class="btn btn-sm btn-mod-delete" *ngIf="isAdmin()" (click)="deletePost(post)">
                 <i class="fas fa-trash"></i> Supprimer
               </button>
@@ -170,6 +180,8 @@
             <span class="status-chip status-reported" *ngIf="isPostReported(post)">
               <i class="fas fa-flag"></i> Signalé
             </span>
+            <!-- Badge statut résolution -->
+            <app-alert-status-badge [post]="post" [showDate]="true"></app-alert-status-badge>
             <span class="mod-post-time">{{ getTimeAgo(post.createdAt) }}</span>
           </div>
 
@@ -197,6 +209,14 @@
             <div class="mod-actions-right">
               <button class="btn btn-sm btn-mod-enable" (click)="toggleActive(post)">
                 <i class="fas fa-eye"></i> Réactiver
+              </button>
+              <button class="btn btn-sm btn-mod-resolve" *ngIf="!post.isResolved"
+                (click)="resolvePost(post)" title="Marquer comme résolue">
+                <i class="fas fa-circle-check"></i> Résoudre
+              </button>
+              <button class="btn btn-sm btn-mod-reopen" *ngIf="post.isResolved"
+                (click)="unresolvePost(post)" title="Réouvrir l'alerte">
+                <i class="fas fa-rotate-left"></i> Réouvrir
               </button>
               <button class="btn btn-sm btn-mod-delete" *ngIf="isAdmin()" (click)="deletePost(post)">
                 <i class="fas fa-trash"></i> Supprimer

@@ -141,6 +141,67 @@
           </div>
         </div>
 
+        <!-- KPI Paiements -->
+        <div class="kpi-grid" style="margin-top:16px" *ngIf="paymentStats()">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--green-dim);color:var(--green)">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ paymentStats()!.donations | number }} XAF</div>
+              <div class="kpi-label">Dons pour alertes</div>
+              <div class="kpi-sub">Total collecté via cagnottes</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(139,92,246,0.12);color:#8b5cf6">
+              <i class="fas fa-shield-heart"></i>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ paymentStats()!.support | number }} XAF</div>
+              <div class="kpi-label">Soutien plateforme</div>
+              <div class="kpi-sub">Dons directs AlertProche</div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-warning">
+            <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ paymentStats()!.pendingPayout | number }} XAF</div>
+              <div class="kpi-label">En attente de versement</div>
+              <div class="kpi-sub">{{ payoutRequests().length }} demande(s)</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;text-align:right" *ngIf="!paymentStats()">
+          <button class="btn btn-outline btn-sm" (click)="loadPaymentStats()">
+            <i class="fas fa-credit-card"></i> Charger les stats de paiement
+          </button>
+        </div>
+
+        <!-- Demandes de retrait en attente -->
+        <div class="payout-requests-panel" *ngIf="payoutRequests().length > 0" style="margin-top:24px">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">
+            <i class="fas fa-money-bill-transfer" style="color:var(--green)"></i>
+            Demandes de retrait en attente
+          </h3>
+          <div class="payout-request-row" *ngFor="let tx of payoutRequests()">
+            <div class="payout-request-info">
+              <span class="payout-amount">{{ tx.amount | number }} XAF</span>
+              <span class="payout-operator">{{ tx.accountBankCode }} · {{ tx.accountNumber }}</span>
+              <span class="payout-name">{{ tx.receiverName }}</span>
+            </div>
+            <button
+              class="btn btn-primary btn-sm"
+              [disabled]="approveLoading() === tx._id"
+              (click)="approvePayout(tx._id)">
+              <span class="spinner" *ngIf="approveLoading() === tx._id"></span>
+              <span *ngIf="approveLoading() !== tx._id">
+                <i class="fas fa-check"></i> Approuver
+              </span>
+            </button>
+          </div>
+        </div>
+
         <!-- Répartition en 2 colonnes -->
         <div class="stats-grid">
 

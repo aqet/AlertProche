@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Post } from '../../core/models/post.model';
 import { MediaUrlPipe } from '../pipes/media-url.pipe';
+import { AlertStatusBadgeComponent } from '../components/alert-status-badge/alert-status-badge.component';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, MediaUrlPipe],
+  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent],
   templateUrl: './post-card.component.html',
   styleUrls: ['./post-card.component.css']
 })

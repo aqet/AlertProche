@@ -6,16 +6,19 @@ import { PostService } from '../../core/services/post.service';
 import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SosService, TrustedContact, PendingInvitation, UserSearchResult, WhoTrustedMe } from '../../core/services/sos.service';
+import { PaymentService } from '../../core/services/payment.service';
+import { Cagnotte } from '../../core/models/payment.model';
 import { Post } from '../../core/models/post.model';
 import { Comment } from '../../core/models/comment.model';
+import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-badge/alert-status-badge.component';
 import { debounceTime, distinctUntilChanged, Subject, switchMap, of } from 'rxjs';
 
-type DashTab = 'posts' | 'comments' | 'profile' | 'sos';
+type DashTab = 'posts' | 'comments' | 'profile' | 'sos' | 'cagnotte';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule, AlertStatusBadgeComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -62,6 +65,15 @@ export class DashboardComponent implements OnInit {
   removingContactId  = signal<string | null>(null);
   // Se retirer de la liste de quelqu'un
   leavingOwnerId     = signal<string | null>(null);
+
+  // ── Cagnottes ──────────────────────────────────────────────────────────
+  cagnottes          = signal<Cagnotte[]>([]);
+  loadingCagnottes   = signal(false);
+  payoutForm: FormGroup;
+  payoutLoading      = signal(false);
+  payoutSuccess      = signal('');
+  payoutError        = signal('');
+  selectedCagnotte   = signal<Cagnotte | null>(null);
 
   user = computed(() => this.auth.currentUser());
 
@@ -186,6 +198,7 @@ export class DashboardComponent implements OnInit {
     private commentService: CommentService,
     public auth: AuthService,
     private sosService: SosService,
+    private paymentService: PaymentService,
     private fb: FormBuilder,
     private route: ActivatedRoute
   ) {
@@ -198,6 +211,13 @@ export class DashboardComponent implements OnInit {
       title: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(150)]],
       content: ['', [Validators.required, Validators.minLength(30)]],
       location: ['', Validators.required],
+    });
+
+    this.payoutForm = this.fb.group({
+      amount:          ['', [Validators.required, Validators.min(100)]],
+      accountBankCode: ['MTN', Validators.required],
+      accountNumber:   ['', [Validators.required, Validators.pattern(/^237[0-9]{9}$/)]],
+      receiverName:    ['', Validators.required],
     });
   }
 
@@ -247,6 +267,51 @@ export class DashboardComponent implements OnInit {
     this.activeTab.set(tab);
     this.editingPost.set(null);
     if (tab === 'sos') this.loadContacts();
+    if (tab === 'cagnotte') this.loadCagnottes();
+  }
+
+  loadCagnottes(): void {
+    this.loadingCagnottes.set(true);
+    this.paymentService.getMyCagnottes().then(data => {
+      this.cagnottes.set(data);
+      this.loadingCagnottes.set(false);
+    }).catch(() => this.loadingCagnottes.set(false));
+  }
+
+  selectCagnotte(c: Cagnotte): void {
+    this.selectedCagnotte.set(c);
+    this.payoutForm.patchValue({ amount: '' });
+    this.payoutSuccess.set('');
+    this.payoutError.set('');
+  }
+
+  async submitPayout(): Promise<void> {
+    if (this.payoutForm.invalid) { this.payoutForm.markAllAsTouched(); return; }
+    const c = this.selectedCagnotte();
+    if (!c) return;
+    const val = this.payoutForm.value;
+    if (val.amount > c.availableAmount) {
+      this.payoutError.set(`Montant demandé (${val.amount} XAF) supérieur au disponible (${c.availableAmount} XAF).`);
+      return;
+    }
+    this.payoutLoading.set(true);
+    this.payoutError.set('');
+    try {
+      await this.paymentService.requestPayout({
+        alertId: c._id,
+        amount: val.amount,
+        accountBankCode: val.accountBankCode,
+        accountNumber: val.accountNumber,
+        receiverName: val.receiverName,
+      });
+      this.payoutSuccess.set('Demande de retrait envoyée. Elle sera traitée par notre équipe.');
+      this.selectedCagnotte.set(null);
+      this.loadCagnottes();
+    } catch (err: any) {
+      this.payoutError.set(err?.error?.message ?? 'Erreur lors de la demande.');
+    } finally {
+      this.payoutLoading.set(false);
+    }
   }
 
   // --- Post CRUD ---
@@ -285,6 +350,34 @@ export class DashboardComponent implements OnInit {
 
   togglePostActive(post: Post) {
     this.postService.togglePostActive(post._id).subscribe({
+      next: (updated) => {
+        this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+      },
+      error: () => {}
+    });
+  }
+
+  canMarkResolved(post: Post): boolean {
+    const u = this.user();
+    if (!u) return false;
+    const isAdminOrMod = u.role === 'Admin' || u.role === 'Moderateur';
+    // Les posts anonymes ne peuvent être résolus/réouverts que par un admin ou modérateur
+    if (post.isAnonymous === true) return isAdminOrMod;
+    // Pour les posts non-anonymes, l'auteur (tous les posts ici appartiennent à l'utilisateur), admin ou modérateur
+    return true;
+  }
+
+  resolvePost(post: Post): void {
+    this.postService.resolvePost(post._id).subscribe({
+      next: (updated) => {
+        this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+      },
+      error: () => {}
+    });
+  }
+
+  unresolvePost(post: Post): void {
+    this.postService.unresolvePost(post._id).subscribe({
       next: (updated) => {
         this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },

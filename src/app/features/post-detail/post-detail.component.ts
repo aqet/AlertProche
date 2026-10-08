@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   FormBuilder,
@@ -16,11 +16,13 @@ import { Comment } from '../../core/models/comment.model';
 import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 import { environment } from '../../../environments/environment';
 import { TrackingService } from '../../core/services/tracking.service';
+import { DonationModalComponent } from '../../shared/components/donation-modal/donation-modal.component';
+import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-badge/alert-status-badge.component';
 
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe, DonationModalComponent, AlertStatusBadgeComponent, DatePipe],
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.css'],
 })
@@ -38,6 +40,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
   shareSuccess = signal(false);
   reportModalOpen = signal(false);
   reportReason = signal('');
+  donationModalOpen = signal(false);
   reportSubmitted = signal(false);
   reportLoading = signal(false);
   isAlreadyReported = signal(false);
@@ -45,6 +48,45 @@ export class PostDetailComponent implements OnInit, OnDestroy {
   commentForm: FormGroup;
   isAuth = computed(() => this.auth.isAuthenticated());
   currentUser = computed(() => this.auth.currentUser());
+
+  resolveLoading = signal(false);
+
+  canResolve = computed(() => {
+    const user = this.currentUser();
+    const p = this.post();
+    if (!user || !p) return false;
+    const isAdminOrMod = user.role === 'Admin' || user.role === 'Moderateur';
+    // Les posts anonymes ne peuvent être résolus que par un admin ou modérateur
+    if (p.isAnonymous === true) return isAdminOrMod;
+    const isAuthor = user._id === p.author_id;
+    return isAuthor || isAdminOrMod;
+  });
+
+  markResolved(): void {
+    const p = this.post();
+    if (!p) return;
+    this.resolveLoading.set(true);
+    this.postService.resolvePost(p._id).subscribe({
+      next: (updated) => {
+        this.post.set(updated);
+        this.resolveLoading.set(false);
+      },
+      error: () => this.resolveLoading.set(false),
+    });
+  }
+
+  markUnresolved(): void {
+    const p = this.post();
+    if (!p) return;
+    this.resolveLoading.set(true);
+    this.postService.unresolvePost(p._id).subscribe({
+      next: (updated) => {
+        this.post.set(updated);
+        this.resolveLoading.set(false);
+      },
+      error: () => this.resolveLoading.set(false),
+    });
+  }
 
   textReportReason = signal(false);
   constructor(

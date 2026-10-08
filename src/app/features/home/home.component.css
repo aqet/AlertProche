@@ -705,3 +705,14 @@
   width: 100%;
   justify-content: center;
 }
+
+/* ── Chip résolues ──────────────────────────────────────────────── */
+.chip-resolved {
+  color: var(--green-dark);
+  border-color: var(--green-border);
+}
+.chip-resolved.chip-active {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  border-color: var(--green);
+}

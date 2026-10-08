@@ -5,8 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { AdminService, AdminStats, AdminUser, AdminPost } from '../../core/services/admin.service';
 import { AuthService } from '../../core/services/auth.service';
 import { VersionManagementComponent } from './version-management/version-management.component';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
-type AdminTab = 'stats' | 'users' | 'posts' | 'versions';
+type AdminTab = 'stats' | 'users' | 'posts' | 'versions' | 'payments';
 
 @Component({
   selector: 'app-admin',
@@ -39,6 +42,12 @@ export class AdminComponent implements OnInit {
   postsLoading = signal(false);
   postsFilter = signal('');
 
+  // Payments
+  paymentStats = signal<{ donations: number; support: number; pendingPayout: number } | null>(null);
+  payoutRequests = signal<any[]>([]);
+  paymentsLoading = signal(false);
+  approveLoading = signal<string | null>(null);
+
   // Actions
   confirmDeleteUserId = signal<string | null>(null);
   confirmDeletePostId = signal<string | null>(null);
@@ -61,7 +70,13 @@ export class AdminComponent implements OnInit {
     { value: 'disabled', label: 'Désactivés' },
   ];
 
-  constructor(private adminService: AdminService, public auth: AuthService) {}
+  constructor(
+    private adminService: AdminService,
+    public auth: AuthService,
+    private http: HttpClient,
+  ) {}
+
+  private get API() { return `${environment.apiUrl}`; }
 
   ngOnInit(): void {
     this.loadStats();
@@ -70,6 +85,7 @@ export class AdminComponent implements OnInit {
   setTab(tab: AdminTab): void {
     this.activeTab.set(tab);
     this.clearAction();
+    if (tab === 'payments') this.loadPaymentStats();
     if (tab === 'users' && this.users().length === 0) this.loadUsers();
     if (tab === 'posts' && this.posts().length === 0) this.loadPosts();
   }
@@ -274,5 +290,40 @@ export class AdminComponent implements OnInit {
         this.notifTestLoading.set(false);
       }
     });
+  }
+
+  // ── PAIEMENTS ─────────────────────────────────────────────────────────
+  async loadPaymentStats(): Promise<void> {
+    this.paymentsLoading.set(true);
+    try {
+      const [donations, support, payouts] = await Promise.all([
+        firstValueFrom(this.http.get<any[]>(`${this.API}/payments/admin/transactions?type=DONATION_ALERT&status=SUCCESS`)).catch(() => []),
+        firstValueFrom(this.http.get<any[]>(`${this.API}/payments/admin/transactions?type=PLATFORM_SUPPORT&status=SUCCESS`)).catch(() => []),
+        firstValueFrom(this.http.get<any[]>(`${this.API}/payments/admin/payout-requests`)).catch(() => []),
+      ]);
+      const sum = (arr: any[]) => arr.reduce((acc, t) => acc + (t.amount ?? 0), 0);
+      this.paymentStats.set({
+        donations: sum(donations),
+        support: sum(support),
+        pendingPayout: sum(payouts.filter((t: any) => t.status === 'PAYOUT_PENDING')),
+      });
+      this.payoutRequests.set(payouts.filter((t: any) => t.status === 'PAYOUT_PENDING'));
+    } catch { /* ignore */ } finally {
+      this.paymentsLoading.set(false);
+    }
+  }
+
+  async approvePayout(transactionId: string): Promise<void> {
+    this.approveLoading.set(transactionId);
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.API}/admin/payments/payout/approve/${transactionId}`, {})
+      );
+      this.payoutRequests.update(list => list.filter((t: any) => t._id !== transactionId));
+    } catch (err: any) {
+      alert(err?.error?.message ?? 'Erreur lors de l\'approbation.');
+    } finally {
+      this.approveLoading.set(null);
+    }
   }
 }

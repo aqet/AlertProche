@@ -1260,3 +1260,125 @@
 }
 
 /* ── Je suis contact de confiance de... supprimé (déplacé dans bloc SOS ci-dessus) ── */
+
+/* ── Cagnottes ───────────────────────────────────────────────── */
+.cagnotte-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.cagnotte-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color var(--transition-normal);
+}
+.cagnotte-row:hover { border-color: var(--green-border); }
+
+.cagnotte-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cagnotte-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cagnotte-amounts {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.amount-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.amount-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+.amount-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+.amount-val.green { color: var(--green); }
+.amount-val.bold  { font-size: 1rem; }
+
+/* Formulaire retrait */
+.payout-form-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 8px;
+}
+
+.payout-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.payout-form-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.payout-form-header i { color: var(--green); }
+
+.payout-hint {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-md);
+}
+.payout-hint strong { color: var(--green); }
+
+@media (max-width: 640px) {
+  .cagnotte-row { flex-direction: column; align-items: flex-start; }
+  .cagnotte-amounts { gap: 10px; }
+}
+
+/* ── Boutons résolution dashboard ──────────────────────────────── */
+.btn-resolve-sm {
+  color: var(--green-dark);
+  border-color: var(--green-border);
+  background: var(--green-dim);
+}
+.btn-resolve-sm:hover { background: var(--green-pale); }
+
+.btn-reopen-sm {
+  color: #E65100;
+  border-color: rgba(245,124,0,0.30);
+  background: rgba(245,124,0,0.08);
+}
+.btn-reopen-sm:hover { background: rgba(245,124,0,0.15); }

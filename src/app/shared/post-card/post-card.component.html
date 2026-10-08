@@ -1,4 +1,4 @@
-<article class="post-card" [routerLink]="['/posts', post._id]">
+<article class="post-card" [class.card-resolved]="post.isResolved" [routerLink]="['/posts', post._id]">
 
   <!-- Bandeau désactivé -->
   <div class="card-disabled-bar" *ngIf="post.isActive === false">
@@ -55,6 +55,8 @@
           {{ post.isAnonymous ? 'Anonyme' : (post.authorPseudo || 'Inconnu') }}
         </span>
       </div>
+      <!-- Badge statut alerte (résolu / en cours) -->
+      <app-alert-status-badge [post]="post"></app-alert-status-badge>
       <div class="card-comments-badge" *ngIf="post.commentCount !== undefined">
         <i class="fas fa-comment"></i>
         {{ post.commentCount }}

@@ -5,13 +5,14 @@ import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Post } from '../../core/models/post.model';
 import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
+import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-badge/alert-status-badge.component';
 
 type ModTab = 'reported' | 'disabled';
 
 @Component({
   selector: 'app-moderation',
   standalone: true,
-  imports: [CommonModule, RouterLink, MediaUrlPipe],
+  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent],
   templateUrl: './moderation.component.html',
   styleUrls: ['./moderation.component.css']
 })
@@ -91,6 +92,28 @@ export class ModerationComponent implements OnInit {
         this.allPosts.update(arr => arr.filter(p => p._id !== post._id));
         this.reportedPosts.update(arr => arr.filter(p => p._id !== post._id));
         this.disabledPosts.update(arr => arr.filter(p => p._id !== post._id));
+      },
+      error: () => {}
+    });
+  }
+
+  resolvePost(post: Post): void {
+    this.postService.resolvePost(post._id).subscribe({
+      next: (updated) => {
+        this.allPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+        this.reportedPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+        this.disabledPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+      },
+      error: () => {}
+    });
+  }
+
+  unresolvePost(post: Post): void {
+    this.postService.unresolvePost(post._id).subscribe({
+      next: (updated) => {
+        this.allPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+        this.reportedPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
+        this.disabledPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },
       error: () => {}
     });

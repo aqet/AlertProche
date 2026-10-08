@@ -236,3 +236,11 @@
   70%  { box-shadow: 0 0 0 8px rgba(229,57,53,0); }
   100% { box-shadow: 0 0 0 0 rgba(229,57,53,0); }
 }
+
+/* Carte résolue : légèrement atténuée */
+.post-card.card-resolved {
+  opacity: 0.82;
+}
+.post-card.card-resolved:hover {
+  opacity: 1;
+}

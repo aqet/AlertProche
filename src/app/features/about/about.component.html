@@ -432,6 +432,9 @@
           <a (click)="openInstallModal($event)" href="#" class="btn btn-outline btn-lg" style="cursor:pointer;">
             <i class="fab" [ngClass]="'fa-' + pwa.buttonIcon"></i> {{ pwa.buttonLabel }}
           </a>
+          <button class="btn btn-primary btn-lg" (click)="supportModalOpen.set(true)">
+            <i class="fas fa-hand-holding-heart"></i> Soutenir AlertProche
+          </button>
           <a routerLink="/" class="btn btn-ghost btn-lg">
             <i class="fas fa-house"></i> Voir les alertes
           </a>
@@ -444,3 +447,20 @@
 
 <!-- ══ MODAL INSTALLATION PWA ════════════════════════════════════ -->
 <app-install-modal></app-install-modal>
+
+<!-- ══ MODAL SOUTIEN PLATEFORME ══════════════════════════════════ -->
+<div class="apk-modal-overlay" *ngIf="supportModalOpen()" (click)="supportModalOpen.set(false)">
+  <div class="apk-modal" (click)="$event.stopPropagation()" style="max-width:420px">
+    <button class="apk-modal-close" (click)="supportModalOpen.set(false)">
+      <i class="fas fa-xmark"></i>
+    </button>
+    <div class="apk-modal-icon" style="background:var(--green)">
+      <i class="fas fa-shield-heart"></i>
+    </div>
+    <h3>Soutenir AlertProche</h3>
+    <p style="font-size:0.85rem;color:var(--text-sub);text-align:center;margin:0">
+      Votre don aide à maintenir la plateforme gratuite et accessible à tous au Cameroun.
+    </p>
+    <app-platform-support-modal (closed)="supportModalOpen.set(false)"></app-platform-support-modal>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="callback-page page-wrapper">
+  <div class="container">
+    <div class="callback-card">
+
+      <!-- Loading -->
+      <ng-container *ngIf="status() === 'loading'">
+        <div class="callback-icon loading">
+          <span class="spinner spinner-lg"></span>
+        </div>
+        <h2>Traitement en cours…</h2>
+        <p>Votre paiement est en cours de vérification.</p>
+      </ng-container>
+
+      <!-- Succès -->
+      <ng-container *ngIf="status() === 'success'">
+        <div class="callback-icon success">
+          <i class="fas fa-circle-check"></i>
+        </div>
+        <h2>Paiement réussi !</h2>
+        <p>Merci pour votre soutien. Votre don a bien été enregistré et contribuera à aider la communauté AlertProche.</p>
+        <div class="callback-ref" *ngIf="ref()">
+          <i class="fas fa-receipt"></i> Référence : <code>{{ ref() }}</code>
+        </div>
+      </ng-container>
+
+      <!-- En attente -->
+      <ng-container *ngIf="status() === 'pending'">
+        <div class="callback-icon pending">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h2>Paiement en attente</h2>
+        <p>Votre paiement est en cours de traitement. Vous recevrez une confirmation dès qu'il sera finalisé.</p>
+        <div class="callback-ref" *ngIf="ref()">
+          <i class="fas fa-receipt"></i> Référence : <code>{{ ref() }}</code>
+        </div>
+      </ng-container>
+
+      <!-- Échec -->
+      <ng-container *ngIf="status() === 'failed'">
+        <div class="callback-icon failed">
+          <i class="fas fa-circle-xmark"></i>
+        </div>
+        <h2>Paiement échoué</h2>
+        <p>Votre paiement n'a pas pu être traité. Veuillez réessayer ou utiliser un autre moyen de paiement.</p>
+      </ng-container>
+
+      <!-- Actions -->
+      <div class="callback-actions">
+        <a routerLink="/" class="btn btn-primary">
+          <i class="fas fa-house"></i> Retour à l'accueil
+        </a>
+        <a routerLink="/a-propos" class="btn btn-ghost" *ngIf="status() === 'success'">
+          <i class="fas fa-circle-info"></i> En savoir plus
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>

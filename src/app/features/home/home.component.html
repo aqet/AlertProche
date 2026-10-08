@@ -180,6 +180,14 @@
         </label>
         <input id="img-input" type="file" accept="image/*" hidden (change)="onImageSearchUpload($event)">
 
+        <!-- Toggle afficher/masquer les résolues -->
+        <button class="chip chip-resolved" [class.chip-active]="showResolved()"
+          (click)="toggleShowResolved()" *ngIf="resolvedCount() > 0">
+          <i class="fas fa-circle-check"></i>
+          Résolues
+          <span class="chip-count">{{ resolvedCount() }}</span>
+        </button>
+
         <!-- Reset -->
         <button class="chip chip-reset" *ngIf="filterType() || filterLocation() || searchQuery() || imageSearchFile()"
           (click)="clearFilters()">

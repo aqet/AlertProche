@@ -718,3 +718,29 @@
   background: rgba(236, 72, 153, 0.15);
   color: #ec4899;
 }
+
+/* ---- BOUTONS RÉSOLUTION ---- */
+.btn-success-resolve {
+  background: var(--green-dim);
+  color: var(--green-dark);
+  border: 1.5px solid var(--green-border);
+}
+.btn-success-resolve:hover {
+  background: var(--green-pale);
+  border-color: var(--green);
+}
+
+.btn-reopen {
+  background: rgba(245,124,0,0.08);
+  color: #E65100;
+  border: 1.5px solid rgba(245,124,0,0.30);
+}
+.btn-reopen:hover {
+  background: rgba(245,124,0,0.15);
+}
+
+/* Date résolue dans la sidebar */
+.resolved-date-val {
+  color: var(--green);
+  font-weight: 600;
+}
