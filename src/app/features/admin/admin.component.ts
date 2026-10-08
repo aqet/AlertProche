@@ -45,6 +45,7 @@ export class AdminComponent implements OnInit {
   // Payments
   paymentStats = signal<{ donations: number; support: number; pendingPayout: number } | null>(null);
   payoutRequests = signal<any[]>([]);
+  allTransactions = signal<any[]>([]);
   paymentsLoading = signal(false);
   approveLoading = signal<string | null>(null);
 
@@ -296,10 +297,11 @@ export class AdminComponent implements OnInit {
   async loadPaymentStats(): Promise<void> {
     this.paymentsLoading.set(true);
     try {
-      const [donations, support, payouts] = await Promise.all([
+      const [donations, support, payouts, allTx] = await Promise.all([
         firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions?type=DONATION_ALERT&status=SUCCESS`)).catch(() => []),
         firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions?type=PLATFORM_SUPPORT&status=SUCCESS`)).catch(() => []),
         firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/payout-requests`)).catch(() => []),
+        firstValueFrom(this.http.get<any[]>(`${this.API}/admin/payments/transactions`)).catch(() => []),
       ]);
       const sum = (arr: any[]) => arr.reduce((acc, t) => acc + (t.amount ?? 0), 0);
       this.paymentStats.set({
@@ -308,6 +310,7 @@ export class AdminComponent implements OnInit {
         pendingPayout: sum(payouts.filter((t: any) => t.status === 'PAYOUT_PENDING')),
       });
       this.payoutRequests.set(payouts.filter((t: any) => t.status === 'PAYOUT_PENDING'));
+      this.allTransactions.set(allTx);
     } catch { /* ignore */ } finally {
       this.paymentsLoading.set(false);
     }
@@ -320,8 +323,29 @@ export class AdminComponent implements OnInit {
         this.http.post(`${this.API}/admin/payments/payout/approve/${transactionId}`, {})
       );
       this.payoutRequests.update(list => list.filter((t: any) => t._id !== transactionId));
+      this.allTransactions.update(list => list.map((t: any) =>
+        t._id === transactionId ? { ...t, status: 'PAYOUT_SUCCESS' } : t
+      ));
     } catch (err: any) {
       alert(err?.error?.message ?? 'Erreur lors de l\'approbation.');
+    } finally {
+      this.approveLoading.set(null);
+    }
+  }
+
+  async markTransactionSuccess(transactionId: string): Promise<void> {
+    this.approveLoading.set(transactionId);
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.API}/admin/payments/mark-success/${transactionId}`, {})
+      );
+      this.allTransactions.update(list => list.map((t: any) =>
+        t._id === transactionId ? { ...t, status: 'SUCCESS' } : t
+      ));
+      // Recharger les stats pour refléter la mise à jour
+      await this.loadPaymentStats();
+    } catch (err: any) {
+      alert(err?.error?.message ?? 'Erreur lors de la récupération.');
     } finally {
       this.approveLoading.set(null);
     }

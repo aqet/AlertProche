@@ -84,6 +84,9 @@
       <button class="admin-tab" [class.active]="activeTab() === 'versions'" (click)="setTab('versions')">
         <i class="fas fa-mobile-screen-button"></i> <p>Versions App</p>
       </button>
+      <button class="admin-tab" [class.active]="activeTab() === 'payments'" (click)="setTab('payments')">
+        <i class="fas fa-credit-card"></i> <p>Paiements</p>
+      </button>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -545,6 +548,159 @@
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div *ngIf="activeTab() === 'versions'" class="animate-fade-in">
       <app-version-management></app-version-management>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TAB PAIEMENTS                                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="activeTab() === 'payments'" class="animate-fade-in">
+
+      <div class="loading-state" *ngIf="paymentsLoading()">
+        <div class="spinner"></div> Chargement des paiements...
+      </div>
+
+      <ng-container *ngIf="!paymentsLoading()">
+
+        <!-- KPI Résumé -->
+        <div class="kpi-grid" *ngIf="paymentStats()">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--green-dim);color:var(--green)">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ paymentStats()!.donations | number }} XAF</div>
+              <div class="kpi-label">Dons pour alertes</div>
+              <div class="kpi-sub">Total collecté via cagnottes</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--primary-dim);color:var(--primary)">
+              <i class="fas fa-heart"></i>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ paymentStats()!.support | number }} XAF</div>
+              <div class="kpi-label">Soutien plateforme</div>
+              <div class="kpi-sub">Dons directs AlertProche</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--urgent-dim);color:var(--urgent)">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ paymentStats()!.pendingPayout | number }} XAF</div>
+              <div class="kpi-label">En attente de versement</div>
+              <div class="kpi-sub">{{ payoutRequests().length }} demande(s)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demandes de retrait en attente -->
+        <div class="section-header" style="margin-top:24px">
+          <h3><i class="fas fa-money-bill-transfer"></i> Demandes de retrait en attente</h3>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table" *ngIf="payoutRequests().length > 0; else noPayouts">
+            <thead>
+              <tr>
+                <th>Montant</th>
+                <th>Opérateur</th>
+                <th>Numéro</th>
+                <th>Bénéficiaire</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of payoutRequests()">
+                <td><strong>{{ p.amount | number }} XAF</strong></td>
+                <td>{{ p.accountBankCode }}</td>
+                <td>{{ p.accountNumber }}</td>
+                <td>{{ p.receiverName }}</td>
+                <td>{{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <button
+                    class="btn btn-primary btn-sm"
+                    [disabled]="approveLoading() === p._id"
+                    (click)="approvePayout(p._id)">
+                    <span class="spinner" *ngIf="approveLoading() === p._id"></span>
+                    <ng-container *ngIf="approveLoading() !== p._id">
+                      <i class="fas fa-check"></i> Approuver
+                    </ng-container>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <ng-template #noPayouts>
+            <div class="empty-table">
+              <i class="fas fa-circle-check"></i>
+              <p>Aucune demande de retrait en attente.</p>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Toutes les transactions -->
+        <div class="section-header" style="margin-top:32px">
+          <h3><i class="fas fa-list"></i> Toutes les transactions</h3>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table" *ngIf="allTransactions().length > 0; else noTx">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Ref digiKUNTZ</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of allTransactions()">
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'badge-green':  t.type === 'DONATION_ALERT',
+                    'badge-blue':   t.type === 'PLATFORM_SUPPORT',
+                    'badge-orange': t.type === 'PAYOUT_REQUEST'
+                  }">{{ t.type }}</span>
+                </td>
+                <td><strong>{{ t.amount | number }} XAF</strong></td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'badge-green':  t.status === 'SUCCESS' || t.status === 'PAYOUT_SUCCESS',
+                    'badge-orange': t.status === 'PENDING' || t.status === 'PAYOUT_PENDING',
+                    'badge-red':    t.status === 'FAILED'  || t.status === 'PAYOUT_ERROR'
+                  }">{{ t.status }}</span>
+                </td>
+                <td style="font-size:0.75rem;color:var(--text-sub)">{{ t.transactionRef }}</td>
+                <td>{{ t.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <button
+                    *ngIf="t.status === 'PENDING'"
+                    class="btn btn-outline btn-sm"
+                    [disabled]="approveLoading() === t._id"
+                    (click)="markTransactionSuccess(t._id)"
+                    title="Marquer manuellement comme réussie">
+                    <span class="spinner" *ngIf="approveLoading() === t._id"></span>
+                    <ng-container *ngIf="approveLoading() !== t._id">
+                      <i class="fas fa-wrench"></i> Récupérer
+                    </ng-container>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <ng-template #noTx>
+            <div class="empty-table">
+              <i class="fas fa-receipt"></i>
+              <p>Aucune transaction trouvée.</p>
+            </div>
+          </ng-template>
+        </div>
+
+      </ng-container>
     </div>
 
   </div>
