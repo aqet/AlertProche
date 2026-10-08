@@ -653,6 +653,14 @@
                   <label class="form-label">Nom du titulaire *</label>
                   <input type="text" class="form-control" formControlName="receiverName"
                     placeholder="Prénom NOM">
+                  <span class="form-error" *ngIf="hasError(payoutForm, 'receiverName', 'required')">Nom requis</span>
+                </div>
+                <!-- Messages succès / erreur dans le formulaire -->
+                <div class="alert-banner success" *ngIf="payoutSuccess()" style="margin-bottom:12px">
+                  <i class="fas fa-circle-check"></i> {{ payoutSuccess() }}
+                </div>
+                <div class="alert-banner error" *ngIf="payoutError()" style="margin-bottom:12px">
+                  <i class="fas fa-circle-exclamation"></i> {{ payoutError() }}
                 </div>
                 <button type="submit" class="btn btn-primary w-full" [disabled]="payoutLoading()">
                   <span class="spinner" *ngIf="payoutLoading()"></span>
