@@ -72,6 +72,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/sos-response/sos-response.component').then(m => m.SosResponseComponent)
   },
   {
+    path: 'payments/callback',
+    loadComponent: () => import('./features/payment-callback/payment-callback.component').then(m => m.PaymentCallbackComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

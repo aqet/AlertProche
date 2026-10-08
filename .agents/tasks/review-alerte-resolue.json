@@ -1,0 +1,21 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    {
+      "severity": "WARNING",
+      "id": "asymmetrie-permission-reouverture",
+      "summary": "canResolve contrôle les deux boutons Résoudre et Réouvrir dans post-detail. Le plan prévoyait que la réouverture soit réservée à l'auteur/admin (pas les modérateurs). Un modérateur verra le bouton Réouvrir et recevra une erreur silencieuse si le backend applique la règle. Ajouter un computed canUnresolve distinct."
+    },
+    {
+      "severity": "WARNING",
+      "id": "erreurs-silencieuses-dashboard-moderation",
+      "summary": "Les callbacks error: () => {} dans resolvePost et unresolvePost des composants dashboard et moderation avalent les erreurs HTTP sans feedback utilisateur. Ajouter un signal d'erreur ou une notification toast pour ces deux composants."
+    },
+    {
+      "severity": "INFO",
+      "id": "resolvedBy-non-affiche",
+      "summary": "Le champ resolvedBy est présent dans le modèle et renvoyé par le backend, mais aucune surface UI ne l'affiche. La sidebar de post-detail montre déjà resolvedAt — afficher le pseudo associé à resolvedBy serait cohérent pour l'audit en modération."
+    }
+  ],
+  "reviewDoc": "c:\\code\\New folder (3) - Copy\\AlertProche\\.agents\\tasks\\review-alerte-resolue.md"
+}

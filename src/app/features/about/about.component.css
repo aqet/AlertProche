@@ -685,3 +685,82 @@
   width: 100%;
   justify-content: center;
 }
+
+/* ── Modale soutien plateforme (styles partagés avec donation-modal) ── */
+.donation-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+}
+
+.preset-btn {
+  padding: 9px 16px;
+  background: var(--bg-hover);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all var(--transition);
+  min-width: 90px;
+}
+.preset-btn:hover { border-color: var(--green-border); color: var(--green); }
+.preset-btn.preset-active {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.donation-custom { width: 100%; }
+.donation-custom .form-control {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.donation-recap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--green);
+  width: 100%;
+  justify-content: center;
+}
+
+.donation-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--urgent-dim);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  color: var(--urgent);
+  width: 100%;
+  justify-content: center;
+}
+
+.donation-submit {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.donation-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  text-align: center;
+}
+.donation-hint i { color: var(--green); margin-right: 4px; }
