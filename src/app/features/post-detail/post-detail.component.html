@@ -33,7 +33,7 @@
               <i class="fas fa-flag"></i>
               {{ isAlreadyReported() ? 'Signalé' : 'Signaler' }}
             </button>
-            <!-- Boutons résolution — visibles uniquement si l'utilisateur peut résoudre -->
+            <!-- Boutons résolution - visibles uniquement si l'utilisateur peut résoudre -->
             <ng-container *ngIf="canResolve()">
               <!-- Marquer comme résolue -->
               <button *ngIf="!post()!.isResolved"
@@ -66,6 +66,9 @@
           </span>
           <!-- Badge statut résolution -->
           <app-alert-status-badge [post]="post()!" [showDate]="true"></app-alert-status-badge>
+          <span class="text-muted small ms-2" *ngIf="post()!.isResolved && post()!.resolvedBy">
+            <i class="fas fa-user-check"></i> Résolu par {{ post()!.resolvedBy }}
+          </span>
           <div class="pulse-indicator" *ngIf="post()!.type === 'Disparition' && !post()!.isResolved">
             <span class="pulse-dot"></span> Alerte active
           </div>

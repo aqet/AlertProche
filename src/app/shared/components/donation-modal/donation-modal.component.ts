@@ -50,7 +50,7 @@ export class DonationModalComponent {
 // ici
   get isValid(): boolean {
     const phoneDigits = this.phone().replace(/\D/g, '');
-    return this.effectiveAmount >= 15 && phoneDigits.length >= 8;
+    return this.effectiveAmount >= 100 && phoneDigits.length >= 8;
   }
 
   close(): void {
@@ -58,8 +58,8 @@ export class DonationModalComponent {
   }
 // ici
   async submit(): Promise<void> {
-    if (this.effectiveAmount < 15) {
-      this.error.set('Le montant minimum est 15 XAF.');
+    if (this.effectiveAmount < 100) {
+      this.error.set('Le montant minimum est 100 XAF.');
       return;
     }
     const phoneDigits = this.phone().replace(/\D/g, '');

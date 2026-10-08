@@ -363,8 +363,8 @@ export class AdminComponent implements OnInit {
   }
 
   async executePlatformPayout(): Promise<void> {
-    if (!this.platformPayoutAmount || this.platformPayoutAmount < 1) {
-      alert('Montant invalide (minimum 1 XAF).');
+    if (!this.platformPayoutAmount || this.platformPayoutAmount < 100) {
+      alert('Montant invalide (minimum 100 XAF).');
       return;
     }
     this.platformPayoutLoading.set(true);

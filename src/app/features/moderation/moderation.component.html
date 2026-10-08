@@ -65,6 +65,14 @@
       </div>
     </div>
 
+    <!-- Feedback banners -->
+    <div class="alert-banner success animate-fade-in" *ngIf="actionSuccess()">
+      <i class="fas fa-circle-check"></i> {{ actionSuccess() }}
+    </div>
+    <div class="alert-banner error animate-fade-in" *ngIf="actionError()">
+      <i class="fas fa-circle-exclamation"></i> {{ actionError() }}
+    </div>
+
     <!-- Tabs -->
     <div class="mod-tabs animate-fade-in stagger-2">
       <button class="mod-tab" [class.active]="activeTab() === 'reported'" (click)="setTab('reported')">

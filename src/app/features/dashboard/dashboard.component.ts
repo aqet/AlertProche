@@ -293,6 +293,13 @@ export class DashboardComponent implements OnInit {
     this.payoutForm.patchValue({ amount: '' });
     this.payoutSuccess.set('');
     this.payoutError.set('');
+    // Update max validator dynamically based on available balance
+    this.payoutForm.get('amount')?.setValidators([
+      Validators.required,
+      Validators.min(1),
+      Validators.max(c.availableAmount),
+    ]);
+    this.payoutForm.get('amount')?.updateValueAndValidity();
   }
 
   async submitPayout(): Promise<void> {
@@ -388,7 +395,10 @@ export class DashboardComponent implements OnInit {
       next: (updated) => {
         this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },
-      error: () => {}
+      error: (err) => {
+        this.editError.set(err?.error?.message || 'Erreur lors de la résolution de la publication.');
+        setTimeout(() => this.editError.set(''), 5000);
+      }
     });
   }
 
@@ -397,7 +407,10 @@ export class DashboardComponent implements OnInit {
       next: (updated) => {
         this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },
-      error: () => {}
+      error: (err) => {
+        this.editError.set(err?.error?.message || 'Erreur lors de la réouverture de la publication.');
+        setTimeout(() => this.editError.set(''), 5000);
+      }
     });
   }
 

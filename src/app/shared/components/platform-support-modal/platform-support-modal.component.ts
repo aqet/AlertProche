@@ -26,7 +26,7 @@ const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
       <input
         type="number"
         class="form-control"
-        placeholder="Autre montant (min. 15 XAF)"
+        placeholder="Autre montant (min. 100 XAF)"
         [value]="customAmount()"
         (input)="onCustomInput($any($event.target).value)"
         min="1">
@@ -44,7 +44,7 @@ const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
         (input)="phone.set($any($event.target).value)">
     </div>
 <!-- ici -->
-    <div class="donation-recap" *ngIf="effectiveAmount >= 1">
+    <div class="donation-recap" *ngIf="effectiveAmount >= 100">
       <i class="fas fa-circle-check"></i>
       <span>Don de <strong>{{ effectiveAmount | number }} XAF</strong></span>
     </div>
@@ -151,12 +151,12 @@ export class PlatformSupportModalComponent {
   get isValid(): boolean {
     const phoneDigits = this.phone().replace(/\D/g, '');
     // ici
-    return this.effectiveAmount >= 15 && phoneDigits.length >= 8;
+    return this.effectiveAmount >= 100 && phoneDigits.length >= 8;
   }
 
   async submit(): Promise<void> {
     // ici
-    if (this.effectiveAmount < 15) { this.error.set('Montant minimum : 15 XAF.'); return; }
+    if (this.effectiveAmount < 100) { this.error.set('Montant minimum : 100 XAF.'); return; }
     const phoneDigits = this.phone().replace(/\D/g, '');
     if (phoneDigits.length < 8) { this.error.set('Veuillez entrer un numéro Mobile Money valide.'); return; }
 
