@@ -254,19 +254,12 @@
 
       <!-- État vide -->
       <div class="empty-state" *ngIf="!loading() && !searching() && filteredPosts().length === 0">
-        <ng-container *ngIf="isOffline(); else noResultsOnline">
-          <div class="empty-icon"><i class="fas fa-wifi-slash"></i></div>
-          <h3>Aucun post sauvegardé</h3>
-          <p>Sauvegardez des posts avec le bouton <i class="fas fa-bookmark"></i> pour les consulter hors-ligne.</p>
-        </ng-container>
-        <ng-template #noResultsOnline>
-          <div class="empty-icon"><i class="fas fa-search"></i></div>
-          <h3>Aucun résultat</h3>
-          <p>Aucune publication ne correspond à vos critères.</p>
-          <button class="btn-hero-secondary" (click)="clearFilters()">
-            <i class="fas fa-xmark"></i> Réinitialiser les filtres
-          </button>
-        </ng-template>
+        <div class="empty-icon"><i class="fas fa-search"></i></div>
+        <h3>Aucun résultat</h3>
+        <p>Aucune publication ne correspond à vos critères.</p>
+        <button class="btn-hero-secondary" (click)="clearFilters()">
+          <i class="fas fa-xmark"></i> Réinitialiser les filtres
+        </button>
       </div>
 
     </div>

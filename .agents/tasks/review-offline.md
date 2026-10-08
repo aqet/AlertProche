@@ -1,33 +1,29 @@
-# Mode hors-ligne pour AlertProche
+# Mode hors-ligne pour AlertProche (passe 2)
 
-L'implémentation ajoute un `OfflineService` centralisé qui surveille les événements `online`/`offline` du navigateur, met des posts en file d'attente dans `localStorage` lors de la création hors-ligne, et les synchronise automatiquement au retour connexion. La lecture hors-ligne repose sur une liste de posts sauvegardés manuellement par l'utilisateur via un bouton bookmark dans `PostCardComponent`. Le bandeau `NetworkBannerComponent` est injecté en tête du layout global dans `AppComponent`. La synchronisation des pending posts est entièrement gérée dans le constructeur de `OfflineService` — `AppComponent` ne duplique pas le listener.
+Trois commits ajoutent un `OfflineService` centralisé, un bouton bookmark dans `PostCardComponent`, la queue hors-ligne dans `PostFormComponent`, le rechargement automatique des posts au retour connexion dans `HomeComponent`, et le bandeau `NetworkBannerComponent` injecté en tête de layout. Les trois findings bloquants de la passe 1 (double appel API, `isSaved` non réactif, image perdue silencieusement) ont été adressés dans le commit `9495d83`.
 
-Watch for : **double appel API au chargement** (confirmed) — `HomeComponent` appelle `loadPosts()` deux fois au démarrage quand l'utilisateur est en ligne ; l'`effect()` du constructeur s'exécute immédiatement, puis `ngOnInit` rappelle `loadPosts()`. L'`isSaved` getter dans `PostCardComponent` n'est pas un signal computed, ce qui le rend **non réactif** dans un contexte de change detection OnPush (likely — voir détail).
+Watch for : aucun blocking concern. La synchronisation concurrente en cas de reconnexions rapides multiples est un risque possible mais non bloquant — voir détail.
 
-**Verdict**: NEEDS_CHANGES
+**Verdict**: APPROVED
 
 ---
 
 ## High-level view
 
-`OfflineService` est bien structuré : les signaux `online`, `_pendingPosts` et `_savedPosts` restent synchronisés avec `localStorage` à chaque mutation, et `syncPendingPosts()` utilise `firstValueFrom` correctement avec un catch silencieux pour permettre les tentatives futures. La propagation du clic dans `PostCardComponent` est stoppée (`event.stopPropagation()`) pour éviter la navigation. L'icône bookmark change visuellement via `[class.saved]="isSaved"`.
+`OfflineService` maintient trois signaux (`online`, `_savedPosts`, `_pendingPosts`) strictement synchronisés avec `localStorage` à chaque mutation. Le listener `'online'` du constructeur appelle `syncPendingPosts()` directement ; `AppComponent` a supprimé son propre listener dupliqué. `firstValueFrom` sérialise les requêtes de sync post par post, ce qui est préférable à une exécution parallèle.
 
-`HomeComponent` présente un double déclenchement de `loadPosts()` au chargement online : l'`effect()` enregistré dans le constructeur s'exécute une première fois à l'initialisation (comportement documenté d'Angular signals), puis `ngOnInit` rappelle `loadPosts()` explicitement. En mode hors-ligne, la logique est correcte grâce au guard `if (!this.offlineService.online()) return` dans `ngOnInit`, mais la `filteredPosts` computed retourne déjà les posts sauvegardés directement — le `this.posts.set(this.offlineService.getSavedPosts())` dans `ngOnInit` est donc redondant.
+Le double appel `loadPosts()` qui existait en passe 1 est résolu : l'`effect()` dans le constructeur de `HomeComponent` introduit un flag `_initialized` qui absorbe le premier déclenchement synchrone d'Angular signals, puis `ngOnInit` prend le relais pour le premier chargement. Au retour connexion, seul l'`effect` déclenche `loadPosts()`.
 
-`PostFormComponent` queue correctement le post hors-ligne et redirige vers l'accueil. Le chemin online est inchangé. L'image n'est pas incluse dans le post en attente (`PendingPost` ne contient pas de `image_url`), ce qui est une limitation à documenter.
+`PostCardComponent` convertit `isSaved` en `computed(() => …)` — la réactivité est désormais explicite et fonctionnera correctement si le composant passe un jour en `OnPush`. Le `stopPropagation()` dans `toggleSave` empêche la navigation vers le post au clic sur le bookmark.
 
-`NetworkBannerComponent` affiche bien le bandeau rouge hors-ligne et le bandeau vert 3 secondes au retour. La logique d'initialisation (`_initialized`) évite le flash vert au premier rendu.
+`PostFormComponent` bloque explicitement la soumission hors-ligne quand une image est sélectionnée, avec un message d'erreur clair. Le chemin en ligne est inchangé. `NetworkBannerComponent` affiche le bandeau rouge pendant la déconnexion et le bandeau vert 3 secondes au retour, avec un guard `_initialized` pour éviter le flash vert au premier rendu.
 
 ---
 
 <details>
-<summary>Issues (3)</summary>
+<summary>Issues (1)</summary>
 
-1. **Double appel API au chargement** — L'`effect()` dans le constructeur de `HomeComponent` s'exécute immédiatement (signal lu : `online() === true`), ce qui appelle `loadPosts()`. Puis `ngOnInit` appelle `loadPosts()` une deuxième fois. Résultat : deux requêtes `GET /posts` en rafale au chargement. Supprimer l'appel explicite `this.loadPosts()` dans `ngOnInit` (le guard hors-ligne reste) ou conditionner l'`effect` pour ne déclencher qu'aux transitions online→offline→online.
-
-2. **`isSaved` getter non réactif sans OnPush** — `isSaved` est un getter TypeScript ordinaire qui appelle `this.offlineService.isPostSaved()`, lequel lit `_savedPosts()` (signal). Dans une `ChangeDetectionStrategy` par défaut, cela fonctionne parce que le composant est revérifié à chaque cycle. Mais si `PostCardComponent` passe un jour en `OnPush`, le getter ne déclenchera plus de mise à jour visuelle après un save/unsave. Convertir en `computed(() => this.offlineService.isPostSaved(this.post._id))` rend la réactivité explicite et robuste.
-
-3. **Image perdue silencieusement lors d'un post hors-ligne** — `PendingPost` ne contient pas de champ image. Si un utilisateur attache une image et soumet hors-ligne, l'image est ignorée sans avertissement. Au minimum, afficher un message expliquant que l'image sera perdue. Idéalement, inclure `imageDataUrl` dans `PendingPost` (base64) si la taille reste raisonnable, ou bloquer l'envoi hors-ligne quand une image est attachée.
+1. **Sync concurrente possible sur reconnexions rapides** — `syncPendingPosts()` n'est pas protégé contre les appels multiples simultanés. Si `window 'online'` se déclenche deux fois en rafale (certains navigateurs le font), deux boucles de sync tournent en parallèle et peuvent tenter de publier et supprimer le même post deux fois. Ajouter un flag `_syncing` pour ignorer un appel si une sync est déjà en cours. Non-bloquant pour le premier déploiement, à corriger avant une charge utilisateur significative.
 
 </details>
 
@@ -36,42 +32,38 @@ Watch for : **double appel API au chargement** (confirmed) — `HomeComponent` a
 <details>
 <summary>Détails</summary>
 
-### Double déclenchement de loadPosts au chargement online
+### Résolution des findings passe 1
 
-Un `effect()` Angular s'exécute une première fois lors de son enregistrement (dans le constructeur), pas seulement lors des transitions. Comme `offlineService.online()` est `true` à ce moment, `loadPosts()` est immédiatement appelé. Ensuite `ngOnInit` s'exécute et, puisque `this.offlineService.online()` est toujours `true`, appelle `loadPosts()` une deuxième fois. Cela génère deux requêtes HTTP simultanées vers `GET /posts` à chaque chargement de la page d'accueil online — confirmed par la lecture du code.
+**Double appel API (était blocking/confirmed)** : résolu. Le constructeur de `HomeComponent` introduit `let _initialized = false` ; le premier déclenchement de l'`effect()` pose le flag et retourne sans appeler `loadPosts()`. `ngOnInit` gère le premier chargement et le guard hors-ligne reste en place. Confirmé par lecture du diff `9495d83`.
+
+**`isSaved` non réactif (était warning/likely)** : résolu. Le getter TypeScript est remplacé par `isSaved = computed(() => this.offlineService.isPostSaved(this.post._id))`. Le template est mis à jour en conséquence (`isSaved()` dans les bindings). Confirmé par diff.
+
+**Image perdue silencieusement (était blocking/confirmed)** : résolu. `PostFormComponent.onSubmit()` teste `this.selectedFile()` avant d'entrer dans le chemin hors-ligne et affiche un message d'erreur explicite demandant de supprimer l'image ou d'attendre la reconnexion.
+
+### Sync concurrente possible
+
+`syncPendingPosts()` est `async` sans mécanisme de verrou. Sur certains navigateurs (Chrome mobile notamment), l'événement `'online'` peut se déclencher deux ou trois fois en succession rapide lors d'une reconnexion. Deux invocations simultanées lisent la même liste pending depuis `localStorage`, itèrent sur les mêmes posts, et chaque itération appelle `removePendingPost()` après succès — ce qui modifie `localStorage` pendant que l'autre boucle tourne sur sa snapshot initiale. Résultat probable : double publication du même post.
 
 ```typescript
-// constructeur — effect() déclenche immédiatement
-effect(() => {
-  if (this.offlineService.online()) {
-    this.loadPosts(); // ← appel n°1, à l'init
-  }
-});
+// Correctif minimal
+private _syncing = false;
 
-// ngOnInit — called juste après
-ngOnInit(): void {
-  if (!this.offlineService.online()) { ... return; }
-  this.loadPosts(); // ← appel n°2
+async syncPendingPosts(): Promise<void> {
+  if (this._syncing) return;
+  this._syncing = true;
+  try {
+    // ... boucle existante
+  } finally {
+    this._syncing = false;
+  }
 }
 ```
 
-La correction la plus simple est de retirer l'appel `loadPosts()` du `ngOnInit` (en conservant le guard hors-ligne pour le `return` early) et de laisser l'`effect` gérer à la fois l'init et les reconnexions. Ou introduire un flag `_initialized` dans le même esprit que `NetworkBannerComponent`.
+Ce risque est classifié **possible** — reproductible sur certains navigateurs mais pas universel. Non bloquant pour le déploiement initial, à corriger à l'occasion.
 
-### `isSaved` réactivité et future fragilité
+### Comportement en ligne inchangé — confirmation
 
-`isPostSaved` lit `_savedPosts()`, donc la lecture du signal est bien captée lors du premier rendu. En `ChangeDetectionStrategy.Default` actuelle, chaque clic sur le bookmark (`toggleSave`) modifie le signal et provoque un cycle de détection global qui re-évalue le getter. Ça fonctionne. La fragilité apparaît si le composant passe en `OnPush` : sans être dans une computed ou un `toSignal`, le getter ne créera pas de dépendance réactive et l'icône ne se mettra pas à jour. Utiliser un `computed` lève cette ambiguïté.
-
-### Image perdue silencieusement lors d'un post hors-ligne
-
-Dans `PostFormComponent.onSubmit()`, le chemin hors-ligne extrait uniquement `title`, `content`, `location`, `type`, `isAnonymous`. Si `this.selectedFile()` est non-nul au moment de la soumission, l'image est abandonnée sans notification à l'utilisateur. `syncPendingPosts()` appelle `postService.createPost(...)` sans passer de fichier, donc le post synchro arrivera sans image même si l'utilisateur en avait choisi une.
-
-### Comportement online inchangé
-
-Le chemin de soumission en ligne dans `PostFormComponent` et la logique de filtrage de `HomeComponent` (`filteredPosts`) ne sont pas affectés par les modifications hors-ligne — confirmed. Le guard hors-ligne dans `onSubmit()` est un early-return, et la computed `filteredPosts` ne court-circuite les filtres qu'en mode offline.
-
-### syncPendingPosts et concurrence
-
-`syncPendingPosts()` itère avec `for...of` + `await firstValueFrom`, ce qui sérialise les requêtes. C'est intentionnel et préférable à une exécution parallèle qui pourrait inonder le serveur. Le catch silencieux par post laisse les posts échoués dans la queue pour la prochaine reconnexion — comportement correct.
+Le chemin de soumission en ligne dans `PostFormComponent` est un early-return hors-ligne suivi du code online existant intact. `HomeComponent.filteredPosts` court-circuite vers les posts sauvegardés uniquement quand `isOffline()` est vrai, sans toucher aux filtres online. Aucune régression détectée.
 
 </details>
 
@@ -80,14 +72,14 @@ Le chemin de soumission en ligne dans `PostFormComponent` et la logique de filtr
 <details>
 <summary>Fichiers examinés</summary>
 
-| Fichier | Modification |
+| Fichier | État |
 |---|---|
-| `src/app/core/services/offline.service.ts` | Nouveau service : signaux online, savedPosts, pendingPosts, sync |
-| `src/app/shared/post-card/post-card.component.ts` | Ajout toggleSave, isSaved getter, injection OfflineService |
-| `src/app/shared/post-card/post-card.component.html` | Bouton bookmark avec stopPropagation et class.saved |
-| `src/app/shared/components/network-banner/network-banner.component.ts` | Nouveau composant : bandeau rouge/vert |
-| `src/app/features/home/home.component.ts` | isOffline computed, effect reconnexion, guard ngOnInit hors-ligne |
-| `src/app/features/post-form/post-form.component.ts` | Guard hors-ligne dans onSubmit, queuePost, offlineQueued signal |
-| `src/app/app.component.ts` | Import et insertion de NetworkBannerComponent dans le template |
+| `src/app/core/services/offline.service.ts` | Signaux synchronisés localStorage, sync centralisée |
+| `src/app/shared/post-card/post-card.component.ts` | `isSaved` converti en `computed`, stopPropagation confirmé |
+| `src/app/shared/post-card/post-card.component.html` | Bindings mis à jour vers `isSaved()` |
+| `src/app/shared/components/network-banner/network-banner.component.ts` | Bandeau rouge/vert, guard _initialized |
+| `src/app/features/home/home.component.ts` | Flag _initialized dans effect, loadPosts extrait, guard offline |
+| `src/app/features/post-form/post-form.component.ts` | Guard image offline, message erreur explicite |
+| `src/app/app.component.ts` | Listener dupliqué supprimé, NetworkBannerComponent importé |
 
 </details>
