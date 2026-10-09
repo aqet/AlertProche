@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { PostType } from '../../core/models/post.model';
 import { TrackingService } from '../../core/services/tracking.service';
@@ -80,13 +80,18 @@ export class PostFormComponent implements OnInit, OnDestroy {
     "Appel à l'aide",
   ];
 
-  postTypeDescriptions: Record<string, string> = {
-    Disparition: 'Personne disparue - enfant, adulte, personne âgée',
-    Abus: 'Maltraitance, exploitation, violence sur mineur ou personne vulnérable',
-    Prevention: 'Sensibilisation, guide, information utile à la communauté',
-    "Appel à l'aide":
-      "Personne à l'hôpital sans famille identifiée, personne en détresse, famille introuvable",
-  };
+  private translateSvc = inject(TranslateService);
+
+  getTypeDescription(type: string): string {
+    const keyMap: Record<string, string> = {
+      'Disparition':    'POST.TYPE_DESC_DISPARITION',
+      'Abus':           'POST.TYPE_DESC_ABUS',
+      'Prevention':     'POST.TYPE_DESC_PREVENTION',
+      "Appel à l'aide": 'POST.TYPE_DESC_APPEL',
+    };
+    const key = keyMap[type];
+    return key ? this.translateSvc.instant(key) : '';
+  }
 
   camerounCities = [
     'National',

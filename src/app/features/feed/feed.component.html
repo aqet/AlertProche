@@ -71,7 +71,7 @@
               <span class="post-header-spacer"></span>
               <div class="post-menu" *ngIf="canDelete(post)">
                 <button class="post-menu-btn" *ngIf="deletingId() !== post._id" (click)="confirmDelete(post._id)"
-                  title="Supprimer">
+                  [title]="'FEED.BTN_DELETE_TITLE' | translate">
                   <i class="fas fa-trash"></i>
                 </button>
                 <div class="confirm-delete" *ngIf="deletingId() === post._id">
@@ -219,7 +219,7 @@
     <!-- Média actuel -->
     <ng-container *ngIf="lightboxCurrent">
       <img *ngIf="lightboxCurrent.type === 'image'" [src]="lightboxCurrent.url" class="lightbox-media"
-        alt="Média en plein écran">
+        [attr.alt]="'FEED.LIGHTBOX_MEDIA_ALT' | translate">
       <video *ngIf="lightboxCurrent.type === 'video'" [src]="lightboxCurrent.url" controls autoplay
         class="lightbox-media">
       </video>
@@ -248,6 +248,6 @@
 </div>
 
 <!-- ── Bouton retour en haut ──────────────────────────────── -->
-<button class="scroll-top-btn" *ngIf="showScrollTop()" (click)="scrollToTop()" title="Retour en haut">
+<button class="scroll-top-btn" *ngIf="showScrollTop()" (click)="scrollToTop()" [title]="'FEED.BTN_SCROLL_TOP_TITLE' | translate">
   <i class="fas fa-arrow-up"></i>
 </button>

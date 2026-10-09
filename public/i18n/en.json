@@ -87,7 +87,9 @@
     "BTN_RESET_FILTERS": "Reset filters",
     "APP_TITLE": "Download the AlertProche app",
     "APP_DESC": "Receive real-time alerts from your area. Available on Android.",
-    "DOWNLOADS": "downloads"
+    "DOWNLOADS": "downloads",
+    "BTN_INSTALL_APP": "Install app",
+    "BTN_INSTALLED_APP": "App installed"
   },
   "AUTH": {
     "TAB_LOGIN": "Sign In",
@@ -222,7 +224,11 @@
     "REPORT_REASON_DOXXING": "Doxxing / personal information",
     "REPORT_REASON_FAKE": "False information",
     "REPORT_REASON_MINOR": "Content inappropriate for minors",
-    "REPORT_REASON_OTHER": "Other"
+    "REPORT_REASON_OTHER": "Other",
+    "TYPE_DESC_DISPARITION": "Missing person — child, adult, elderly person",
+    "TYPE_DESC_ABUS": "Mistreatment, exploitation, violence against a minor or vulnerable person",
+    "TYPE_DESC_PREVENTION": "Awareness, guidance, useful information for the community",
+    "TYPE_DESC_APPEL": "Person hospitalised without identified family, person in distress, family untraceable"
   },
   "POST_CARD": {
     "ARIA_SAVE": "Save offline",
@@ -580,7 +586,20 @@
     "DETAIL_SHARES": "Shares",
     "DETAIL_LOADING_COMMENTS": "Loading replies…",
     "DETAIL_MEDIA_ALT": "Media",
-    "DETAIL_NOT_FOUND": "Post not found."
+    "DETAIL_NOT_FOUND": "Post not found.",
+    "BTN_DELETE_TITLE": "Delete",
+    "BTN_SCROLL_TOP_TITLE": "Back to top",
+    "LIGHTBOX_MEDIA_ALT": "Media fullscreen"
+  },
+  "CREATE_POST": {
+    "PLACEHOLDER": "Share something with the community...",
+    "MEDIA_ALT": "Preview",
+    "BTN_REMOVE_TITLE": "Remove",
+    "BTN_MEDIA_TITLE": "Add photo or video",
+    "BTN_LOCATION_TITLE": "Add location",
+    "LOCATION_PLACEHOLDER": "City, country...",
+    "BTN_PUBLISHING": "Publishing...",
+    "BTN_PUBLISH": "Publish"
   },
   "SOS": {
     "LOADING": "Loading alert…",

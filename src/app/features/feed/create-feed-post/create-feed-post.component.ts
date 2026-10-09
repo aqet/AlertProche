@@ -4,6 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { FeedService, FeedPost } from '../../../core/services/feed.service';
 import { environment } from '../../../../environments/environment';
@@ -49,7 +50,7 @@ const WORLD_CITIES: string[] = [
 @Component({
   selector: 'app-create-feed-post',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './create-feed-post.component.html',
   styleUrls: ['./create-feed-post.component.css'],
 })

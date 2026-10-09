@@ -87,7 +87,9 @@
     "BTN_RESET_FILTERS": "Réinitialiser les filtres",
     "APP_TITLE": "Téléchargez l'application AlertProche",
     "APP_DESC": "Recevez les alertes de votre région en temps réel. Disponible sur Android.",
-    "DOWNLOADS": "téléchargements"
+    "DOWNLOADS": "téléchargements",
+    "BTN_INSTALL_APP": "Installer l'app",
+    "BTN_INSTALLED_APP": "App installée"
   },
   "AUTH": {
     "TAB_LOGIN": "Se connecter",
@@ -222,7 +224,11 @@
     "REPORT_REASON_DOXXING": "Doxxing / informations personnelles",
     "REPORT_REASON_FAKE": "Fausse information",
     "REPORT_REASON_MINOR": "Contenu inapproprié pour des mineurs",
-    "REPORT_REASON_OTHER": "Autre"
+    "REPORT_REASON_OTHER": "Autre",
+    "TYPE_DESC_DISPARITION": "Personne disparue - enfant, adulte, personne âgée",
+    "TYPE_DESC_ABUS": "Maltraitance, exploitation, violence sur mineur ou personne vulnérable",
+    "TYPE_DESC_PREVENTION": "Sensibilisation, guide, information utile à la communauté",
+    "TYPE_DESC_APPEL": "Personne à l'hôpital sans famille identifiée, personne en détresse, famille introuvable"
   },
   "POST_CARD": {
     "ARIA_SAVE": "Sauvegarder hors-ligne",
@@ -580,7 +586,20 @@
     "DETAIL_SHARES": "Partages",
     "DETAIL_LOADING_COMMENTS": "Chargement des réponses…",
     "DETAIL_MEDIA_ALT": "Média",
-    "DETAIL_NOT_FOUND": "Publication introuvable."
+    "DETAIL_NOT_FOUND": "Publication introuvable.",
+    "BTN_DELETE_TITLE": "Supprimer",
+    "BTN_SCROLL_TOP_TITLE": "Retour en haut",
+    "LIGHTBOX_MEDIA_ALT": "Média en plein écran"
+  },
+  "CREATE_POST": {
+    "PLACEHOLDER": "Partagez quelque chose avec la communauté...",
+    "MEDIA_ALT": "Aperçu",
+    "BTN_REMOVE_TITLE": "Retirer",
+    "BTN_MEDIA_TITLE": "Ajouter photo ou vidéo",
+    "BTN_LOCATION_TITLE": "Ajouter localisation",
+    "LOCATION_PLACEHOLDER": "Ville, pays...",
+    "BTN_PUBLISHING": "Publication...",
+    "BTN_PUBLISH": "Publier"
   },
   "SOS": {
     "LOADING": "Chargement de l'alerte…",
