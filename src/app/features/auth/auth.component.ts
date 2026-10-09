@@ -2,9 +2,9 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
-import { PostFormComponent } from '../post-form/post-form.component';
 import { TrackingService } from '../../core/services/tracking.service';
 
 type AuthMode = 'login' | 'register';
@@ -13,7 +13,7 @@ type RegisterStep = 'info' | 'otp' | 'password';
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })

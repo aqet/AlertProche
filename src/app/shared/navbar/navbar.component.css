@@ -142,6 +142,12 @@
   flex-shrink: 0;
 }
 
+/* Bouton langue */
+.lang-btn {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
 /* Bouton thème */
 .theme-btn {
   width: 34px; height: 34px;

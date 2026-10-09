@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { Post } from '../../../core/models/post.model';
 
 @Component({
   selector: 'app-alert-status-badge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './alert-status-badge.component.html',
   styleUrls: ['./alert-status-badge.component.css']
 })

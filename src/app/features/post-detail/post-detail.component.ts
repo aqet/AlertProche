@@ -8,6 +8,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -22,7 +23,7 @@ import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe, DonationModalComponent, AlertStatusBadgeComponent, DatePipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe, DonationModalComponent, AlertStatusBadgeComponent, DatePipe, TranslateModule],
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.css'],
 })

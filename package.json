@@ -28,6 +28,8 @@
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/push-notifications": "^8.1.2",
     "@capgo/capacitor-native-biometric": "^8.6.2",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "@swimlane/ngx-charts": "^20.5.0",
     "browser-image-compression": "^2.0.2",
     "rxjs": "~7.8.0",

@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { PostType } from '../../core/models/post.model';
 import { TrackingService } from '../../core/services/tracking.service';
@@ -17,7 +18,7 @@ import { OfflineService } from '../../core/services/offline.service';
 @Component({
   selector: 'app-post-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.css'],
 })

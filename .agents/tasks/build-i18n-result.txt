@@ -1,0 +1,36 @@
+Build result: SUCCESS (development configuration)
+Date: 2026-10-09 10:10
+
+Output location: dist/alert-proche
+Build time: ~168s
+
+Packages installed:
+  @ngx-translate/core@^15.0.0
+  @ngx-translate/http-loader@^8.0.0
+
+Files created:
+  public/i18n/fr.json          - French translations (full structure)
+  public/i18n/en.json          - English translations (full structure)
+  src/app/core/services/language.service.ts - LanguageService with signal
+
+Files modified:
+  src/app/app.config.ts        - TranslateModule.forRoot configured
+  src/app/shared/navbar/navbar.component.ts   - TranslateModule + LanguageService injected
+  src/app/shared/navbar/navbar.component.html - All text translated, lang switcher added
+  src/app/shared/navbar/navbar.component.css  - .lang-btn style added
+  src/app/features/auth/auth.component.ts     - TranslateModule added
+  src/app/features/home/home.component.ts     - TranslateModule added
+  src/app/features/dashboard/dashboard.component.ts - TranslateModule added
+  src/app/features/admin/admin.component.ts   - TranslateModule added
+  src/app/features/about/about.component.ts   - TranslateModule added
+  src/app/features/post-form/post-form.component.ts   - TranslateModule added
+  src/app/features/post-detail/post-detail.component.ts - TranslateModule added
+  src/app/features/reviews/reviews.component.ts - TranslateModule added
+  src/app/shared/post-card/post-card.component.ts - TranslateModule added
+  src/app/shared/components/donation-modal/donation-modal.component.ts - TranslateModule added
+  src/app/shared/components/alert-status-badge/alert-status-badge.component.ts - TranslateModule added
+
+Build output (no errors, no warnings):
+  Initial total: 1.85 MB
+  All lazy chunks compiled successfully
+

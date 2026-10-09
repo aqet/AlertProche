@@ -1,6 +1,7 @@
 import { Component, Input, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { Post } from '../../core/models/post.model';
 import { MediaUrlPipe } from '../pipes/media-url.pipe';
 import { AlertStatusBadgeComponent } from '../components/alert-status-badge/alert-status-badge.component';
@@ -9,7 +10,7 @@ import { OfflineService } from '../../core/services/offline.service';
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent],
+  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent, TranslateModule],
   templateUrl: './post-card.component.html',
   styleUrls: ['./post-card.component.css']
 })

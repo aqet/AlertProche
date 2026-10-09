@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { AdminService, AdminStats, AdminUser, AdminPost } from '../../core/services/admin.service';
 import { AuthService } from '../../core/services/auth.service';
 import { VersionManagementComponent } from './version-management/version-management.component';
@@ -14,7 +15,7 @@ type AdminTab = 'stats' | 'users' | 'posts' | 'versions' | 'payments';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, VersionManagementComponent],
+  imports: [CommonModule, RouterLink, FormsModule, VersionManagementComponent, TranslateModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })

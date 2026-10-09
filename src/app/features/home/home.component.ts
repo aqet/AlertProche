@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, signal, computed, effect } from '@angular
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { Post, PostType } from '../../core/models/post.model';
 import { PostCardComponent } from '../../shared/post-card/post-card.component';
@@ -16,7 +17,7 @@ import { OfflineService } from '../../core/services/offline.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PostCardComponent, InstallModalComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PostCardComponent, InstallModalComponent, TranslateModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })

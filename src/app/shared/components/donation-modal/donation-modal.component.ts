@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { PaymentService } from '../../../core/services/payment.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -9,7 +10,7 @@ const PRESET_AMOUNTS = [100, 500, 1000, 2000, 5000];
 @Component({
   selector: 'app-donation-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './donation-modal.component.html',
   styleUrls: ['./donation-modal.component.css'],
 })
