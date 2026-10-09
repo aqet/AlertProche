@@ -5,8 +5,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatService, ChatAction } from '../../../core/services/chat.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 export interface ChatMessage {
   role:      'user' | 'assistant';
@@ -30,7 +32,7 @@ function getOrCreateThreadId(): string {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './chatbot.component.html',
   styleUrls:   ['./chatbot.component.css'],
 })
@@ -40,6 +42,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   private chatSvc  = inject(ChatService);
   private auth     = inject(AuthService);
   private router   = inject(Router);
+  private translate = inject(TranslateService);
+  private lang      = inject(LanguageService);
 
   isOpen        = signal(false);
   loading       = signal(false);
@@ -51,12 +55,17 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
 
   isAuth = computed(() => this.auth.isAuthenticated());
 
-  readonly suggestions = [
-    '🆘 SOS ?',
-    '📢 Signaler un abus',
-    '👤 Mon profil',
-    '📰 Fil d\'actualité',
-  ];
+  // Suggestions are language-aware: re-evaluated when currentLang signal changes
+  readonly suggestions = computed(() => {
+    // Read the signal to create a dependency for re-computation on language change
+    this.lang.currentLang();
+    return [
+      this.translate.instant('CHATBOT.SUGGESTION_1'),
+      this.translate.instant('CHATBOT.SUGGESTION_2'),
+      this.translate.instant('CHATBOT.SUGGESTION_3'),
+      this.translate.instant('CHATBOT.SUGGESTION_4'),
+    ];
+  });
 
   private shouldScroll = false;
 
@@ -132,7 +141,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
           ...msgs,
           {
             role:      'assistant',
-            text:      'Désolé, je suis temporairement indisponible. Si vous avez une urgence, appuyez sur le bouton SOS rouge.',
+            text:      this.translate.instant('CHATBOT.ERR_UNAVAILABLE'),
             timestamp: new Date(),
           },
         ]);

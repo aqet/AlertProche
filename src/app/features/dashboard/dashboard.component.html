@@ -351,7 +351,7 @@
             <div class="sos-invitations-panel" *ngIf="pendingInvitations().length > 0">
               <h3 class="sos-sub-title">
                 <i class="fas fa-bell"></i>
-                Invitations reçues
+                {{ 'DASHBOARD.SOS_INVITATIONS_TITLE' | translate }}
                 <span class="badge-count">{{ pendingInvitations().length }}</span>
               </h3>
               <div class="sos-invitation-list">
@@ -362,7 +362,7 @@
                   </div>
                   <div class="sos-invitation-info">
                     <span class="sos-contact-pseudo">{{ inv.pseudo }}</span>
-                    <span class="sos-contact-status status-pending">souhaite vous ajouter</span>
+                    <span class="sos-contact-status status-pending">{{ 'DASHBOARD.SOS_WANTS_TO_ADD' | translate }}</span>
                   </div>
                   <div class="sos-invitation-actions">
                     <button class="btn btn-primary btn-sm" (click)="respondInvitation(inv.inviterId, 'accept')">
@@ -380,7 +380,7 @@
             <div class="sos-add-contact" *ngIf="acceptedContactsCount() < 5">
               <h3 class="sos-sub-title">
                 <i class="fas fa-user-plus"></i>
-                Ajouter un contact
+                {{ 'DASHBOARD.SOS_ADD_CONTACT_TITLE' | translate }}
               </h3>
               <div class="sos-search-wrap">
                 <div class="search-input-wrap">
@@ -432,7 +432,7 @@
                     </span>
                   </div>
                   <div class="sos-contact-info">
-                    <span class="sos-contact-pseudo">{{ contact.profile?.pseudo || 'Utilisateur inconnu' }}</span>
+                    <span class="sos-contact-pseudo">{{ contact.profile?.pseudo || ('COMMON.UNKNOWN' | translate) }}</span>
                     <span class="sos-contact-status"
                       [class.status-accepted]="contact.status === 'ACCEPTED'"
                       [class.status-pending]="contact.status === 'PENDING'"
@@ -468,7 +468,7 @@
             <div class="sos-trusted-by-section">
               <h3 class="sos-sub-title">
                 <i class="fas fa-people-group"></i>
-                Je suis contact de confiance de
+                {{ 'DASHBOARD.SOS_TRUSTED_BY_TITLE' | translate }}
                 <span class="badge-count" *ngIf="whoTrustedMe().length > 0">{{ whoTrustedMe().length }}</span>
               </h3>
 
@@ -573,7 +573,7 @@
                     <th>{{ 'ADMIN.TAB_STATS' | translate }}</th>
                     <th>{{ 'PAYMENT.WITHDRAW_AMOUNT_LABEL' | translate }}</th>
                     <th>{{ 'ADMIN.PAYOUT_STATUS_PENDING' | translate }}</th>
-                    <th>Date</th>
+                    <th>{{ 'COMMON.DATE' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -631,12 +631,12 @@
     <!-- Formulaire -->
     <form [formGroup]="payoutForm" (ngSubmit)="submitPayout()" class="payout-modal-form">
       <div class="form-group">
-        <label class="form-label">{{ 'DASHBOARD.WITHDRAW_PHONE_LABEL' | translate }} (XAF) *</label>
+        <label class="form-label">{{ 'DASHBOARD.WITHDRAW_AMOUNT_LABEL' | translate }} (XAF) *</label>
         <input type="number" class="form-control" formControlName="amount"
           [max]="c.availableAmount" min="100" [placeholder]="'DASHBOARD.WITHDRAW_MIN' | translate">
         <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'required')">{{ 'POST.ERR_TITLE_REQUIRED' | translate }}</span>
         <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">{{ 'DASHBOARD.WITHDRAW_MIN' | translate }}</span>
-        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'max')">{{ 'CAGNOTTE.WITHDRAW_MIN' | translate }}</span>
+        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'max')">{{ 'PAYMENT.ERR_AMOUNT_MAX' | translate }}</span>
       </div>
       <div class="form-group">
         <label class="form-label">{{ 'PAYMENT.PHONE_LABEL' | translate }}</label>
@@ -650,13 +650,13 @@
         <input type="tel" class="form-control" formControlName="accountNumber"
           placeholder="237XXXXXXXXX">
         <span class="form-error" *ngIf="hasError(payoutForm, 'accountNumber', 'pattern')">
-          Format invalide (ex: 237XXXXXXXXX)
+          {{ 'DASHBOARD.WITHDRAW_PHONE_FORMAT_ERROR' | translate }}
         </span>
       </div>
       <div class="form-group">
         <label class="form-label">{{ 'ADMIN.PAYOUT_USER_LABEL' | translate }} *</label>
         <input type="text" class="form-control" formControlName="receiverName"
-          placeholder="Prénom NOM">
+          [placeholder]="'DASHBOARD.WITHDRAW_RECEIVER_PLACEHOLDER' | translate">
         <span class="form-error" *ngIf="hasError(payoutForm, 'receiverName', 'required')">{{ 'AUTH.ERR_PSEUDO_REQUIRED' | translate }}</span>
       </div>
 

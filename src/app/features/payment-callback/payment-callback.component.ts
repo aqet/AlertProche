@@ -1,13 +1,14 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 type CallbackStatus = 'loading' | 'success' | 'failed' | 'pending';
 
 @Component({
   selector: 'app-payment-callback',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslateModule],
   templateUrl: './payment-callback.component.html',
   styleUrls: ['./payment-callback.component.css'],
 })

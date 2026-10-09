@@ -43,7 +43,8 @@
           class="nav-link nav-link-admin">{{ 'NAV.ADMIN' | translate }}</a>
       </li>
       <li *ngIf="user()?.role === 'Admin'">
-        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">{{ 'NAV.ANALYTICS' | translate }}</a>
+        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">{{ 'NAV.ANALYTICS' |
+          translate }}</a>
       </li>
     </ul>
 
@@ -51,8 +52,10 @@
     <div class="nav-actions">
       <!-- Language switcher -->
       <button class="theme-btn lang-btn" (click)="toggleLang()"
-        [title]="lang.currentLang() === 'fr' ? 'Switch to English' : 'Passer en français'">
-        {{ lang.currentLang() === 'fr' ? '🇫🇷' : '🇬🇧' }}
+        [title]="'NAV.LANG_SWITCH' | translate">
+        <strong>
+          {{ lang.currentLang() === 'fr' ? 'FR' : 'EN' }}
+        </strong>
       </button>
 
       <button class="theme-btn" (click)="theme.toggleTheme()"
@@ -63,11 +66,13 @@
       <ng-container *ngIf="isAuth(); else guestBlock">
         <a routerLink="/posts/new" class="btn-publish">
           <i class="fas fa-plus"></i> {{ 'NAV.PUBLISH' | translate }}
-          <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
+          <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount()
+            }}</span>
         </a>
         <div class="user-chip">
           <div class="user-avatar">
-            <img *ngIf="user()?.photoUrl" [src]="user()!.photoUrl!" [alt]="user()?.pseudo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            <img *ngIf="user()?.photoUrl" [src]="user()!.photoUrl!" [alt]="user()?.pseudo"
+              style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             <span *ngIf="!user()?.photoUrl">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</span>
           </div>
           <span class="user-pseudo">{{ user()?.pseudo }}</span>
@@ -83,7 +88,8 @@
 
       <ng-template #guestBlock>
         <a routerLink="/auth" [queryParams]="{mode: 'login'}" class="btn-login">{{ 'NAV.LOGIN' | translate }}</a>
-        <a routerLink="/auth" [queryParams]="{mode: 'register'}" class="btn-register">{{ 'NAV.REGISTER' | translate }}</a>
+        <a routerLink="/auth" [queryParams]="{mode: 'register'}" class="btn-register">{{ 'NAV.REGISTER' | translate
+          }}</a>
       </ng-template>
     </div>
 
@@ -96,21 +102,26 @@
   <!-- Menu mobile -->
   <div class="mobile-menu" *ngIf="isOpen">
     <div class="mobile-menu-inner">
-      <a routerLink="/" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> {{ 'NAV.HOME' | translate }}</a>
+      <a routerLink="/" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> {{
+        'NAV.HOME' | translate }}</a>
       <a routerLink="/feed" routerLinkActive="active" (click)="closeMenu()" class="m-link">
         <i class="fas fa-rss"></i> {{ 'NAV.FEED' | translate }}
       </a>
       <a routerLink="/sos/history" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
           class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
-      <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-circle-info"></i> {{ 'NAV.ABOUT' | translate }}</a>
-      <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i> {{ 'NAV.REVIEWS' | translate }}</a>
-      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i class="fas fa-gauge"></i> {{ 'NAV.DASHBOARD' | translate }}</a>
-      <a routerLink="/moderation" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-mod" *ngIf="canModerate()"><i
-          class="fas fa-shield-halved"></i> {{ 'NAV.MODERATION' | translate }}</a>
-      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-admin" *ngIf="user()?.role === 'Admin'"><i
-          class="fas fa-crown"></i> {{ 'NAV.ADMIN' | translate }}</a>
-      <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-administration"
-        *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> {{ 'NAV.ANALYTICS' | translate }}</a>
+      <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i
+          class="fas fa-circle-info"></i> {{ 'NAV.ABOUT' | translate }}</a>
+      <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i>
+        {{ 'NAV.REVIEWS' | translate }}</a>
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
+          class="fas fa-gauge"></i> {{ 'NAV.DASHBOARD' | translate }}</a>
+      <a routerLink="/moderation" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-mod"
+        *ngIf="canModerate()"><i class="fas fa-shield-halved"></i> {{ 'NAV.MODERATION' | translate }}</a>
+      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-admin"
+        *ngIf="user()?.role === 'Admin'"><i class="fas fa-crown"></i> {{ 'NAV.ADMIN' | translate }}</a>
+      <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMenu()"
+        class="m-link m-link-administration" *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> {{
+        'NAV.ANALYTICS' | translate }}</a>
       <a routerLink="/posts/new" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
           class="fas fa-triangle-exclamation"></i> {{ 'NAV.PUBLISH' | translate }}
         <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>

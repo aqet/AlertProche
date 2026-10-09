@@ -4,13 +4,14 @@ import {
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
 import { SosService, SosStatus } from '../../core/services/sos.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-sos-response',
   standalone: true,
-  imports: [CommonModule, RouterLink, DecimalPipe, DatePipe],
+  imports: [CommonModule, RouterLink, DecimalPipe, DatePipe, TranslateModule],
   templateUrl: './sos-response.component.html',
   styleUrls: ['./sos-response.component.css'],
 })

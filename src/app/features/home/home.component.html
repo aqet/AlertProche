@@ -3,7 +3,7 @@
   <!-- Bandeau mode hors-ligne -->
   <div class="offline-banner" *ngIf="isOffline()">
     <i class="fas fa-wifi-slash"></i>
-    Mode hors-ligne — vous consultez vos posts sauvegardés
+    {{ 'HOME.OFFLINE_BANNER' | translate }}
   </div>
 
   <!-- ══ HERO COMPACT ═══════════════════════════════════════════ -->
@@ -34,25 +34,24 @@
         <div class="hero-left">
           <div class="hero-eyebrow">
             <i class="fas fa-shield-halved"></i>
-            Plateforme citoyenne de signalement
+            {{ 'HOME.HERO_EYEBROW' | translate }}
           </div>
           <h1 class="hero-title">
-            Protéger ensemble.<br>
-            <span class="hero-accent">Signaler. Alerter. Agir.</span>
+            {{ 'HOME.HERO_TITLE' | translate }}<br>
+            <span class="hero-accent">{{ 'HOME.HERO_ACCENT' | translate }}</span>
           </h1>
           <p class="hero-desc">
-            AlertProche centralise les signalements d'urgence, de disparitions et d'abus au Cameroun.
-            Chaque citoyen peut faire la différence.
+            {{ 'HOME.HERO_DESC' | translate }}
           </p>
           <div class="hero-actions">
             <a routerLink="/posts/new" class="btn-hero-primary" *ngIf="isAuth()">
-              <i class="fas fa-plus"></i> Publier un signalement
+              <i class="fas fa-plus"></i> {{ 'HOME.BTN_PUBLISH' | translate }}
             </a>
             <a routerLink="/auth" [queryParams]="{mode:'register'}" class="btn-hero-primary" *ngIf="!isAuth()">
-              <i class="fas fa-user-plus"></i> Rejoindre la communauté
+              <i class="fas fa-user-plus"></i> {{ 'HOME.BTN_JOIN' | translate }}
             </a>
             <a href="#flux" class="btn-hero-secondary">
-              <i class="fas fa-arrow-down"></i> Voir les alertes
+              <i class="fas fa-arrow-down"></i> {{ 'HOME.BTN_SEE_ALERTS' | translate }}
             </a>
             <button class="app-dl-btn" (click)="onAppDownloadClick()">
                 <i class="fab" [ngClass]="'fa-' + pwa.buttonIcon"></i> {{ pwa.buttonLabel }}
@@ -64,19 +63,19 @@
         <div class="hero-stats">
           <div class="stat-chip stat-urgent">
             <span class="stat-num">{{ stats().disparitions }}</span>
-            <span class="stat-lbl">Disparitions</span>
+            <span class="stat-lbl">{{ 'HOME.STAT_DISPARITIONS' | translate }}</span>
           </div>
           <div class="stat-chip stat-warning">
             <span class="stat-num">{{ stats().abus }}</span>
-            <span class="stat-lbl">Abus signalés</span>
+            <span class="stat-lbl">{{ 'HOME.STAT_ABUS' | translate }}</span>
           </div>
           <div class="stat-chip stat-pink">
             <span class="stat-num">{{ stats().appels }}</span>
-            <span class="stat-lbl">Appels à l'aide</span>
+            <span class="stat-lbl">{{ 'HOME.STAT_APPELS' | translate }}</span>
           </div>
           <div class="stat-chip stat-green">
             <span class="stat-num">{{ stats().prevention }}</span>
-            <span class="stat-lbl">Prévention</span>
+            <span class="stat-lbl">{{ 'HOME.STAT_PREVENTION' | translate }}</span>
           </div>
         </div>
       </div>
@@ -97,36 +96,36 @@
       <div class="container">
         <h2 class="section-h">
           <span class="section-tag"><i class="fas fa-circle-question"></i></span>
-          Pourquoi AlertProche ?
+          {{ 'HOME.WHY_TITLE' | translate }}
         </h2>
         <div class="pillars-grid">
           <div class="pillar-card pillar-urgent">
             <div class="pillar-icon"><i class="fas fa-triangle-exclamation"></i></div>
-            <h3>Signaler</h3>
-            <p>Publiez une alerte de disparition, d'abus ou de prévention. Modération automatique incluse.</p>
+            <h3>{{ 'HOME.PILLAR_REPORT_TITLE' | translate }}</h3>
+            <p>{{ 'HOME.PILLAR_REPORT_DESC' | translate }}</p>
           </div>
           <div class="pillar-card pillar-green">
             <div class="pillar-icon"><i class="fas fa-magnifying-glass"></i></div>
-            <h3>Rechercher</h3>
-            <p>Parcourez le flux d'alertes, filtrez par ville ou par type de cas.</p>
+            <h3>{{ 'HOME.PILLAR_SEARCH_TITLE' | translate }}</h3>
+            <p>{{ 'HOME.PILLAR_SEARCH_DESC' | translate }}</p>
           </div>
           <div class="pillar-card pillar-purple">
             <div class="pillar-icon"><i class="fas fa-people-group"></i></div>
-            <h3>Soutenir</h3>
-            <p>Commentez, partagez, apportez un soutien moral ou juridique à la communauté.</p>
+            <h3>{{ 'HOME.PILLAR_SUPPORT_TITLE' | translate }}</h3>
+            <p>{{ 'HOME.PILLAR_SUPPORT_DESC' | translate }}</p>
           </div>
           <div class="pillar-card pillar-green">
             <div class="pillar-icon"><i class="fas fa-shield-halved"></i></div>
-            <h3>Protéger</h3>
-            <p>Anonymat garanti. Modération contre doxxing et contenus haineux.</p>
+            <h3>{{ 'HOME.PILLAR_PROTECT_TITLE' | translate }}</h3>
+            <p>{{ 'HOME.PILLAR_PROTECT_DESC' | translate }}</p>
           </div>
         </div>
         <div class="why-cta">
           <a routerLink="/auth" [queryParams]="{mode:'register'}" class="btn-hero-primary">
-            <i class="fas fa-user-plus"></i> Créer un compte gratuit
+            <i class="fas fa-user-plus"></i> {{ 'HOME.BTN_CREATE_ACCOUNT' | translate }}
           </a>
           <a href="#flux" class="btn-hero-secondary">
-            <i class="fas fa-arrow-down"></i> Voir les alertes
+            <i class="fas fa-arrow-down"></i> {{ 'HOME.BTN_SEE_ALERTS' | translate }}
           </a>
         </div>
       </div>
@@ -141,13 +140,13 @@
       <div class="search-bar">
         <div class="search-input-wrap">
           <i class="fas fa-search search-ico"></i>
-          <input type="text" class="search-input" placeholder="Rechercher par nom, ville, mot-clé…"
+          <input type="text" class="search-input" [placeholder]="'HOME.SEARCH_PLACEHOLDER' | translate"
             [ngModel]="searchQuery()" (ngModelChange)="onSearchQueryChange($event)">
           <button class="search-clear" *ngIf="searchQuery()" (click)="onSearchQueryChange('')">
             <i class="fas fa-xmark"></i>
           </button>
         </div>
-        <input type="text" class="location-input" placeholder="Ville / Région" [ngModel]="filterLocation()"
+        <input type="text" class="location-input" [placeholder]="'HOME.LOCATION_PLACEHOLDER' | translate" [ngModel]="filterLocation()"
           (ngModelChange)="onLocationChange($event)">
         <a routerLink="/posts/new" class="btn-search-post" *ngIf="isAuth()">
           <i class="fas fa-plus"></i>
@@ -157,31 +156,31 @@
       <!-- Chips filtres type -->
       <div class="filter-chips">
         <button class="chip" [class.chip-active]="!filterType()" (click)="setFilter('')">
-          Tous <span class="chip-count">{{ stats().total }}</span>
+          {{ 'HOME.FILTER_ALL' | translate }} <span class="chip-count">{{ stats().total }}</span>
         </button>
         <button class="chip chip-red" [class.chip-active]="filterType() === 'Disparition'"
           (click)="setFilter('Disparition')">
-          <i class="fas fa-triangle-exclamation"></i> Disparitions
+          <i class="fas fa-triangle-exclamation"></i> {{ 'HOME.FILTER_DISPARITIONS' | translate }}
           <span class="chip-count">{{ stats().disparitions }}</span>
         </button>
         <button class="chip chip-orange" [class.chip-active]="filterType() === 'Abus'" (click)="setFilter('Abus')">
-          <i class="fas fa-shield-exclamation"></i> Abus
+          <i class="fas fa-shield-exclamation"></i> {{ 'HOME.FILTER_ABUS' | translate }}
           <span class="chip-count">{{ stats().abus }}</span>
         </button>
         <button class="chip chip-pink" [class.chip-active]="filterType() === 'Appel à l\'aide'"
           (click)="setFilter('Appel à l\'aide')">
-          <i class="fas fa-hand-holding-heart"></i> Appels
+          <i class="fas fa-hand-holding-heart"></i> {{ 'HOME.FILTER_APPELS' | translate }}
           <span class="chip-count">{{ stats().appels }}</span>
         </button>
         <button class="chip chip-green" [class.chip-active]="filterType() === 'Prevention'"
           (click)="setFilter('Prevention')">
-          <i class="fas fa-circle-info"></i> Prévention
+          <i class="fas fa-circle-info"></i> {{ 'HOME.FILTER_PREVENTION' | translate }}
           <span class="chip-count">{{ stats().prevention }}</span>
         </button>
 
         <!-- Recherche par image -->
         <label class="chip chip-img" for="img-input">
-          <i class="fas fa-camera"></i> Photo
+          <i class="fas fa-camera"></i> {{ 'HOME.FILTER_PHOTO' | translate }}
           <span *ngIf="imageSearchFile()">✓</span>
         </label>
         <input id="img-input" type="file" accept="image/*" hidden (change)="onImageSearchUpload($event)">
@@ -190,21 +189,21 @@
         <button class="chip chip-resolved" [class.chip-active]="showResolved()"
           (click)="toggleShowResolved()" *ngIf="resolvedCount() > 0">
           <i class="fas fa-circle-check"></i>
-          Résolues
+          {{ 'HOME.FILTER_RESOLVED' | translate }}
           <span class="chip-count">{{ resolvedCount() }}</span>
         </button>
 
         <!-- Reset -->
         <button class="chip chip-reset" *ngIf="filterType() || filterLocation() || searchQuery() || imageSearchFile()"
           (click)="clearFilters()">
-          <i class="fas fa-xmark"></i> Effacer
+          <i class="fas fa-xmark"></i> {{ 'HOME.FILTER_CLEAR' | translate }}
         </button>
       </div>
 
       <!-- Aperçu image search -->
       <div class="img-preview-bar" *ngIf="imageSearchPreview()">
         <img [src]="imageSearchPreview()" alt="Aperçu" class="img-preview-thumb">
-        <span>Recherche par similarité d'image active</span>
+        <span>{{ 'HOME.IMAGE_SEARCH_ACTIVE' | translate }}</span>
         <button class="img-preview-del" (click)="removeImageSearch()">
           <i class="fas fa-trash"></i>
         </button>
@@ -220,7 +219,8 @@
       <!-- Compteur résultats -->
       <div class="results-bar" *ngIf="!loading()">
         <span class="results-count">
-          {{ filteredPosts().length }} résultat{{ filteredPosts().length > 1 ? 's' : '' }}
+          {{ filteredPosts().length }}
+          {{ filteredPosts().length > 1 ? ('HOME.RESULTS_PLURAL' | translate) : ('HOME.RESULTS_SINGULAR' | translate) }}
         </span>
         <div class="results-tags">
           <span class="rtag" *ngIf="filterType()">{{ filterType() }}</span>
@@ -243,7 +243,7 @@
       <!-- Loader recherche -->
       <div class="search-loader" *ngIf="!loading() && searching()">
         <div class="spinner"></div>
-        <span>Recherche en cours…</span>
+        <span>{{ 'COMMON.SEARCH_IN_PROGRESS' | translate }}</span>
       </div>
 
       <!-- Grille posts -->
@@ -255,10 +255,10 @@
       <!-- État vide -->
       <div class="empty-state" *ngIf="!loading() && !searching() && filteredPosts().length === 0">
         <div class="empty-icon"><i class="fas fa-search"></i></div>
-        <h3>Aucun résultat</h3>
-        <p>Aucune publication ne correspond à vos critères.</p>
+        <h3>{{ 'HOME.EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'HOME.EMPTY_DESC' | translate }}</p>
         <button class="btn-hero-secondary" (click)="clearFilters()">
-          <i class="fas fa-xmark"></i> Réinitialiser les filtres
+          <i class="fas fa-xmark"></i> {{ 'HOME.BTN_RESET_FILTERS' | translate }}
         </button>
       </div>
 
@@ -272,11 +272,11 @@
         <div class="app-card-left">
           <div class="app-icon"><i class="fas fa-mobile-screen"></i></div>
           <div>
-            <h3>Téléchargez l'application AlertProche</h3>
-            <p>Recevez les alertes de votre région en temps réel. Disponible sur Android.</p>
+            <h3>{{ 'HOME.APP_TITLE' | translate }}</h3>
+            <p>{{ 'HOME.APP_DESC' | translate }}</p>
             <div class="app-stats" *ngIf="appDownloadCount() > 0">
               <i class="fas fa-download"></i>
-              {{ appDownloadCount() }} téléchargements
+              {{ appDownloadCount() }} {{ 'HOME.DOWNLOADS' | translate }}
             </div>
           </div>
         </div>

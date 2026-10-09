@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { FeedService, FeedPost } from '../../core/services/feed.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CreateFeedPostComponent } from './create-feed-post/create-feed-post.component';
@@ -13,7 +14,7 @@ const TEXT_TRUNCATE_LIMIT = 280; // caractères avant troncature
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, RouterLink, CreateFeedPostComponent],
+  imports: [CommonModule, RouterLink, CreateFeedPostComponent, TranslateModule],
   templateUrl: './feed.component.html',
   styleUrls: ['./feed.component.css'],
 })

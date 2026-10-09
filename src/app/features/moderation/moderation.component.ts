@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Post } from '../../core/models/post.model';
@@ -12,7 +13,7 @@ type ModTab = 'reported' | 'disabled';
 @Component({
   selector: 'app-moderation',
   standalone: true,
-  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent],
+  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent, TranslateModule],
   templateUrl: './moderation.component.html',
   styleUrls: ['./moderation.component.css']
 })
