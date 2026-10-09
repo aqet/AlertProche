@@ -23,15 +23,15 @@
         <div class="dash-metrics">
           <div class="dash-metric">
             <span class="dash-metric-num">{{ stats().posts }}</span>
-            <span class="dash-metric-lbl">Publications</span>
+            <span class="dash-metric-lbl">{{ 'DASHBOARD.METRIC_POSTS' | translate }}</span>
           </div>
           <div class="dash-metric">
             <span class="dash-metric-num text-alert">{{ stats().disparitions }}</span>
-            <span class="dash-metric-lbl">Disparitions</span>
+            <span class="dash-metric-lbl">{{ 'DASHBOARD.METRIC_DISPARITIONS' | translate }}</span>
           </div>
           <div class="dash-metric">
             <span class="dash-metric-num">{{ stats().comments }}</span>
-            <span class="dash-metric-lbl">Commentaires</span>
+            <span class="dash-metric-lbl">{{ 'DASHBOARD.METRIC_COMMENTS' | translate }}</span>
           </div>
         </div>
 
@@ -39,36 +39,36 @@
         <nav class="dash-nav">
           <button class="dash-nav-item" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
             <i class="fas fa-file-lines"></i>
-            <span class="nav-label">Mes Publications</span>
+            <span class="nav-label">{{ 'DASHBOARD.NAV_POSTS' | translate }}</span>
             <span class="dash-nav-badge" *ngIf="stats().posts > 0">{{ stats().posts }}</span>
           </button>
           <button class="dash-nav-item" [class.active]="activeTab() === 'comments'" (click)="setTab('comments')">
             <i class="fas fa-comments"></i>
-            <span class="nav-label">Mes Commentaires</span>
+            <span class="nav-label">{{ 'DASHBOARD.NAV_COMMENTS' | translate }}</span>
             <span class="dash-nav-badge" *ngIf="stats().comments > 0">{{ stats().comments }}</span>
           </button>
           <button class="dash-nav-item" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
             <i class="fas fa-user-pen"></i>
-            <span class="nav-label">Mon Profil</span>
+            <span class="nav-label">{{ 'DASHBOARD.NAV_PROFILE' | translate }}</span>
           </button>
           <button class="dash-nav-item" [class.active]="activeTab() === 'sos'" (click)="setTab('sos')">
             <i class="fas fa-shield-halved"></i>
-            <span class="nav-label">Contacts SOS</span>
+            <span class="nav-label">{{ 'DASHBOARD.NAV_SOS' | translate }}</span>
             <span class="dash-nav-badge" *ngIf="acceptedContactsCount() > 0">{{ acceptedContactsCount() }}/5</span>
           </button>
           <button class="dash-nav-item" [class.active]="activeTab() === 'cagnotte'" (click)="setTab('cagnotte')">
             <i class="fas fa-hand-holding-heart"></i>
-            <span class="nav-label">Mes Cagnottes</span>
+            <span class="nav-label">{{ 'DASHBOARD.NAV_CAGNOTTE' | translate }}</span>
           </button>
         </nav>
 
         <!-- Actions rapides -->
         <div class="dash-quick-actions">
           <a routerLink="/posts/new" class="btn btn-danger w-full btn-sm">
-            <i class="fas fa-plus"></i> Publier un Cas
+            <i class="fas fa-plus"></i> {{ 'DASHBOARD.BTN_NEW_POST' | translate }}
           </a>
           <a routerLink="/moderation" *ngIf="canModerate()" class="btn-mod-link w-full">
-            <i class="fas fa-shield-halved"></i> Espace Modération
+            <i class="fas fa-shield-halved"></i> {{ 'DASHBOARD.BTN_MODERATION' | translate }}
           </a>
         </div>
       </aside>
@@ -79,15 +79,15 @@
         <!-- ── PUBLICATIONS ─────────────────────────── -->
         <div *ngIf="activeTab() === 'posts'" class="animate-fade-in">
           <div class="dash-section-header">
-            <h2>Mes Publications</h2>
+            <h2>{{ 'DASHBOARD.SECTION_MY_POSTS' | translate }}</h2>
           </div>
 
           <!-- Formulaire d'édition -->
           <div class="edit-panel" *ngIf="editingPost()">
             <div class="edit-panel-header">
-              <h3><i class="fas fa-pen"></i> Modifier la publication</h3>
+              <h3><i class="fas fa-pen"></i> {{ 'DASHBOARD.EDIT_TITLE' | translate }}</h3>
               <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">
-                <i class="fas fa-xmark"></i> Annuler
+                <i class="fas fa-xmark"></i> {{ 'DASHBOARD.BTN_CANCEL' | translate }}
               </button>
             </div>
             <div class="alert-banner error" *ngIf="editError()">
@@ -95,32 +95,31 @@
             </div>
             <form [formGroup]="postEditForm" (ngSubmit)="saveEdit()">
               <div class="form-group">
-                <label class="form-label">Titre</label>
+                <label class="form-label">{{ 'DASHBOARD.LABEL_TITLE' | translate }}</label>
                 <input type="text" class="form-control" formControlName="title">
-                <span class="form-error" *ngIf="hasError(postEditForm, 'title', 'required')">Titre requis</span>
+                <span class="form-error" *ngIf="hasError(postEditForm, 'title', 'required')">{{ 'POST.ERR_TITLE_REQUIRED' | translate }}</span>
               </div>
               <div class="form-group">
-                <label class="form-label">Description</label>
+                <label class="form-label">{{ 'DASHBOARD.LABEL_DESC' | translate }}</label>
                 <textarea class="form-control" rows="4" formControlName="content"></textarea>
-                <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">30 caractères
-                  minimum</span>
+                <span class="form-error" *ngIf="hasError(postEditForm, 'content', 'minlength')">{{ 'POST.ERR_CONTENT_MIN' | translate }}</span>
               </div>
               <div class="form-group">
-                <label class="form-label">Localisation</label>
+                <label class="form-label">{{ 'DASHBOARD.LABEL_LOCATION' | translate }}</label>
                 <input type="text" class="form-control" formControlName="location">
               </div>
               <div class="edit-actions">
                 <button type="submit" class="btn btn-primary" [disabled]="editLoading()">
                   <span class="spinner" *ngIf="editLoading()"></span>
-                  <span *ngIf="!editLoading()"><i class="fas fa-save"></i> Enregistrer</span>
+                  <span *ngIf="!editLoading()"><i class="fas fa-save"></i> {{ 'DASHBOARD.BTN_SAVE' | translate }}</span>
                 </button>
-                <button type="button" class="btn btn-ghost" (click)="cancelEdit()">Annuler</button>
+                <button type="button" class="btn btn-ghost" (click)="cancelEdit()">{{ 'DASHBOARD.BTN_CANCEL' | translate }}</button>
               </div>
             </form>
           </div>
 
           <div class="loading-state" *ngIf="loadingPosts()">
-            <div class="spinner"></div> Chargement...
+            <div class="spinner"></div> {{ 'DASHBOARD.LOADING' | translate }}
           </div>
 
           <div class="posts-list" *ngIf="!loadingPosts() && !editingPost()">
@@ -137,7 +136,7 @@
                 <div class="post-row-meta">
                   <span><i class="fas fa-location-dot"></i> {{ post.location }}</span>
                   <span><i class="fas fa-comment"></i> {{ post.commentCount || 0 }}</span>
-                  <span *ngIf="post.isAnonymous"><i class="fas fa-eye-slash"></i> Anonyme</span>
+                  <span *ngIf="post.isAnonymous"><i class="fas fa-eye-slash"></i> {{ 'COMMON.ANONYMOUS' | translate }}</span>
                 </div>
                 <!-- Badge statut alerte -->
                 <app-alert-status-badge [post]="post"></app-alert-status-badge>
@@ -150,12 +149,12 @@
                 <ng-container *ngIf="canMarkResolved(post)">
                   <button class="btn btn-sm btn-resolve-sm" *ngIf="!post.isResolved"
                     (click)="resolvePost(post)"
-                    title="Marquer comme résolue">
+                    [title]="'DASHBOARD.MARK_RESOLVED' | translate">
                     <i class="fas fa-circle-check"></i>
                   </button>
                   <button class="btn btn-sm btn-reopen-sm" *ngIf="post.isResolved"
                     (click)="unresolvePost(post)"
-                    title="Réouvrir cette alerte">
+                    [title]="'DASHBOARD.REOPEN' | translate">
                     <i class="fas fa-rotate-left"></i>
                   </button>
                 </ng-container>
@@ -169,17 +168,16 @@
                   <i class="fas fa-trash"></i>
                 </button>
                 <div class="confirm-delete" *ngIf="deletingPostId() === post._id">
-                  <span>Supprimer ?</span>
-                  <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">Oui</button>
-                  <button class="btn btn-ghost btn-sm" (click)="cancelDeletePost()">Non</button>
+                  <span>{{ 'COMMON.DELETE' | translate }} ?</span>
+                  <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">{{ 'COMMON.YES' | translate }}</button>
+                  <button class="btn btn-ghost btn-sm" (click)="cancelDeletePost()">{{ 'COMMON.NO' | translate }}</button>
                 </div>
               </div>
             </div>
             <div class="empty-state" *ngIf="myPosts().length === 0">
               <div class="empty-icon"><i class="fas fa-file-circle-plus"></i></div>
-              <h3>Aucune publication</h3>
-              <p>Vous n'avez pas encore publié de cas.</p>
-              <a routerLink="/posts/new" class="btn btn-danger btn-sm"><i class="fas fa-plus"></i> Publier</a>
+              <h3>{{ 'DASHBOARD.EMPTY_POSTS' | translate }}</h3>
+              <a routerLink="/posts/new" class="btn btn-danger btn-sm"><i class="fas fa-plus"></i> {{ 'DASHBOARD.BTN_NEW_POST' | translate }}</a>
             </div>
           </div>
         </div>
@@ -187,10 +185,10 @@
         <!-- ── COMMENTAIRES ─────────────────────────── -->
         <div *ngIf="activeTab() === 'comments'" class="animate-fade-in">
           <div class="dash-section-header">
-            <h2>Mes Commentaires</h2>
+            <h2>{{ 'DASHBOARD.SECTION_MY_COMMENTS' | translate }}</h2>
           </div>
           <div class="loading-state" *ngIf="loadingComments()">
-            <div class="spinner"></div> Chargement...
+            <div class="spinner"></div> {{ 'DASHBOARD.LOADING' | translate }}
           </div>
           <div class="comments-list" *ngIf="!loadingComments()">
             <div class="comment-row" *ngFor="let c of myComments(); trackBy: trackByComment">
@@ -199,7 +197,7 @@
                 <div class="comment-row-meta">
                   <span><i class="fas fa-clock"></i> {{ getTimeAgo(c.createdAt) }}</span>
                   <a [routerLink]="['/posts', c.post_id]" class="comment-row-link">
-                    <i class="fas fa-arrow-up-right-from-square"></i> Voir la publication
+                    <i class="fas fa-arrow-up-right-from-square"></i>
                   </a>
                 </div>
               </div>
@@ -209,17 +207,15 @@
                   <i class="fas fa-trash"></i>
                 </button>
                 <div class="confirm-delete" *ngIf="deletingCommentId() === c._id">
-                  <span>Supprimer ?</span>
-                  <button class="btn btn-danger btn-sm" (click)="deleteComment(c._id)">Oui</button>
-                  <button class="btn btn-ghost btn-sm" (click)="cancelDeleteComment()">Non</button>
+                  <span>{{ 'COMMON.DELETE' | translate }} ?</span>
+                  <button class="btn btn-danger btn-sm" (click)="deleteComment(c._id)">{{ 'COMMON.YES' | translate }}</button>
+                  <button class="btn btn-ghost btn-sm" (click)="cancelDeleteComment()">{{ 'COMMON.NO' | translate }}</button>
                 </div>
               </div>
             </div>
             <div class="empty-state" *ngIf="myComments().length === 0">
               <div class="empty-icon"><i class="fas fa-comment-slash"></i></div>
-              <h3>Aucun commentaire</h3>
-              <p>Vous n'avez pas encore commenté.</p>
-              <a routerLink="/" class="btn btn-outline btn-sm">Explorer le flux</a>
+              <h3>{{ 'DASHBOARD.EMPTY_COMMENTS' | translate }}</h3>
             </div>
           </div>
         </div>
@@ -227,7 +223,7 @@
         <!-- ── PROFIL ────────────────────────────────── -->
         <div *ngIf="activeTab() === 'profile'" class="animate-fade-in">
           <div class="dash-section-header">
-            <h2>Mon Profil</h2>
+            <h2>{{ 'DASHBOARD.SECTION_PROFILE' | translate }}</h2>
           </div>
           <div class="profile-layout">
             <div class="profile-main">
@@ -244,7 +240,7 @@
                         {{ user()?.pseudo?.charAt(0)?.toUpperCase() }}
                       </span>
                     </div>
-                    <label class="profile-avatar-overlay" title="Changer la photo">
+                    <label class="profile-avatar-overlay">
                       <span class="spinner profile-photo-spinner" *ngIf="photoLoading()"></span>
                       <i class="fas fa-camera" *ngIf="!photoLoading()"></i>
                       <input
@@ -274,25 +270,23 @@
                 </div>
                 <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
                   <div class="form-group">
-                    <label class="form-label">Pseudo public</label>
+                    <label class="form-label">{{ 'AUTH.LABEL_PSEUDO' | translate }}</label>
                     <div class="input-icon-wrap">
                       <i class="fas fa-user input-icon"></i>
                       <input type="text" class="form-control input-with-icon" formControlName="pseudo">
                     </div>
-                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'required')">Pseudo requis</span>
-                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'minlength')">3 caractères
-                      minimum</span>
+                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'required')">{{ 'AUTH.ERR_PSEUDO_REQUIRED' | translate }}</span>
+                    <span class="form-error" *ngIf="hasError(profileForm, 'pseudo', 'minlength')">{{ 'AUTH.ERR_PSEUDO_MIN' | translate }}</span>
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Adresse email</label>
+                    <label class="form-label">{{ 'AUTH.LABEL_EMAIL' | translate }}</label>
                     <div class="input-icon-wrap">
                       <i class="fas fa-envelope input-icon"></i>
                       <input type="email" class="form-control input-with-icon" [value]="user()?.email" disabled>
                     </div>
-                    <span class="form-hint">L'email ne peut pas être modifié.</span>
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Localisation</label>
+                    <label class="form-label">{{ 'AUTH.LABEL_LOCATION' | translate }}</label>
                     <div class="input-icon-wrap">
                       <i class="fas fa-location-dot input-icon"></i>
                       <select class="form-control input-with-icon" formControlName="location">
@@ -301,20 +295,16 @@
                       </select>
                     </div>
                   </div>
-                  <div class="privacy-notice">
-                    <i class="fas fa-shield-halved"></i>
-                    <p>Vos informations personnelles sont protégées.</p>
-                  </div>
                   <button type="submit" class="btn btn-primary" [disabled]="profileLoading()">
                     <span class="spinner" *ngIf="profileLoading()"></span>
-                    <span *ngIf="!profileLoading()"><i class="fas fa-save"></i> Enregistrer</span>
+                    <span *ngIf="!profileLoading()"><i class="fas fa-save"></i> {{ 'COMMON.SAVE' | translate }}</span>
                   </button>
                 </form>
               </div>
             </div>
             <div class="profile-sidebar">
               <div class="my-role-card">
-                <div class="my-role-header"><i class="fas fa-id-badge"></i> <span>Mon rôle</span></div>
+                <div class="my-role-header"><i class="fas fa-id-badge"></i> <span>{{ 'DASHBOARD.SECTION_PROFILE' | translate }}</span></div>
                 <div class="my-role-body">
                   <div class="my-role-badge" [class.my-role-standard]="user()?.role === 'Standard'"
                     [class.my-role-mod]="user()?.role === 'Moderateur'"
@@ -324,15 +314,9 @@
                       [class.fa-crown]="user()?.role === 'Admin'"></i>
                     {{ user()?.role }}
                   </div>
-                  <p class="my-role-desc">
-                    <ng-container *ngIf="user()?.role === 'Standard'">Publiez des cas, commentez et signalez du
-                      contenu.</ng-container>
-                    <ng-container *ngIf="user()?.role === 'Moderateur'">Accès à l'espace de modération.</ng-container>
-                    <ng-container *ngIf="user()?.role === 'Admin'">Accès complet à la plateforme.</ng-container>
-                  </p>
                 </div>
                 <a routerLink="/moderation" class="btn btn-mod-link w-full" *ngIf="canModerate()">
-                  <i class="fas fa-shield-halved"></i> Espace modération
+                  <i class="fas fa-shield-halved"></i> {{ 'DASHBOARD.BTN_MODERATION' | translate }}
                 </a>
               </div>
             </div>
@@ -343,8 +327,8 @@
         <div *ngIf="activeTab() === 'sos'" class="animate-fade-in">
 
           <div class="dash-section-header">
-            <h2><i class="fas fa-shield-halved" style="color:var(--green);margin-right:8px;"></i>Contacts de Confiance</h2>
-            <p class="dash-section-sub">Gérez les personnes qui recevront votre alerte SOS ({{ acceptedContactsCount() }}/5 actifs)</p>
+            <h2><i class="fas fa-shield-halved" style="color:var(--green);margin-right:8px;"></i>{{ 'DASHBOARD.SECTION_SOS' | translate }}</h2>
+            <p class="dash-section-sub">{{ 'DASHBOARD.SOS_DESC' | translate }} ({{ acceptedContactsCount() }}/5)</p>
           </div>
 
           <!-- Alertes feedback -->
@@ -358,7 +342,7 @@
           <!-- Loader global (premier chargement) -->
           <div class="sos-loading-overlay" *ngIf="loadingContacts()">
             <div class="spinner"></div>
-            <span>Chargement de vos contacts...</span>
+            <span>{{ 'DASHBOARD.LOADING' | translate }}</span>
           </div>
 
           <ng-container *ngIf="!loadingContacts()">
@@ -382,10 +366,10 @@
                   </div>
                   <div class="sos-invitation-actions">
                     <button class="btn btn-primary btn-sm" (click)="respondInvitation(inv.inviterId, 'accept')">
-                      <i class="fas fa-check"></i> Accepter
+                      <i class="fas fa-check"></i> {{ 'COMMON.CONFIRM' | translate }}
                     </button>
                     <button class="btn btn-ghost btn-sm" (click)="respondInvitation(inv.inviterId, 'reject')">
-                      <i class="fas fa-xmark"></i> Refuser
+                      <i class="fas fa-xmark"></i> {{ 'COMMON.CANCEL' | translate }}
                     </button>
                   </div>
                 </div>
@@ -404,7 +388,7 @@
                   <input
                     type="text"
                     class="search-input"
-                    placeholder="Rechercher un utilisateur par pseudo..."
+                    [placeholder]="'HOME.SEARCH_PLACEHOLDER' | translate"
                     [value]="searchQuery()"
                     (input)="onSearchInput($any($event.target).value)">
                   <div class="spinner search-spinner" *ngIf="searchLoading()"></div>
@@ -422,36 +406,21 @@
                       class="btn btn-primary btn-sm"
                       *ngIf="!isAlreadyContact(u._id)"
                       (click)="addContact(u._id, u.pseudo)">
-                      <i class="fas fa-plus"></i> Inviter
+                      <i class="fas fa-plus"></i>
                     </button>
                     <span class="sos-already-added" *ngIf="isAlreadyContact(u._id)">
-                      <i class="fas fa-check"></i> Déjà ajouté
+                      <i class="fas fa-check"></i>
                     </span>
                   </div>
                 </div>
-
-                <p class="sos-search-hint" *ngIf="searchQuery().length >= 2 && !searchLoading() && searchResults().length === 0">
-                  <i class="fas fa-circle-info"></i>
-                  Aucun utilisateur trouvé pour "{{ searchQuery() }}"
-                </p>
-                <p class="sos-search-hint" *ngIf="searchQuery().length > 0 && searchQuery().length < 2">
-                  <i class="fas fa-circle-info"></i>
-                  Tapez au moins 2 caractères
-                </p>
               </div>
-            </div>
-
-            <!-- Limite atteinte -->
-            <div class="sos-limit-notice" *ngIf="acceptedContactsCount() >= 5">
-              <i class="fas fa-lock"></i>
-              Limite de 5 contacts atteinte. Retirez un contact pour en ajouter un autre.
             </div>
 
             <!-- ③ Mes contacts actuels -->
             <div class="sos-contacts-section">
               <h3 class="sos-sub-title">
                 <i class="fas fa-users"></i>
-                Mes contacts ({{ acceptedContactsCount() }}/5)
+                {{ 'DASHBOARD.SECTION_SOS' | translate }} ({{ acceptedContactsCount() }}/5)
               </h3>
 
               <div class="sos-contacts-list" *ngIf="trustedContacts().length > 0">
@@ -477,9 +446,9 @@
                   </div>
                   <div class="sos-contact-actions">
                     <div class="confirm-delete" *ngIf="removingContactId() === contact.userId">
-                      <span>Retirer ?</span>
-                      <button class="btn btn-danger btn-sm" (click)="removeContact(contact.userId)">Oui</button>
-                      <button class="btn btn-ghost btn-sm" (click)="cancelRemoveContact()">Non</button>
+                      <span>{{ 'COMMON.DELETE' | translate }} ?</span>
+                      <button class="btn btn-danger btn-sm" (click)="removeContact(contact.userId)">{{ 'COMMON.YES' | translate }}</button>
+                      <button class="btn btn-ghost btn-sm" (click)="cancelRemoveContact()">{{ 'COMMON.NO' | translate }}</button>
                     </div>
                     <button class="btn btn-sm btn-delete"
                       *ngIf="removingContactId() !== contact.userId"
@@ -492,7 +461,6 @@
 
               <div class="empty-state sos-empty-compact" *ngIf="trustedContacts().length === 0">
                 <div class="empty-icon"><i class="fas fa-user-plus"></i></div>
-                <p>Aucun contact encore. Recherchez un pseudo ci-dessus pour en ajouter.</p>
               </div>
             </div>
 
@@ -512,46 +480,22 @@
                   </div>
                   <div class="sos-contact-info">
                     <span class="sos-contact-pseudo">{{ u.pseudo }}</span>
-                    <span class="sos-contact-status status-accepted">
-                      <i class="fas fa-shield-halved"></i> Peut intervenir lors de votre SOS
-                    </span>
                   </div>
                   <div class="sos-contact-actions">
                     <button class="btn btn-sm btn-delete"
                       *ngIf="leavingOwnerId() !== u.userId"
-                      (click)="confirmLeave(u.userId)"
-                      title="Ne plus être contact de confiance">
+                      (click)="confirmLeave(u.userId)">
                       <i class="fas fa-user-minus"></i>
                     </button>
                     <div class="confirm-delete" *ngIf="leavingOwnerId() === u.userId">
-                      <span>Se retirer ?</span>
-                      <button class="btn btn-danger btn-sm" (click)="leaveTrustedList(u.userId)">Oui</button>
-                      <button class="btn btn-ghost btn-sm" (click)="cancelLeave()">Non</button>
+                      <span>{{ 'COMMON.DELETE' | translate }} ?</span>
+                      <button class="btn btn-danger btn-sm" (click)="leaveTrustedList(u.userId)">{{ 'COMMON.YES' | translate }}</button>
+                      <button class="btn btn-ghost btn-sm" (click)="cancelLeave()">{{ 'COMMON.NO' | translate }}</button>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div class="sos-trusted-by-empty" *ngIf="whoTrustedMe().length === 0">
-                <i class="fas fa-circle-info"></i>
-                Personne ne vous a encore désigné comme contact de confiance.
-              </div>
             </div>
-
-            <!-- ⑤ Bannière explicative - en bas, consultative -->
-            <details class="sos-info-details">
-              <summary>
-                <i class="fas fa-circle-question"></i>
-                Pourquoi des contacts de confiance ?
-              </summary>
-              <div class="sos-info-details-body">
-                <p>
-                  En cas d'urgence, ces personnes reçoivent une notification push avec votre
-                  position GPS en temps réel. Vous pouvez en désigner jusqu'à <strong>5</strong>.
-                  Elles doivent avoir installé AlertProche pour être ajoutées.
-                </p>
-              </div>
-            </details>
 
           </ng-container>
 
@@ -560,11 +504,11 @@
         <!-- ── MES CAGNOTTES ────────────────────────── -->
         <div *ngIf="activeTab() === 'cagnotte'" class="animate-fade-in">
           <div class="dash-section-header">
-            <h2>Mes Cagnottes</h2>
+            <h2>{{ 'DASHBOARD.SECTION_CAGNOTTE' | translate }}</h2>
           </div>
 
           <div class="loading-state" *ngIf="loadingCagnottes()">
-            <div class="spinner"></div> Chargement...
+            <div class="spinner"></div> {{ 'DASHBOARD.LOADING' | translate }}
           </div>
 
           <!-- Succès / Erreur payout -->
@@ -585,15 +529,15 @@
                   <h3 class="cagnotte-title">{{ c.title }}</h3>
                   <div class="cagnotte-amounts">
                     <div class="amount-chip">
-                      <span class="amount-label">Collecté</span>
+                      <span class="amount-label">{{ 'CAGNOTTE.COLLECTED' | translate }}</span>
                       <span class="amount-val green">{{ c.raisedAmount | number }} XAF</span>
                     </div>
                     <div class="amount-chip">
-                      <span class="amount-label">Retiré</span>
+                      <span class="amount-label">{{ 'PAYMENT.WITHDRAW_AMOUNT_LABEL' | translate }}</span>
                       <span class="amount-val">{{ c.withdrawnAmount | number }} XAF</span>
                     </div>
                     <div class="amount-chip">
-                      <span class="amount-label">Disponible</span>
+                      <span class="amount-label">{{ 'DASHBOARD.CAGNOTTE_AVAILABLE' | translate }}</span>
                       <span class="amount-val green bold">{{ c.availableAmount | number }} XAF</span>
                     </div>
                   </div>
@@ -602,7 +546,7 @@
                   class="btn btn-primary btn-sm"
                   [disabled]="c.availableAmount <= 0"
                   (click)="selectCagnotte(c)">
-                  <i class="fas fa-money-bill-transfer"></i> Retirer
+                  <i class="fas fa-money-bill-transfer"></i> {{ 'DASHBOARD.BTN_WITHDRAW' | translate }}
                 </button>
 
               </div>
@@ -611,22 +555,26 @@
             <ng-template #noCagnotte>
               <div class="empty-state">
                 <div class="empty-icon"><i class="fas fa-hand-holding-heart"></i></div>
-                <h3>Aucune cagnotte</h3>
-                <p>Vos alertes recevront des dons dès que des soutiens seront versés.</p>
+                <h3>{{ 'CAGNOTTE.EMPTY' | translate }}</h3>
               </div>
             </ng-template>
 
             <!-- Historique des transactions -->
             <div class="transactions-history" style="margin-top:32px">
               <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">
-                <i class="fas fa-history"></i> Historique des transactions
+                <i class="fas fa-history"></i>
               </h3>
               <div class="loading-state" *ngIf="txHistoryLoading()">
-                <div class="spinner"></div> Chargement...
+                <div class="spinner"></div> {{ 'DASHBOARD.LOADING' | translate }}
               </div>
               <table class="admin-table" *ngIf="!txHistoryLoading() && myTransactions().length > 0">
                 <thead>
-                  <tr><th>Type</th><th>Montant</th><th>Statut</th><th>Date</th></tr>
+                  <tr>
+                    <th>{{ 'ADMIN.TAB_STATS' | translate }}</th>
+                    <th>{{ 'PAYMENT.WITHDRAW_AMOUNT_LABEL' | translate }}</th>
+                    <th>{{ 'ADMIN.PAYOUT_STATUS_PENDING' | translate }}</th>
+                    <th>Date</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let t of myTransactions()">
@@ -651,7 +599,6 @@
               </table>
               <div class="empty-state" *ngIf="!txHistoryLoading() && myTransactions().length === 0">
                 <div class="empty-icon"><i class="fas fa-receipt"></i></div>
-                <p>Aucune transaction.</p>
               </div>
             </div>
 
@@ -674,32 +621,32 @@
     <div class="payout-modal-icon">
       <i class="fas fa-money-bill-transfer"></i>
     </div>
-    <h3 class="payout-modal-title">Demande de retrait</h3>
+    <h3 class="payout-modal-title">{{ 'DASHBOARD.WITHDRAW_TITLE' | translate }}</h3>
     <p class="payout-modal-subtitle">{{ c.title }}</p>
     <div class="payout-modal-balance">
       <i class="fas fa-wallet"></i>
-      Solde disponible : <strong>{{ c.availableAmount | number }} XAF</strong>
+      {{ 'DASHBOARD.CAGNOTTE_AVAILABLE' | translate }} : <strong>{{ c.availableAmount | number }} XAF</strong>
     </div>
 
     <!-- Formulaire -->
     <form [formGroup]="payoutForm" (ngSubmit)="submitPayout()" class="payout-modal-form">
       <div class="form-group">
-        <label class="form-label">Montant à retirer (XAF) *</label>
+        <label class="form-label">{{ 'DASHBOARD.WITHDRAW_PHONE_LABEL' | translate }} (XAF) *</label>
         <input type="number" class="form-control" formControlName="amount"
-          [max]="c.availableAmount" min="1" placeholder="Min. 1 XAF">
-        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'required')">Montant requis</span>
-        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">Minimum 1 XAF</span>
-        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'max')">Dépasse le solde disponible</span>
+          [max]="c.availableAmount" min="100" [placeholder]="'DASHBOARD.WITHDRAW_MIN' | translate">
+        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'required')">{{ 'POST.ERR_TITLE_REQUIRED' | translate }}</span>
+        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'min')">{{ 'DASHBOARD.WITHDRAW_MIN' | translate }}</span>
+        <span class="form-error" *ngIf="hasError(payoutForm, 'amount', 'max')">{{ 'CAGNOTTE.WITHDRAW_MIN' | translate }}</span>
       </div>
       <div class="form-group">
-        <label class="form-label">Opérateur *</label>
+        <label class="form-label">{{ 'PAYMENT.PHONE_LABEL' | translate }}</label>
         <select class="form-control" formControlName="accountBankCode">
           <option value="MTN">MTN Mobile Money</option>
           <option value="ORANGEMONEY">Orange Money</option>
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Numéro (format 237XXXXXXXXX) *</label>
+        <label class="form-label">{{ 'DASHBOARD.WITHDRAW_PHONE_LABEL' | translate }} *</label>
         <input type="tel" class="form-control" formControlName="accountNumber"
           placeholder="237XXXXXXXXX">
         <span class="form-error" *ngIf="hasError(payoutForm, 'accountNumber', 'pattern')">
@@ -707,10 +654,10 @@
         </span>
       </div>
       <div class="form-group">
-        <label class="form-label">Nom du titulaire *</label>
+        <label class="form-label">{{ 'ADMIN.PAYOUT_USER_LABEL' | translate }} *</label>
         <input type="text" class="form-control" formControlName="receiverName"
           placeholder="Prénom NOM">
-        <span class="form-error" *ngIf="hasError(payoutForm, 'receiverName', 'required')">Nom requis</span>
+        <span class="form-error" *ngIf="hasError(payoutForm, 'receiverName', 'required')">{{ 'AUTH.ERR_PSEUDO_REQUIRED' | translate }}</span>
       </div>
 
       <!-- Messages -->
@@ -723,13 +670,13 @@
 
       <p class="payout-modal-hint">
         <i class="fas fa-info-circle"></i>
-        La demande sera traitée par notre équipe sous 24–48h.
+        {{ 'CAGNOTTE.WITHDRAW_INFO' | translate }}
       </p>
 
       <button type="submit" class="btn btn-primary payout-modal-submit" [disabled]="payoutLoading()">
         <span class="spinner" *ngIf="payoutLoading()"></span>
         <ng-container *ngIf="!payoutLoading()">
-          <i class="fas fa-paper-plane"></i> Envoyer la demande
+          <i class="fas fa-paper-plane"></i> {{ 'CAGNOTTE.WITHDRAW_BTN' | translate }}
         </ng-container>
       </button>
     </form>

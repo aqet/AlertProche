@@ -6,27 +6,27 @@
       <div class="admin-header-left">
         <div class="admin-icon"><i class="fas fa-crown"></i></div>
         <div>
-          <h1 class="admin-title">Panneau d'Administration</h1>
+          <h1 class="admin-title">{{ 'ADMIN.TITLE' | translate }}</h1>
           <p class="admin-subtitle">
-            Connecté en tant que
+            {{ 'ADMIN.SUBTITLE' | translate }}
             <span class="admin-role-chip"><i class="fas fa-crown"></i> {{ currentUser()?.pseudo }} - Admin</span>
           </p>
         </div>
       </div>
       <div class="admin-header-actions">
         <a routerLink="/moderation" class="btn btn-ghost btn-sm">
-          <i class="fas fa-shield-halved"></i> Modération
+          <i class="fas fa-shield-halved"></i> {{ 'ADMIN.BTN_MODERATION' | translate }}
         </a>
         <a routerLink="/admin/analytics" class="btn btn-ghost btn-sm">
-          <i class="fas fa-chart-line"></i> Analytics
+          <i class="fas fa-chart-line"></i> {{ 'ADMIN.BTN_ANALYTICS' | translate }}
         </a>
         <button class="btn btn-ghost btn-sm" (click)="testPushNotification()" [disabled]="notifTestLoading()">
           <span class="spinner" *ngIf="notifTestLoading()"></span>
           <i class="fas fa-bell" *ngIf="!notifTestLoading()"></i>
-          {{ notifTestLoading() ? 'Test en cours…' : 'Tester notifications' }}
+          {{ notifTestLoading() ? ('ADMIN.BTN_TEST_NOTIF_LOADING' | translate) : ('ADMIN.BTN_TEST_NOTIF' | translate) }}
         </button>
         <button class="btn btn-ghost btn-sm" (click)="loadStats()">
-          <i class="fas fa-rotate-right"></i> Actualiser
+          <i class="fas fa-rotate-right"></i> {{ 'ADMIN.BTN_REFRESH' | translate }}
         </button>
       </div>
     </div>
@@ -35,7 +35,7 @@
     <div class="notif-test-panel animate-fade-in" *ngIf="notifTestResult() as r">
       <div class="notif-test-header">
         <i class="fas fa-bell"></i>
-        <strong>Résultat du test de notification push</strong>
+        <strong>{{ 'ADMIN.NOTIF_RESULT_TITLE' | translate }}</strong>
         <button class="notif-test-close" (click)="notifTestResult.set(null)">
           <i class="fas fa-xmark"></i>
         </button>
@@ -43,19 +43,19 @@
       <div class="notif-test-body">
         <div class="notif-test-stat" *ngIf="r.totalTokens === 0 && !r.error">
           <i class="fas fa-mobile-screen" style="color: var(--color-text-muted)"></i>
-          <span>Aucun appareil enregistré avec un token FCM en base.</span>
+          <span>{{ 'ADMIN.NOTIF_NO_DEVICE' | translate }}</span>
         </div>
         <div class="notif-test-stat ok" *ngIf="r.sent > 0">
           <i class="fas fa-circle-check"></i>
-          <span>{{ r.sent }} notification{{ r.sent > 1 ? 's' : '' }} envoyée{{ r.sent > 1 ? 's' : '' }} avec succès sur {{ r.totalTokens }} appareil{{ r.totalTokens > 1 ? 's' : '' }}</span>
+          <span>{{ r.sent }} {{ 'ADMIN.NOTIF_SENT' | translate }} {{ r.totalTokens }} {{ 'ADMIN.NOTIF_DEVICE' | translate }}</span>
         </div>
         <div class="notif-test-stat warn" *ngIf="r.failed > 0">
           <i class="fas fa-triangle-exclamation"></i>
-          <span>{{ r.failed }} envoi{{ r.failed > 1 ? 's' : '' }} échoué{{ r.failed > 1 ? 's' : '' }} (tokens invalides supprimés automatiquement)</span>
+          <span>{{ r.failed }} {{ 'ADMIN.NOTIF_FAILED' | translate }}</span>
         </div>
         <div class="notif-test-stat err" *ngIf="r.error">
           <i class="fas fa-circle-xmark"></i>
-          <span>Erreur FCM : {{ r.error }}</span>
+          <span>{{ 'ADMIN.NOTIF_FCM_ERROR' | translate }} {{ r.error }}</span>
         </div>
       </div>
     </div>
@@ -71,21 +71,21 @@
     <!-- Tabs -->
     <div class="admin-tabs animate-fade-in stagger-1">
       <button class="admin-tab" [class.active]="activeTab() === 'stats'" (click)="setTab('stats')">
-        <i class="fas fa-chart-line"></i> <p>Statistiques</p>
+        <i class="fas fa-chart-line"></i> <p>{{ 'ADMIN.TAB_STATS' | translate }}</p>
       </button>
       <button class="admin-tab" [class.active]="activeTab() === 'users'" (click)="setTab('users')">
-        <i class="fas fa-users"></i> <p>Utilisateurs</p>
+        <i class="fas fa-users"></i> <p>{{ 'ADMIN.TAB_USERS' | translate }}</p>
         <span class="tab-count" *ngIf="usersTotal() > 0">{{ usersTotal() }}</span>
       </button>
       <button class="admin-tab" [class.active]="activeTab() === 'posts'" (click)="setTab('posts')">
-        <i class="fas fa-file-lines"></i> <p>Publications
+        <i class="fas fa-file-lines"></i> <p>{{ 'ADMIN.TAB_POSTS' | translate }}
         <span class="tab-count" *ngIf="postsTotal() > 0">{{ postsTotal() }}</span>
       </button>
       <button class="admin-tab" [class.active]="activeTab() === 'versions'" (click)="setTab('versions')">
-        <i class="fas fa-mobile-screen-button"></i> <p>Versions App</p>
+        <i class="fas fa-mobile-screen-button"></i> <p>{{ 'ADMIN.TAB_VERSIONS' | translate }}</p>
       </button>
       <button class="admin-tab" [class.active]="activeTab() === 'payments'" (click)="setTab('payments')">
-        <i class="fas fa-credit-card"></i> <p>Paiements</p>
+        <i class="fas fa-credit-card"></i> <p>{{ 'ADMIN.TAB_PAYMENTS' | translate }}</p>
       </button>
     </div>
 
@@ -95,7 +95,7 @@
     <div *ngIf="activeTab() === 'stats'" class="animate-fade-in">
 
       <div class="loading-state" *ngIf="statsLoading()">
-        <div class="spinner"></div> Chargement des statistiques...
+        <div class="spinner"></div> {{ 'ADMIN.LOADING_STATS' | translate }}
       </div>
 
       <ng-container *ngIf="!statsLoading() && stats()">
@@ -106,40 +106,39 @@
             <div class="kpi-icon"><i class="fas fa-users"></i></div>
             <div class="kpi-body">
               <div class="kpi-value">{{ stats()!.users.total }}</div>
-              <div class="kpi-label">Utilisateurs inscrits</div>
-              <div class="kpi-sub">+{{ stats()!.users.newThisWeek }} cette semaine</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_USERS' | translate }}</div>
+              <div class="kpi-sub">+{{ stats()!.users.newThisWeek }} {{ 'ADMIN.KPI_USERS_WEEK' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card kpi-posts">
             <div class="kpi-icon"><i class="fas fa-file-lines"></i></div>
             <div class="kpi-body">
               <div class="kpi-value">{{ stats()!.posts.total }}</div>
-              <div class="kpi-label">Publications totales</div>
-              <div class="kpi-sub">+{{ stats()!.posts.newThisWeek }} cette semaine</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_POSTS' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card kpi-comments">
             <div class="kpi-icon"><i class="fas fa-comments"></i></div>
             <div class="kpi-body">
               <div class="kpi-value">{{ stats()!.comments.total }}</div>
-              <div class="kpi-label">Commentaires</div>
-              <div class="kpi-sub">Total plateforme</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_COMMENTS' | translate }}</div>
+              <div class="kpi-sub">{{ 'ADMIN.KPI_COMMENTS_SUB' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card kpi-alert">
             <div class="kpi-icon"><i class="fas fa-flag"></i></div>
             <div class="kpi-body">
               <div class="kpi-value text-alert">{{ stats()!.posts.reported }}</div>
-              <div class="kpi-label">Posts signalés</div>
-              <div class="kpi-sub">En attente de modération</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_REPORTED' | translate }}</div>
+              <div class="kpi-sub">{{ 'ADMIN.KPI_REPORTED_SUB' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card kpi-warning">
             <div class="kpi-icon"><i class="fas fa-eye-slash"></i></div>
             <div class="kpi-body">
               <div class="kpi-value text-warning">{{ stats()!.posts.disabled }}</div>
-              <div class="kpi-label">Posts désactivés</div>
-              <div class="kpi-sub">Par les modérateurs</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_DISABLED' | translate }}</div>
+              <div class="kpi-sub">{{ 'ADMIN.KPI_DISABLED_SUB' | translate }}</div>
             </div>
           </div>
         </div>
@@ -152,8 +151,8 @@
             </div>
             <div class="kpi-body">
               <div class="kpi-value">{{ paymentStats()!.donations | number }} XAF</div>
-              <div class="kpi-label">Dons pour alertes</div>
-              <div class="kpi-sub">Total collecté via cagnottes</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_DONATIONS' | translate }}</div>
+              <div class="kpi-sub">{{ 'ADMIN.KPI_DONATIONS_SUB' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card">
@@ -162,30 +161,24 @@
             </div>
             <div class="kpi-body">
               <div class="kpi-value">{{ paymentStats()!.support | number }} XAF</div>
-              <div class="kpi-label">Soutien plateforme</div>
-              <div class="kpi-sub">Dons directs AlertProche</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_PLATFORM_REVENUE' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card kpi-warning">
             <div class="kpi-icon"><i class="fas fa-clock"></i></div>
             <div class="kpi-body">
               <div class="kpi-value">{{ paymentStats()!.pendingPayout | number }} XAF</div>
-              <div class="kpi-label">En attente de versement</div>
-              <div class="kpi-sub">{{ payoutRequests().length }} demande(s)</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_PENDING_WITHDRAWALS' | translate }}</div>
+              <div class="kpi-sub">{{ payoutRequests().length }} {{ 'ADMIN.PAYOUT_STATUS_PENDING' | translate }}</div>
             </div>
           </div>
-        </div>
-        <div style="margin-top:16px;text-align:right" *ngIf="!paymentStats()">
-          <button class="btn btn-outline btn-sm" (click)="loadPaymentStats()">
-            <i class="fas fa-credit-card"></i> Charger les stats de paiement
-          </button>
         </div>
 
         <!-- Demandes de retrait en attente -->
         <div class="payout-requests-panel" *ngIf="payoutRequests().length > 0" style="margin-top:24px">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">
             <i class="fas fa-money-bill-transfer" style="color:var(--green)"></i>
-            Demandes de retrait en attente
+            {{ 'ADMIN.WITHDRAWAL_REQUESTS_TITLE' | translate }}
           </h3>
           <div class="payout-request-row" *ngFor="let tx of payoutRequests()">
             <div class="payout-request-info">
@@ -199,7 +192,7 @@
               (click)="approvePayout(tx._id)">
               <span class="spinner" *ngIf="approveLoading() === tx._id"></span>
               <span *ngIf="approveLoading() !== tx._id">
-                <i class="fas fa-check"></i> Approuver
+                <i class="fas fa-check"></i> {{ 'ADMIN.BTN_APPROVE' | translate }}
               </span>
             </button>
           </div>
@@ -210,7 +203,7 @@
 
           <!-- Répartition utilisateurs -->
           <div class="stats-card">
-            <h3 class="stats-card-title"><i class="fas fa-users"></i> Répartition des rôles</h3>
+            <h3 class="stats-card-title"><i class="fas fa-users"></i> {{ 'ADMIN.TAB_USERS' | translate }}</h3>
             <div class="role-bars">
               <div class="role-bar-item">
                 <div class="role-bar-label">
@@ -253,7 +246,7 @@
 
           <!-- Répartition posts par type -->
           <div class="stats-card">
-            <h3 class="stats-card-title"><i class="fas fa-chart-pie"></i> Publications par type</h3>
+            <h3 class="stats-card-title"><i class="fas fa-chart-pie"></i> {{ 'ADMIN.TAB_POSTS' | translate }}</h3>
             <div class="type-stats">
               <div class="type-stat-item">
                 <div class="type-stat-header">
@@ -308,7 +301,6 @@
             <ng-template #noActivity>
               <div class="no-activity">
                 <i class="fas fa-chart-bar"></i>
-                <p>Aucune activité sur les 30 derniers jours.</p>
               </div>
             </ng-template>
           </div>
@@ -327,27 +319,27 @@
         <div class="search-wrap">
           <i class="fas fa-search search-icon"></i>
           <input type="text" class="form-control search-input"
-            placeholder="Rechercher par pseudo ou email..."
+            [placeholder]="'HOME.SEARCH_PLACEHOLDER' | translate"
             [ngModel]="userSearch()"
             (ngModelChange)="userSearch.set($event); onSearchChange()">
         </div>
-        <span class="table-count">{{ usersTotal() }} utilisateur(s)</span>
+        <span class="table-count">{{ usersTotal() }}</span>
       </div>
 
       <div class="loading-state" *ngIf="usersLoading()">
-        <div class="spinner"></div> Chargement...
+        <div class="spinner"></div> {{ 'COMMON.LOADING' | translate }}
       </div>
 
       <div class="admin-table-wrap" *ngIf="!usersLoading()">
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Utilisateur</th>
-              <th>Email</th>
-              <th>Rôle</th>
-              <th>Posts</th>
-              <th>Commentaires</th>
-              <th>Inscrit le</th>
+              <th>{{ 'AUTH.LABEL_PSEUDO' | translate }}</th>
+              <th>{{ 'AUTH.LABEL_EMAIL' | translate }}</th>
+              <th>{{ 'ADMIN.PAYOUT_USER_LABEL' | translate }}</th>
+              <th>{{ 'ADMIN.TAB_POSTS' | translate }}</th>
+              <th>{{ 'ADMIN.KPI_COMMENTS' | translate }}</th>
+              <th>Date</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -358,7 +350,6 @@
                 <div class="user-cell">
                   <div class="user-cell-avatar">{{ user.pseudo.charAt(0).toUpperCase() }}</div>
                   <span class="user-cell-pseudo">{{ user.pseudo }}</span>
-                  <span class="self-badge" *ngIf="user._id === currentUser()?._id">Vous</span>
                 </div>
               </td>
               <td class="email-cell">{{ user.email }}</td>
@@ -387,28 +378,26 @@
               <td>
                 <div class="row-actions" *ngIf="user._id !== currentUser()?._id">
                   <button class="btn btn-sm btn-ghost-icon" (click)="startRoleChange(user)"
-                    title="Changer le rôle" *ngIf="roleChangeUserId() !== user._id">
+                    *ngIf="roleChangeUserId() !== user._id">
                     <i class="fas fa-user-pen"></i>
                   </button>
-                  <button class="btn btn-sm btn-ghost-icon" (click)="viewUserTransactions(user._id)"
-                    title="Voir les transactions">
+                  <button class="btn btn-sm btn-ghost-icon" (click)="viewUserTransactions(user._id)">
                     <i class="fas fa-receipt"></i>
                   </button>
                   <button class="btn btn-sm btn-danger-icon" (click)="confirmDeleteUser(user._id)"
-                    title="Supprimer le compte" *ngIf="confirmDeleteUserId() !== user._id">
+                    *ngIf="confirmDeleteUserId() !== user._id">
                     <i class="fas fa-trash"></i>
                   </button>
                   <!-- Confirm delete -->
                   <div class="confirm-inline" *ngIf="confirmDeleteUserId() === user._id">
-                    <span>Supprimer ?</span>
+                    <span>{{ 'COMMON.DELETE' | translate }} ?</span>
                     <button class="btn btn-danger btn-sm" (click)="deleteUser(user._id)" [disabled]="actionLoading()">
                       <span class="spinner" *ngIf="actionLoading()"></span>
-                      <span *ngIf="!actionLoading()">Oui</span>
+                      <span *ngIf="!actionLoading()">{{ 'COMMON.YES' | translate }}</span>
                     </button>
-                    <button class="btn btn-ghost btn-sm" (click)="cancelDeleteUser()">Non</button>
+                    <button class="btn btn-ghost btn-sm" (click)="cancelDeleteUser()">{{ 'COMMON.NO' | translate }}</button>
                   </div>
                 </div>
-                <span class="text-muted" *ngIf="user._id === currentUser()?._id" style="font-size:0.75rem">-</span>
               </td>
             </tr>
           </tbody>
@@ -416,7 +405,6 @@
 
         <div class="empty-table" *ngIf="users().length === 0">
           <i class="fas fa-users-slash"></i>
-          <p>Aucun utilisateur trouvé.</p>
         </div>
       </div>
 
@@ -437,17 +425,22 @@
         <div class="panel-overlay" (click)="selectedUserTransactions.set(null)" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)"></div>
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-card,#fff);padding:24px;border-radius:12px;max-width:800px;width:90%;max-height:80vh;overflow-y:auto;z-index:1001">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h3 style="margin:0"><i class="fas fa-receipt"></i> Transactions de l'utilisateur</h3>
+            <h3 style="margin:0"><i class="fas fa-receipt"></i></h3>
             <button class="btn btn-ghost btn-sm" (click)="selectedUserTransactions.set(null)">
               <i class="fas fa-xmark"></i>
             </button>
           </div>
           <div class="loading-state" *ngIf="userTxLoading()">
-            <div class="spinner"></div> Chargement...
+            <div class="spinner"></div> {{ 'COMMON.LOADING' | translate }}
           </div>
           <table class="admin-table" *ngIf="!userTxLoading() && selectedUserTransactions()!.length > 0">
             <thead>
-              <tr><th>Type</th><th>Montant</th><th>Statut</th><th>Date</th></tr>
+              <tr>
+                <th>Type</th>
+                <th>{{ 'PAYMENT.WITHDRAW_AMOUNT_LABEL' | translate }}</th>
+                <th>Statut</th>
+                <th>Date</th>
+              </tr>
             </thead>
             <tbody>
               <tr *ngFor="let t of selectedUserTransactions()">
@@ -458,9 +451,6 @@
               </tr>
             </tbody>
           </table>
-          <div class="empty-table" *ngIf="!userTxLoading() && selectedUserTransactions()!.length === 0">
-            <p>Aucune transaction pour cet utilisateur.</p>
-          </div>
         </div>
       </div>
     </div>
@@ -480,23 +470,23 @@
             {{ f.label }}
           </button>
         </div>
-        <span class="table-count">{{ postsTotal() }} publication(s)</span>
+        <span class="table-count">{{ postsTotal() }}</span>
       </div>
 
       <div class="loading-state" *ngIf="postsLoading()">
-        <div class="spinner"></div> Chargement...
+        <div class="spinner"></div> {{ 'COMMON.LOADING' | translate }}
       </div>
 
       <div class="admin-table-wrap" *ngIf="!postsLoading()">
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Publication</th>
-              <th>Type</th>
-              <th>Auteur</th>
-              <th>Lieu</th>
+              <th>{{ 'POST.LABEL_TITLE' | translate }}</th>
+              <th>{{ 'POST.LABEL_TYPE' | translate }}</th>
+              <th>{{ 'ADMIN.PAYOUT_USER_LABEL' | translate }}</th>
+              <th>{{ 'POST.LABEL_LOCATION' | translate }}</th>
               <th>Statut</th>
-              <th>Commentaires</th>
+              <th>{{ 'ADMIN.KPI_COMMENTS' | translate }}</th>
               <th>Date</th>
               <th>Actions</th>
             </tr>
@@ -512,10 +502,10 @@
                   </a>
                   <div class="post-cell-flags">
                     <span class="flag-chip flag-reported" *ngIf="post.isReported">
-                      <i class="fas fa-flag"></i> Signalé
+                      <i class="fas fa-flag"></i> {{ 'POST.BTN_REPORT' | translate }}
                     </span>
                     <span class="flag-chip flag-disabled" *ngIf="!post.isActive">
-                      <i class="fas fa-eye-slash"></i> Désactivé
+                      <i class="fas fa-eye-slash"></i> {{ 'COMMON.DISABLED_BY_MOD' | translate }}
                     </span>
                   </div>
                 </div>
@@ -523,14 +513,14 @@
               <td><span class="badge" [ngClass]="getBadgeClass(post.type)">{{ post.type }}</span></td>
               <td>
                 <div class="author-cell">
-                  <span>{{ post.isAnonymous ? 'Anonyme' : post.authorPseudo }}</span>
+                  <span>{{ post.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : post.authorPseudo }}</span>
                   <span class="author-email" *ngIf="!post.isAnonymous">{{ post.authorEmail }}</span>
                 </div>
               </td>
               <td class="location-cell">{{ post.location }}</td>
               <td>
                 <span class="status-dot" [class.status-active]="post.isActive" [class.status-off]="!post.isActive">
-                  {{ post.isActive ? 'Actif' : 'Désactivé' }}
+                  {{ post.isActive ? ('COMMON.STATUS_OPEN' | translate) : ('COMMON.DISABLED_BY_MOD' | translate) }}
                 </span>
               </td>
               <td class="num-cell">{{ post.commentCount }}</td>
@@ -538,20 +528,20 @@
               <td>
                 <div class="row-actions">
                   <a [routerLink]="['/posts', post._id]" target="_blank"
-                    class="btn btn-sm btn-ghost-icon" title="Voir la publication">
+                    class="btn btn-sm btn-ghost-icon">
                     <i class="fas fa-eye"></i>
                   </a>
                   <button class="btn btn-sm btn-danger-icon" (click)="confirmDeletePost(post._id)"
-                    title="Supprimer définitivement" *ngIf="confirmDeletePostId() !== post._id">
+                    *ngIf="confirmDeletePostId() !== post._id">
                     <i class="fas fa-trash"></i>
                   </button>
                   <div class="confirm-inline" *ngIf="confirmDeletePostId() === post._id">
-                    <span>Supprimer ?</span>
+                    <span>{{ 'COMMON.DELETE' | translate }} ?</span>
                     <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)" [disabled]="actionLoading()">
                       <span class="spinner" *ngIf="actionLoading()"></span>
-                      <span *ngIf="!actionLoading()">Oui</span>
+                      <span *ngIf="!actionLoading()">{{ 'COMMON.YES' | translate }}</span>
                     </button>
-                    <button class="btn btn-ghost btn-sm" (click)="cancelDeletePost()">Non</button>
+                    <button class="btn btn-ghost btn-sm" (click)="cancelDeletePost()">{{ 'COMMON.NO' | translate }}</button>
                   </div>
                 </div>
               </td>
@@ -561,7 +551,6 @@
 
         <div class="empty-table" *ngIf="posts().length === 0">
           <i class="fas fa-file-circle-xmark"></i>
-          <p>Aucune publication trouvée.</p>
         </div>
       </div>
 
@@ -591,7 +580,7 @@
     <div *ngIf="activeTab() === 'payments'" class="animate-fade-in">
 
       <div class="loading-state" *ngIf="paymentsLoading()">
-        <div class="spinner"></div> Chargement des paiements...
+        <div class="spinner"></div> {{ 'COMMON.LOADING' | translate }}
       </div>
 
       <ng-container *ngIf="!paymentsLoading()">
@@ -604,8 +593,8 @@
             </div>
             <div class="kpi-body">
               <div class="kpi-value">{{ paymentStats()!.donations | number }} XAF</div>
-              <div class="kpi-label">Dons pour alertes</div>
-              <div class="kpi-sub">Total collecté via cagnottes</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_DONATIONS' | translate }}</div>
+              <div class="kpi-sub">{{ 'ADMIN.KPI_DONATIONS_SUB' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card">
@@ -614,8 +603,7 @@
             </div>
             <div class="kpi-body">
               <div class="kpi-value">{{ paymentStats()!.support | number }} XAF</div>
-              <div class="kpi-label">Soutien plateforme</div>
-              <div class="kpi-sub">Dons directs AlertProche</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_PLATFORM_REVENUE' | translate }}</div>
             </div>
           </div>
           <div class="kpi-card">
@@ -624,46 +612,46 @@
             </div>
             <div class="kpi-body">
               <div class="kpi-value">{{ paymentStats()!.pendingPayout | number }} XAF</div>
-              <div class="kpi-label">En attente de versement</div>
-              <div class="kpi-sub">{{ payoutRequests().length }} demande(s)</div>
+              <div class="kpi-label">{{ 'ADMIN.KPI_PENDING_WITHDRAWALS' | translate }}</div>
+              <div class="kpi-sub">{{ payoutRequests().length }} {{ 'ADMIN.PAYOUT_STATUS_PENDING' | translate }}</div>
             </div>
           </div>
         </div>
 
         <!-- Admin platform payout -->
         <div class="section-header" style="margin-top:24px">
-          <h3><i class="fas fa-building-columns"></i> Retrait vers AlertProche</h3>
+          <h3><i class="fas fa-building-columns"></i></h3>
         </div>
         <div class="admin-payout-to-platform">
           <button class="btn btn-primary btn-sm" *ngIf="!showPlatformPayoutForm()" (click)="showPlatformPayoutForm.set(true)">
-            <i class="fas fa-money-bill-transfer"></i> Retirer vers AlertProche
+            <i class="fas fa-money-bill-transfer"></i>
           </button>
           <div class="platform-payout-form" *ngIf="showPlatformPayoutForm()">
             <div class="form-inline-group" style="display:flex;gap:8px;align-items:center">
-              <input type="number" class="form-control" placeholder="Montant (XAF), min 100" [(ngModel)]="platformPayoutAmount" min="100" style="max-width:200px">
+              <input type="number" class="form-control" [placeholder]="'PAYMENT.CUSTOM_AMOUNT_PLACEHOLDER' | translate" [(ngModel)]="platformPayoutAmount" min="100" style="max-width:200px">
               <button class="btn btn-primary" [disabled]="platformPayoutLoading()" (click)="executePlatformPayout()">
                 <span class="spinner" *ngIf="platformPayoutLoading()"></span>
                 <ng-container *ngIf="!platformPayoutLoading()">
-                  <i class="fas fa-check"></i> Confirmer
+                  <i class="fas fa-check"></i> {{ 'COMMON.CONFIRM' | translate }}
                 </ng-container>
               </button>
-              <button class="btn btn-ghost" (click)="showPlatformPayoutForm.set(false); platformPayoutAmount=null;">Annuler</button>
+              <button class="btn btn-ghost" (click)="showPlatformPayoutForm.set(false); platformPayoutAmount=null;">{{ 'COMMON.CANCEL' | translate }}</button>
             </div>
           </div>
         </div>
 
         <!-- Demandes de retrait en attente -->
         <div class="section-header" style="margin-top:24px">
-          <h3><i class="fas fa-money-bill-transfer"></i> Demandes de retrait en attente</h3>
+          <h3><i class="fas fa-money-bill-transfer"></i> {{ 'ADMIN.WITHDRAWAL_REQUESTS_TITLE' | translate }}</h3>
         </div>
         <div class="admin-table-wrap">
           <table class="admin-table" *ngIf="payoutRequests().length > 0; else noPayouts">
             <thead>
               <tr>
-                <th>Montant</th>
+                <th>{{ 'ADMIN.PAYOUT_AMOUNT_LABEL' | translate }}</th>
                 <th>Opérateur</th>
-                <th>Numéro</th>
-                <th>Bénéficiaire</th>
+                <th>{{ 'ADMIN.PAYOUT_PHONE_LABEL' | translate }}</th>
+                <th>{{ 'ADMIN.PAYOUT_USER_LABEL' | translate }}</th>
                 <th>Date</th>
                 <th>Action</th>
               </tr>
@@ -682,7 +670,7 @@
                     (click)="approvePayout(p._id)">
                     <span class="spinner" *ngIf="approveLoading() === p._id"></span>
                     <ng-container *ngIf="approveLoading() !== p._id">
-                      <i class="fas fa-check"></i> Approuver
+                      <i class="fas fa-check"></i> {{ 'ADMIN.BTN_APPROVE' | translate }}
                     </ng-container>
                   </button>
                 </td>
@@ -692,34 +680,33 @@
           <ng-template #noPayouts>
             <div class="empty-table">
               <i class="fas fa-circle-check"></i>
-              <p>Aucune demande de retrait en attente.</p>
+              <p>{{ 'ADMIN.NO_PENDING_WITHDRAWALS' | translate }}</p>
             </div>
           </ng-template>
         </div>
 
         <!-- Toutes les transactions -->
         <div class="section-header" style="margin-top:32px">
-          <h3><i class="fas fa-list"></i> Toutes les transactions</h3>
+          <h3><i class="fas fa-list"></i></h3>
         </div>
 
         <!-- Filtres type / statut -->
         <div class="table-toolbar" style="margin-bottom:16px">
           <div class="filter-chips-row">
-            <label style="font-weight:500;margin-right:8px">Filtres :</label>
             <select class="form-control" style="width:auto;margin-right:8px" [(ngModel)]="txFilterType" (ngModelChange)="loadPaymentStats()">
               <option value="">Tous les types</option>
-              <option value="DONATION_ALERT">Dons pour alertes</option>
-              <option value="PLATFORM_SUPPORT">Soutien plateforme</option>
-              <option value="PAYOUT_REQUEST">Demandes de retrait</option>
+              <option value="DONATION_ALERT">{{ 'ADMIN.KPI_DONATIONS' | translate }}</option>
+              <option value="PLATFORM_SUPPORT">{{ 'ADMIN.KPI_PLATFORM_REVENUE' | translate }}</option>
+              <option value="PAYOUT_REQUEST">{{ 'ADMIN.WITHDRAWAL_REQUESTS_TITLE' | translate }}</option>
             </select>
             <select class="form-control" style="width:auto" [(ngModel)]="txFilterStatus" (ngModelChange)="loadPaymentStats()">
               <option value="">Tous les statuts</option>
-              <option value="PENDING">En attente</option>
-              <option value="SUCCESS">Réussi</option>
-              <option value="FAILED">Échoué</option>
-              <option value="PAYOUT_PENDING">Payout en attente</option>
-              <option value="PAYOUT_SUCCESS">Payout réussi</option>
-              <option value="PAYOUT_ERROR">Payout échoué</option>
+              <option value="PENDING">{{ 'ADMIN.PAYOUT_STATUS_PENDING' | translate }}</option>
+              <option value="SUCCESS">{{ 'ADMIN.PAYOUT_STATUS_APPROVED' | translate }}</option>
+              <option value="FAILED">{{ 'ADMIN.PAYOUT_STATUS_REJECTED' | translate }}</option>
+              <option value="PAYOUT_PENDING">{{ 'ADMIN.PAYOUT_STATUS_PENDING' | translate }}</option>
+              <option value="PAYOUT_SUCCESS">{{ 'ADMIN.PAYOUT_STATUS_APPROVED' | translate }}</option>
+              <option value="PAYOUT_ERROR">{{ 'ADMIN.PAYOUT_STATUS_REJECTED' | translate }}</option>
             </select>
           </div>
         </div>
@@ -728,9 +715,9 @@
             <thead>
               <tr>
                 <th>Type</th>
-                <th>Montant</th>
+                <th>{{ 'ADMIN.PAYOUT_AMOUNT_LABEL' | translate }}</th>
                 <th>Statut</th>
-                <th>Ref digiKUNTZ</th>
+                <th>Ref</th>
                 <th>Date</th>
                 <th>Action</th>
               </tr>
@@ -759,11 +746,10 @@
                     *ngIf="t.status === 'PENDING'"
                     class="btn btn-outline btn-sm"
                     [disabled]="approveLoading() === t._id"
-                    (click)="markTransactionSuccess(t._id)"
-                    title="Marquer manuellement comme réussie">
+                    (click)="markTransactionSuccess(t._id)">
                     <span class="spinner" *ngIf="approveLoading() === t._id"></span>
                     <ng-container *ngIf="approveLoading() !== t._id">
-                      <i class="fas fa-wrench"></i> Récupérer
+                      <i class="fas fa-wrench"></i>
                     </ng-container>
                   </button>
                 </td>
@@ -773,7 +759,6 @@
           <ng-template #noTx>
             <div class="empty-table">
               <i class="fas fa-receipt"></i>
-              <p>Aucune transaction trouvée.</p>
             </div>
           </ng-template>
         </div>

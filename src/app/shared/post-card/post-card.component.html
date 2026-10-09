@@ -2,7 +2,7 @@
 
   <!-- Bandeau désactivé -->
   <div class="card-disabled-bar" *ngIf="post.isActive === false">
-    <i class="fas fa-eye-slash"></i> Désactivé par un modérateur
+    <i class="fas fa-eye-slash"></i> {{ 'COMMON.DISABLED_BY_MOD' | translate }}
   </div>
 
   <!-- Image avec overlay type -->
@@ -52,7 +52,7 @@
         </span>
         <span class="card-meta-item">
           <i class="fas fa-user"></i>
-          {{ post.isAnonymous ? 'Anonyme' : (post.authorPseudo || 'Inconnu') }}
+          {{ post.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : (post.authorPseudo || ('COMMON.UNKNOWN' | translate)) }}
         </span>
       </div>
       <!-- Badge statut alerte (résolu / en cours) -->
