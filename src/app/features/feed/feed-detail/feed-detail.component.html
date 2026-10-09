@@ -5,7 +5,7 @@
       <button class="fd-back-btn" (click)="goBack()">
         <i class="fas fa-arrow-left"></i>
       </button>
-      <span>Publication</span>
+      <span>{{ 'FEED.DETAIL_BACK_LABEL' | translate }}</span>
     </div>
     <div class="fd-skeleton">
       <div class="skel-row">
@@ -28,12 +28,12 @@
       <button class="fd-back-btn" (click)="goBack()">
         <i class="fas fa-arrow-left"></i>
       </button>
-      <span>Publication</span>
+      <span>{{ 'FEED.DETAIL_BACK_LABEL' | translate }}</span>
     </div>
     <div class="fd-error-state">
       <i class="fas fa-triangle-exclamation"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary btn-sm" (click)="goBack()">Retour</button>
+      <button class="btn btn-primary btn-sm" (click)="goBack()">{{ 'COMMON.BACK' | translate }}</button>
     </div>
   </div>
 </div>
@@ -47,7 +47,7 @@
       <button class="fd-back-btn" (click)="goBack()">
         <i class="fas fa-arrow-left"></i>
       </button>
-      <span>Publication</span>
+      <span>{{ 'FEED.DETAIL_BACK_LABEL' | translate }}</span>
     </div>
 
     <!-- ── Post complet ─────────────────────────────────── -->
@@ -123,13 +123,13 @@
       <!-- Compteurs -->
       <div class="fd-counts">
         <span *ngIf="post()!.likesCount > 0">
-          <strong>{{ post()!.likesCount }}</strong> J'aime
+          <strong>{{ post()!.likesCount }}</strong> {{ 'FEED.DETAIL_LIKES' | translate }}
         </span>
         <span *ngIf="post()!.commentsCount > 0">
-          <strong>{{ post()!.commentsCount }}</strong> Commentaires
+          <strong>{{ post()!.commentsCount }}</strong> {{ 'FEED.DETAIL_COMMENTS' | translate }}
         </span>
         <span *ngIf="(post()!.sharesCount ?? 0) > 0">
-          <strong>{{ post()!.sharesCount }}</strong> Partages
+          <strong>{{ post()!.sharesCount }}</strong> {{ 'FEED.DETAIL_SHARES' | translate }}
         </span>
       </div>
 
@@ -144,12 +144,12 @@
           (click)="toggleLike()"
           [disabled]="!isAuth()">
           <i class="fas fa-heart"></i>
-          <span>J'aime</span>
+          <span>{{ 'FEED.DETAIL_LIKES' | translate }}</span>
         </button>
 
         <button class="fd-action-btn" (click)="sharePost()">
           <i class="fas fa-share-nodes"></i>
-          <span>Partager</span>
+          <span>{{ 'POST.BTN_SHARE' | translate }}</span>
         </button>
       </div>
 
@@ -168,7 +168,7 @@
         <input
           type="text"
           class="fd-comment-input"
-          placeholder="Répondre..."
+          [placeholder]="'FEED.COMMENT_PLACEHOLDER' | translate"
           [ngModel]="commentText()"
           (ngModelChange)="commentText.set($event)"
           (keydown.enter)="submitComment()"
@@ -188,7 +188,7 @@
 
       <div class="fd-comments-loading" *ngIf="commentsLoading()">
         <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
-        <span>Chargement des réponses...</span>
+        <span>{{ 'FEED.DETAIL_LOADING_COMMENTS' | translate }}</span>
       </div>
 
       <div class="fd-comments-list" *ngIf="!commentsLoading()">
@@ -209,7 +209,7 @@
 
         <div class="fd-no-comments" *ngIf="comments().length === 0">
           <i class="fas fa-comment-slash"></i>
-          <p>Aucune réponse pour l'instant.</p>
+          <p>{{ 'FEED.NO_COMMENTS' | translate }}</p>
         </div>
 
       </div>
@@ -228,7 +228,7 @@
       *ngIf="lightboxType() === 'image'"
       [src]="lightboxUrl()!"
       class="fd-lightbox-media"
-      alt="Média">
+      [attr.alt]="'FEED.DETAIL_MEDIA_ALT' | translate">
     <video
       *ngIf="lightboxType() === 'video'"
       [src]="lightboxUrl()!"

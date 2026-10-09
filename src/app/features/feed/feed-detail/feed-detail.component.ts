@@ -4,6 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeedService, FeedPost } from '../../../core/services/feed.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
@@ -11,15 +12,16 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-feed-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './feed-detail.component.html',
   styleUrls:   ['./feed-detail.component.css'],
 })
 export class FeedDetailComponent implements OnInit {
-  private route    = inject(ActivatedRoute);
-  private router   = inject(Router);
-  private feedSvc  = inject(FeedService);
-  private auth     = inject(AuthService);
+  private route      = inject(ActivatedRoute);
+  private router     = inject(Router);
+  private feedSvc    = inject(FeedService);
+  private auth       = inject(AuthService);
+  private translate  = inject(TranslateService);
 
   post           = signal<FeedPost | null>(null);
   loading        = signal(true);
@@ -53,7 +55,7 @@ export class FeedDetailComponent implements OnInit {
         this.loadComments(id);
       },
       error: () => {
-        this.error.set('Publication introuvable.');
+        this.error.set(this.translate.instant('FEED.DETAIL_NOT_FOUND'));
         this.loading.set(false);
       },
     });
