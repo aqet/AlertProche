@@ -3,15 +3,15 @@
   <div class="sos-countdown-content">
 
     <div class="sos-countdown-number">{{ cancelCountdown() }}</div>
-    <p class="sos-countdown-label">Envoi du SOS dans…</p>
+    <p class="sos-countdown-label">{{ 'SOS_FAB.COUNTDOWN_LABEL' | translate }}</p>
 
     <button class="sos-cancel-mega-btn" (click)="onCancelConfirm()">
       <i class="fas fa-xmark"></i>
-      ANNULER - FAUSSE ALERTE
+      {{ 'SOS_FAB.BTN_CANCEL_ALERT' | translate }}
     </button>
 
     <p class="sos-countdown-hint">
-      Relâchez le bouton pour annuler
+      {{ 'SOS_FAB.HOLD_HINT' | translate }}
     </p>
   </div>
 </div>
@@ -22,12 +22,12 @@
     <div class="sos-active-pulse">
       <i class="fas fa-shield-halved"></i>
     </div>
-    <h2>SOS EN COURS</h2>
-    <p>Vos contacts sont alertés.<br>Aide en route.</p>
+    <h2>{{ 'SOS_FAB.ACTIVE_TITLE' | translate }}</h2>
+    <p>{{ 'SOS_FAB.ACTIVE_DESC_1' | translate }}<br>{{ 'SOS_FAB.ACTIVE_DESC_2' | translate }}</p>
 
     <div class="sos-responding-count" *ngIf="respondingCount() > 0">
       <i class="fas fa-person-running"></i>
-      {{ respondingCount() }} personne{{ respondingCount() > 1 ? 's' : '' }} en route
+      {{ (respondingCount() > 1 ? 'SOS_FAB.RESPONDERS_MANY' : 'SOS_FAB.RESPONDERS_ONE') | translate:{ count: respondingCount() } }}
     </div>
 
     <div class="sos-error-msg" *ngIf="errorMsg()">
@@ -36,7 +36,7 @@
 
     <button class="sos-resolve-btn" (click)="onCloseSos()">
       <i class="fas fa-circle-check"></i>
-      Je suis en sécurité
+      {{ 'SOS_FAB.BTN_SAFE' | translate }}
     </button>
   </div>
 </div>
@@ -72,7 +72,7 @@
     (pointerup)="onPointerUp()"
     (pointerleave)="onPointerUp()"
     (contextmenu)="$event.preventDefault()"
-    aria-label="Bouton SOS d'urgence - Maintenez 3 secondes">
+    [attr.aria-label]="'SOS_FAB.ARIA_LABEL' | translate">
 
     <i class="fas fa-shield-halved sos-icon"></i>
     <span class="sos-label">SOS</span>
@@ -80,6 +80,6 @@
 
   <!-- Tooltip d'aide -->
   <div class="sos-tooltip" *ngIf="state() === 'idle'">
-    Maintenir 3s
+    {{ 'SOS_FAB.TOOLTIP_HOLD' | translate }}
   </div>
 </div>

@@ -3,10 +3,11 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeedService, FeedPost } from '../../core/services/feed.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CreateFeedPostComponent } from './create-feed-post/create-feed-post.component';
+import { TimeAgoService } from '../../core/services/time-ago.service';
 import { environment } from '../../../environments/environment';
 
 const TEXT_TRUNCATE_LIMIT = 280; // caractères avant troncature
@@ -23,6 +24,8 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
   private auth    = inject(AuthService);
   private zone    = inject(NgZone);
   private el      = inject(ElementRef);
+  private timeAgo = inject(TimeAgoService);
+  private translate = inject(TranslateService);
 
   posts        = signal<FeedPost[]>([]);
   loading      = signal(true);
@@ -131,7 +134,7 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => this.observeVideos(), 100);
       },
       error: () => {
-        this.error.set('Impossible de charger le fil d\'actualité.');
+        this.error.set(this.translate.instant('FEED.ERR_LOAD'));
         this.loading.set(false);
         this.loadingMore.set(false);
       },
@@ -234,8 +237,8 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (navigator.share) {
       navigator.share({
-        title: `${post.author.pseudo} sur AlertProche`,
-        text:  post.content?.slice(0, 100) || 'Découvrez cette publication sur AlertProche.',
+        title: this.translate.instant('FEED.SHARE_TITLE', { pseudo: post.author.pseudo }),
+        text:  post.content?.slice(0, 100) || this.translate.instant('FEED.SHARE_TEXT'),
         url:   shareUrl,
       }).catch(() => {
         navigator.clipboard.writeText(frontendUrl).catch(() => {});
@@ -417,12 +420,7 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
   // ── Utilitaires ──────────────────────────────────────────────────────────
 
   getTimeAgo(dateStr: string): string {
-    const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-    if (diff < 60)      return 'À l\'instant';
-    if (diff < 3600)    return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400)   return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return new Date(dateStr).toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 
   trackByPost(_: number, p: FeedPost): string { return p._id; }

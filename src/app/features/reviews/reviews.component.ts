@@ -1,10 +1,11 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ReviewService } from '../../core/services/review.service';
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageService } from '../../core/services/language.service';
 import { Review, ReviewStats } from '../../core/models/review.model';
 
 @Component({
@@ -15,6 +16,9 @@ import { Review, ReviewStats } from '../../core/models/review.model';
   styleUrls: ['./reviews.component.css'],
 })
 export class ReviewsComponent implements OnInit {
+  private translate = inject(TranslateService);
+  private lang = inject(LanguageService);
+
   // ── Auth ──────────────────────────────────────────────────────────
   isAuth = computed(() => this.auth.isAuthenticated());
   currentUser = computed(() => this.auth.currentUser());
@@ -88,14 +92,9 @@ export class ReviewsComponent implements OnInit {
   activeStars(): number { return this.hoverRating() || this.formRating(); }
 
   ratingLabel(): string {
-    const labels: Record<number, string> = {
-      1: 'Très insatisfait',
-      2: 'Insatisfait',
-      3: 'Correct',
-      4: 'Satisfait',
-      5: 'Excellent !',
-    };
-    return labels[this.activeStars()] ?? 'Sélectionnez une note';
+    const n = this.activeStars();
+    if (n === 0) return this.translate.instant('REVIEWS.LABEL_NONE');
+    return this.translate.instant(`REVIEWS.RATING_LABEL_${n}`);
   }
 
   // ── Soumission ────────────────────────────────────────────────────
@@ -107,11 +106,11 @@ export class ReviewsComponent implements OnInit {
   submitReview(): void {
     this.formError.set('');
     if (this.formRating() === 0) {
-      this.formError.set('Veuillez sélectionner une note.');
+      this.formError.set(this.translate.instant('REVIEWS.ERR_RATING_REQUIRED'));
       return;
     }
     if (this.formMessage.trim().length < 10) {
-      this.formError.set('Votre message doit contenir au moins 10 caractères.');
+      this.formError.set(this.translate.instant('REVIEWS.ERR_MESSAGE_MIN'));
       return;
     }
 
@@ -134,7 +133,7 @@ export class ReviewsComponent implements OnInit {
       },
       error: () => {
         this.formLoading.set(false);
-        this.formError.set('Une erreur est survenue. Veuillez réessayer.');
+        this.formError.set(this.translate.instant('COMMON.ERR_GENERIC'));
       },
     });
   }
@@ -149,13 +148,13 @@ export class ReviewsComponent implements OnInit {
 
   // ── Utilitaires ───────────────────────────────────────────────────
   displayName(review: Review): string {
-    if (review.isAnonymous) return 'Anonyme';
-    return review.pseudo ?? 'Utilisateur';
+    if (review.isAnonymous) return this.translate.instant('COMMON.ANONYMOUS');
+    return review.pseudo ?? this.translate.instant('COMMON.USER');
   }
 
   initials(review: Review): string {
-    const name = this.displayName(review);
-    return name === 'Anonyme' ? '?' : name.charAt(0).toUpperCase();
+    if (review.isAnonymous) return '?';
+    return this.displayName(review).charAt(0).toUpperCase();
   }
 
   ratingPercent(star: number): number {
@@ -195,7 +194,8 @@ export class ReviewsComponent implements OnInit {
   }
 
   formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('fr-FR', {
+    const locale = this.lang.currentLang() === 'en' ? 'en-GB' : 'fr-FR';
+    return new Date(iso).toLocaleDateString(locale, {
       day: 'numeric', month: 'long', year: 'numeric',
     });
   }

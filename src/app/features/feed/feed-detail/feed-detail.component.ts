@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeedService, FeedPost } from '../../../core/services/feed.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { TimeAgoService } from '../../../core/services/time-ago.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -22,6 +23,7 @@ export class FeedDetailComponent implements OnInit {
   private feedSvc    = inject(FeedService);
   private auth       = inject(AuthService);
   private translate  = inject(TranslateService);
+  private timeAgo    = inject(TimeAgoService);
 
   post           = signal<FeedPost | null>(null);
   loading        = signal(true);
@@ -115,7 +117,7 @@ export class FeedDetailComponent implements OnInit {
 
     if (navigator.share) {
       navigator.share({
-        title: `${p.author.pseudo} sur AlertProche`,
+        title: this.translate.instant('FEED.SHARE_TITLE', { pseudo: p.author.pseudo }),
         text:  p.content?.slice(0, 100) || '',
         url:   shareUrl,
       }).catch(() => navigator.clipboard.writeText(frontendUrl).catch(() => {}));
@@ -141,12 +143,7 @@ export class FeedDetailComponent implements OnInit {
   }
 
   getTimeAgo(dateStr: string): string {
-    const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-    if (diff < 60)      return 'À l\'instant';
-    if (diff < 3600)    return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400)   return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return new Date(dateStr).toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 
   goBack(): void {

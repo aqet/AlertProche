@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, signal, computed, inject, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx-charts';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import {
   AnalyticsPeriod, AnalyticsTab, AnalyticsOverview,
@@ -12,13 +13,14 @@ type ChartSerie = 'sessions' | 'pageviews' | 'both';
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, NgxChartsModule],
+  imports: [CommonModule, NgxChartsModule, TranslateModule],
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.css']
 })
 export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
   private analytics = inject(AnalyticsService);
   private el = inject(ElementRef);
+  private translate = inject(TranslateService);
 
   curveMonotoneX=curveMonotoneX
   period = signal<AnalyticsPeriod>('30d');
@@ -51,10 +53,10 @@ export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
     const serie = this.chartSerie();
     const result: any[] = [];
     if (serie !== 'pageviews') {
-      result.push({ name: 'Sessions',   series: data.map(d => ({ name: d.date.slice(5), value: d.sessions  })) });
+      result.push({ name: this.translate.instant('ANALYTICS.KPI_SESSIONS'),   series: data.map(d => ({ name: d.date.slice(5), value: d.sessions  })) });
     }
     if (serie !== 'sessions') {
-      result.push({ name: 'Pages vues', series: data.map(d => ({ name: d.date.slice(5), value: d.pageviews })) });
+      result.push({ name: this.translate.instant('ANALYTICS.KPI_PAGEVIEWS'), series: data.map(d => ({ name: d.date.slice(5), value: d.pageviews })) });
     }
     return result; 
   });

@@ -10,7 +10,7 @@
     </div>
 
     <h3>{{ 'PAYMENT.DONATE_TITLE' | translate }}</h3>
-    <p class="donation-subtitle">{{ alertTitle }}</p>
+    <p class="donation-subtitle">{{ alertTitle || ('PAYMENT.ALERT_FALLBACK' | translate) }}</p>
 
     <!-- Montants prédéfinis -->
     <div class="donation-presets">
@@ -75,7 +75,7 @@
 
     <p class="donation-hint">
       <i class="fas fa-lock"></i>
-      Paiement sécurisé via <strong>digiKUNTZ</strong> · MTN / Orange Money
+      <span [innerHTML]="'PAYMENT.SECURE_NOTE' | translate"></span>
     </p>
   </div>
 </div>

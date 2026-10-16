@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -12,6 +12,7 @@ import { Cagnotte } from '../../core/models/payment.model';
 import { Post } from '../../core/models/post.model';
 import { Comment } from '../../core/models/comment.model';
 import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-badge/alert-status-badge.component';
+import { TimeAgoService } from '../../core/services/time-ago.service';
 import { debounceTime, distinctUntilChanged, Subject, switchMap, of } from 'rxjs';
 
 type DashTab = 'posts' | 'comments' | 'profile' | 'sos' | 'cagnotte';
@@ -203,7 +204,9 @@ export class DashboardComponent implements OnInit {
     private sosService: SosService,
     private paymentService: PaymentService,
     private fb: FormBuilder,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private timeAgo: TimeAgoService,
+    private translate: TranslateService
   ) {
     this.profileForm = this.fb.group({
       pseudo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
@@ -306,14 +309,14 @@ export class DashboardComponent implements OnInit {
   async submitPayout(): Promise<void> {
     if (this.payoutForm.invalid) {
       this.payoutForm.markAllAsTouched();
-      this.payoutError.set('Veuillez remplir tous les champs correctement.');
+      this.payoutError.set(this.translate.instant('DASHBOARD.ERR_PAYOUT_FORM'));
       return;
     }
     const c = this.selectedCagnotte();
     if (!c) return;
     const val = this.payoutForm.value;
     if (Number(val.amount) > c.availableAmount) {
-      this.payoutError.set(`Montant demandé (${val.amount} XAF) supérieur au disponible (${c.availableAmount} XAF).`);
+      this.payoutError.set(this.translate.instant('DASHBOARD.ERR_PAYOUT_EXCEED', { amount: val.amount, available: c.availableAmount }));
       return;
     }
     this.payoutLoading.set(true);
@@ -327,12 +330,12 @@ export class DashboardComponent implements OnInit {
         accountNumber: val.accountNumber,
         receiverName: val.receiverName,
       });
-      this.payoutSuccess.set('Demande de retrait envoyée. Elle sera traitée par notre équipe.');
+      this.payoutSuccess.set(this.translate.instant('DASHBOARD.PAYOUT_SUBMITTED'));
       this.selectedCagnotte.set(null);
       this.payoutForm.reset({ accountBankCode: 'MTN' });
       this.loadCagnottes();
     } catch (err: any) {
-      this.payoutError.set(err?.error?.message ?? 'Erreur lors de la demande. Vérifiez vos informations.');
+      this.payoutError.set(err?.error?.message ?? this.translate.instant('DASHBOARD.ERR_PAYOUT_REQUEST'));
     } finally {
       this.payoutLoading.set(false);
     }
@@ -366,7 +369,7 @@ export class DashboardComponent implements OnInit {
         this.editLoading.set(false);
       },
       error: (err) => {
-        this.editError.set(err?.error?.message || 'Erreur lors de la mise à jour.');
+        this.editError.set(err?.error?.message || this.translate.instant('COMMON.ERR_UPDATE'));
         this.editLoading.set(false);
       }
     });
@@ -397,7 +400,7 @@ export class DashboardComponent implements OnInit {
         this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },
       error: (err) => {
-        this.editError.set(err?.error?.message || 'Erreur lors de la résolution de la publication.');
+        this.editError.set(err?.error?.message || this.translate.instant('DASHBOARD.ERR_POST_RESOLVE'));
         setTimeout(() => this.editError.set(''), 5000);
       }
     });
@@ -409,7 +412,7 @@ export class DashboardComponent implements OnInit {
         this.myPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
       },
       error: (err) => {
-        this.editError.set(err?.error?.message || 'Erreur lors de la réouverture de la publication.');
+        this.editError.set(err?.error?.message || this.translate.instant('DASHBOARD.ERR_POST_REOPEN'));
         setTimeout(() => this.editError.set(''), 5000);
       }
     });
@@ -461,12 +464,12 @@ export class DashboardComponent implements OnInit {
     this.auth.updateAccount(this.profileForm.value.pseudo, this.profileForm.value.location).subscribe({
       next: () => {
         this.profileLoading.set(false);
-        this.profileSuccess.set('Profil mis à jour avec succès.');
+        this.profileSuccess.set(this.translate.instant('DASHBOARD.PROFILE_UPDATED'));
         setTimeout(() => this.profileSuccess.set(''), 3000);
       },
       error: (err) => {
         this.profileLoading.set(false);
-        this.profileError.set(err?.error?.message || 'Erreur lors de la mise à jour.');
+        this.profileError.set(err?.error?.message || this.translate.instant('COMMON.ERR_UPDATE'));
       }
     });
   }
@@ -479,11 +482,11 @@ export class DashboardComponent implements OnInit {
 
     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowed.includes(file.type)) {
-      this.photoError.set('Format non supporté. Acceptés : JPG, PNG, WebP.');
+      this.photoError.set(this.translate.instant('DASHBOARD.PHOTO_FORMAT'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      this.photoError.set('La photo dépasse 5 Mo.');
+      this.photoError.set(this.translate.instant('DASHBOARD.PHOTO_TOO_LARGE'));
       return;
     }
 
@@ -499,13 +502,13 @@ export class DashboardComponent implements OnInit {
       next: () => {
         this.photoLoading.set(false);
         this.photoPreview.set(null);
-        this.profileSuccess.set('Photo de profil mise à jour.');
+        this.profileSuccess.set(this.translate.instant('DASHBOARD.PHOTO_UPDATED'));
         setTimeout(() => this.profileSuccess.set(''), 3000);
       },
       error: (err) => {
         this.photoLoading.set(false);
         this.photoPreview.set(null);
-        this.photoError.set(err?.error?.message || 'Erreur lors de l\'upload.');
+        this.photoError.set(err?.error?.message || this.translate.instant('DASHBOARD.PHOTO_UPLOAD_ERR'));
       },
     });
   }
@@ -543,14 +546,14 @@ export class DashboardComponent implements OnInit {
     this.contactSuccess.set('');
     this.sosService.addContact(userId).subscribe({
       next: () => {
-        this.contactSuccess.set(`Invitation envoyée à ${pseudo}.`);
+        this.contactSuccess.set(this.translate.instant('DASHBOARD.INVITE_SENT', { pseudo }));
         this.searchResults.set([]);
         this.searchQuery.set('');
         this.loadContacts();
         setTimeout(() => this.contactSuccess.set(''), 4000);
       },
       error: (err) => {
-        this.contactError.set(err?.error?.message || 'Erreur lors de l\'invitation.');
+        this.contactError.set(err?.error?.message || this.translate.instant('DASHBOARD.INVITE_ERR'));
         setTimeout(() => this.contactError.set(''), 4000);
       },
     });
@@ -559,11 +562,11 @@ export class DashboardComponent implements OnInit {
   respondInvitation(inviterId: string, action: 'accept' | 'reject'): void {
     this.sosService.respondToInvitation(inviterId, action).subscribe({
       next: () => {
-        this.contactSuccess.set(action === 'accept' ? 'Invitation acceptée.' : 'Invitation refusée.');
+        this.contactSuccess.set(action === 'accept' ? this.translate.instant('DASHBOARD.INVITE_ACCEPTED') : this.translate.instant('DASHBOARD.INVITE_DECLINED'));
         this.loadContacts();
         setTimeout(() => this.contactSuccess.set(''), 3000);
       },
-      error: (err) => this.contactError.set(err?.error?.message || 'Erreur.'),
+      error: (err) => this.contactError.set(err?.error?.message || this.translate.instant('COMMON.ERR_GENERIC')),
     });
   }
 
@@ -580,10 +583,10 @@ export class DashboardComponent implements OnInit {
       next: () => {
         this.trustedContacts.update(list => list.filter(c => c.userId !== contactId));
         this.removingContactId.set(null);
-        this.contactSuccess.set('Contact retiré.');
+        this.contactSuccess.set(this.translate.instant('DASHBOARD.CONTACT_REMOVED'));
         setTimeout(() => this.contactSuccess.set(''), 3000);
       },
-      error: (err) => this.contactError.set(err?.error?.message || 'Erreur.'),
+      error: (err) => this.contactError.set(err?.error?.message || this.translate.instant('COMMON.ERR_GENERIC')),
     });
   }
 
@@ -593,9 +596,9 @@ export class DashboardComponent implements OnInit {
 
   getContactStatusLabel(status: string): string {
     const map: Record<string, string> = {
-      'ACCEPTED': 'Actif',
-      'PENDING':  'En attente',
-      'REJECTED': 'Refusé',
+      'ACCEPTED': this.translate.instant('DASHBOARD.CONTACT_STATUS_ACTIVE'),
+      'PENDING':  this.translate.instant('DASHBOARD.CONTACT_STATUS_PENDING'),
+      'REJECTED': this.translate.instant('DASHBOARD.CONTACT_STATUS_REJECTED'),
     };
     return map[status] || status;
   }
@@ -620,21 +623,14 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         this.leavingOwnerId.set(null);
-        this.contactError.set(err?.error?.message || 'Erreur lors de la suppression.');
+        this.contactError.set(err?.error?.message || this.translate.instant('DASHBOARD.CONTACT_DELETE_ERR'));
         setTimeout(() => this.contactError.set(''), 4000);
       },
     });
   }
 
   getTimeAgo(dateStr: string): string {
-    const now = new Date();
-    const date = new Date(dateStr);
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diff < 60) return 'À l\'instant';
-    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return date.toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 
   hasError(form: FormGroup, field: string, error?: string): boolean {

@@ -4,21 +4,21 @@
     <div class="update-modal-icon update-icon--hard">
       <i class="fas fa-mobile-screen-button"></i>
     </div>
-    <h2 class="update-title">Mise à jour requise</h2>
+    <h2 class="update-title">{{ 'UPDATE.HARD_TITLE' | translate }}</h2>
     <p class="update-desc">
-      Cette version de l'application n'est plus supportée.<br>
-      Veuillez mettre à jour AlertProche pour continuer à l'utiliser.
+      {{ 'UPDATE.HARD_DESC_1' | translate }}<br>
+      {{ 'UPDATE.HARD_DESC_2' | translate }}
     </p>
     <div class="update-version-badge" *ngIf="status()?.latestVersion">
       <i class="fas fa-tag"></i>
-      Nouvelle version : <strong>{{ status()!.latestVersion }}</strong>
+      {{ 'UPDATE.NEW_VERSION' | translate }} <strong>{{ status()!.latestVersion }}</strong>
     </div>
     <div class="update-notes" *ngIf="status()?.releaseNotes">
       <p>{{ status()!.releaseNotes }}</p>
     </div>
     <button class="btn-update-hard" (click)="openStore()">
       <i class="fas fa-download"></i>
-      Mettre à jour maintenant
+      {{ 'UPDATE.BTN_UPDATE_NOW' | translate }}
     </button>
     <!-- Pas de bouton "Plus tard" - modal non dismissible -->
   </div>
@@ -28,13 +28,13 @@
 <div class="update-banner" *ngIf="showSoftModal()">
   <div class="update-banner-icon"><i class="fas fa-circle-up"></i></div>
   <div class="update-banner-body">
-    <strong>Mise à jour disponible - v{{ status()!.latestVersion }}</strong>
-    <p>Nouvelles fonctionnalités et corrections de sécurité.</p>
+    <strong>{{ 'UPDATE.SOFT_TITLE' | translate:{ version: status()!.latestVersion } }}</strong>
+    <p>{{ 'UPDATE.SOFT_DESC' | translate }}</p>
   </div>
   <div class="update-banner-actions">
     <button class="btn-update-soft" (click)="openStore()">
-      <i class="fas fa-download"></i> Mettre à jour
+      <i class="fas fa-download"></i> {{ 'UPDATE.BTN_UPDATE' | translate }}
     </button>
-    <button class="btn-dismiss" (click)="dismissSoft()">Plus tard</button>
+    <button class="btn-dismiss" (click)="dismissSoft()">{{ 'UPDATE.BTN_LATER' | translate }}</button>
   </div>
 </div>

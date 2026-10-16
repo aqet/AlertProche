@@ -2,11 +2,12 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AdminService, AdminStats, AdminUser, AdminPost } from '../../core/services/admin.service';
 import { AuthService } from '../../core/services/auth.service';
 import { VersionManagementComponent } from './version-management/version-management.component';
 import { HttpClient } from '@angular/common/http';
+import { TimeAgoService } from '../../core/services/time-ago.service';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
@@ -73,16 +74,21 @@ export class AdminComponent implements OnInit {
   currentUser = computed(() => this.auth.currentUser());
 
   readonly ROLES = ['Standard', 'Moderateur', 'Admin'];
-  readonly POST_FILTERS = [
-    { value: '', label: 'Tous les posts' },
-    { value: 'reported', label: 'Signalés' },
-    { value: 'disabled', label: 'Désactivés' },
-  ];
+
+  get POST_FILTERS() {
+    return [
+      { value: '', label: this.translate.instant('ADMIN.FILTER_ALL') },
+      { value: 'reported', label: this.translate.instant('ADMIN.FILTER_REPORTED') },
+      { value: 'disabled', label: this.translate.instant('ADMIN.FILTER_DISABLED') },
+    ];
+  }
 
   constructor(
     private adminService: AdminService,
     public auth: AuthService,
     private http: HttpClient,
+    private translate: TranslateService,
+    private timeAgo: TimeAgoService,
   ) {}
 
   private get API() { return `${environment.apiUrl}`; }
@@ -148,11 +154,11 @@ export class AdminComponent implements OnInit {
         this.users.update(arr => arr.map(u => u._id === userId ? { ...u, role: updated.role } : u));
         this.roleChangeUserId.set(null);
         this.actionLoading.set(false);
-        this.showSuccess('Rôle mis à jour avec succès.');
+        this.showSuccess(this.translate.instant('ADMIN.MSG_ROLE_UPDATED'));
       },
       error: (err) => {
         this.actionLoading.set(false);
-        this.showError(err?.error?.message || 'Erreur lors de la mise à jour du rôle.');
+        this.showError(err?.error?.message || this.translate.instant('ADMIN.ERR_ROLE_UPDATE'));
       }
     });
   }
@@ -172,11 +178,11 @@ export class AdminComponent implements OnInit {
         this.usersTotal.update(n => n - 1);
         this.confirmDeleteUserId.set(null);
         this.actionLoading.set(false);
-        this.showSuccess('Compte supprimé. Les publications ont été anonymisées.');
+        this.showSuccess(this.translate.instant('ADMIN.MSG_USER_DELETED'));
       },
       error: (err) => {
         this.actionLoading.set(false);
-        this.showError(err?.error?.message || 'Erreur lors de la suppression.');
+        this.showError(err?.error?.message || this.translate.instant('ADMIN.ERR_DELETE'));
       }
     });
   }
@@ -215,11 +221,11 @@ export class AdminComponent implements OnInit {
         this.postsTotal.update(n => n - 1);
         this.confirmDeletePostId.set(null);
         this.actionLoading.set(false);
-        this.showSuccess('Publication supprimée définitivement.');
+        this.showSuccess(this.translate.instant('ADMIN.MSG_POST_DELETED'));
       },
       error: (err) => {
         this.actionLoading.set(false);
-        this.showError(err?.error?.message || 'Erreur lors de la suppression.');
+        this.showError(err?.error?.message || this.translate.instant('ADMIN.ERR_DELETE'));
       }
     });
   }
@@ -244,19 +250,12 @@ export class AdminComponent implements OnInit {
 
   getTimeAgo(dateStr: string): string {
     if (!dateStr) return '';
-    const now = new Date();
-    const date = new Date(dateStr);
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diff < 60) return 'À l\'instant';
-    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return date.toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 
   formatDate(dateStr: string): string {
     if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+    return this.timeAgo.formatDate(dateStr);
   }
 
   getRoleBadgeClass(role: string): string {
@@ -295,7 +294,7 @@ export class AdminComponent implements OnInit {
         this.notifTestLoading.set(false);
       },
       error: (err) => {
-        this.notifTestResult.set({ sent: 0, failed: 0, totalTokens: 0, error: err?.error?.message || 'Erreur de connexion' });
+        this.notifTestResult.set({ sent: 0, failed: 0, totalTokens: 0, error: err?.error?.message || this.translate.instant('COMMON.ERR_CONNECTION') });
         this.notifTestLoading.set(false);
       }
     });
@@ -339,7 +338,7 @@ export class AdminComponent implements OnInit {
         t._id === transactionId ? { ...t, status: 'PAYOUT_SUCCESS' } : t
       ));
     } catch (err: any) {
-      alert(err?.error?.message ?? 'Erreur lors de l\'approbation.');
+      alert(err?.error?.message ?? this.translate.instant('ADMIN.ERR_APPROVE'));
     } finally {
       this.approveLoading.set(null);
     }
@@ -357,7 +356,7 @@ export class AdminComponent implements OnInit {
       // Recharger les stats pour refléter la mise à jour
       await this.loadPaymentStats();
     } catch (err: any) {
-      alert(err?.error?.message ?? 'Erreur lors de la récupération.');
+      alert(err?.error?.message ?? this.translate.instant('ADMIN.ERR_FETCH'));
     } finally {
       this.approveLoading.set(null);
     }
@@ -365,7 +364,7 @@ export class AdminComponent implements OnInit {
 
   async executePlatformPayout(): Promise<void> {
     if (!this.platformPayoutAmount || this.platformPayoutAmount < 100) {
-      alert('Montant invalide (minimum 100 XAF).');
+      alert(this.translate.instant('ADMIN.ERR_AMOUNT_MIN'));
       return;
     }
     this.platformPayoutLoading.set(true);
@@ -373,15 +372,15 @@ export class AdminComponent implements OnInit {
       await firstValueFrom(
         this.http.post(`${this.API}/admin/payments/payout-to-platform`, {
           amount: this.platformPayoutAmount,
-          narration: 'Retrait administrateur vers compte AlertProche',
+          narration: this.translate.instant('ADMIN.PAYOUT_NARRATION'),
         })
       );
       this.showPlatformPayoutForm.set(false);
       this.platformPayoutAmount = null;
       await this.loadPaymentStats();
-      this.showSuccess('Payout vers AlertProche effectué avec succès.');
+      this.showSuccess(this.translate.instant('ADMIN.MSG_PAYOUT_SUCCESS'));
     } catch (err: any) {
-      alert(err?.error?.message ?? 'Erreur lors du payout.');
+      alert(err?.error?.message ?? this.translate.instant('ADMIN.ERR_PAYOUT'));
     } finally {
       this.platformPayoutLoading.set(false);
     }

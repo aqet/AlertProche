@@ -2,7 +2,7 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { TrackingService } from '../../core/services/tracking.service';
@@ -157,6 +157,7 @@ export class AuthComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private tracking: TrackingService,
+    private translate: TranslateService,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -204,7 +205,7 @@ export class AuthComponent implements OnInit {
       next: () => { this.loading.set(false); this.router.navigate(['/']); this.tracking.trackEvent('user_login'); },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(err?.error?.message || 'Email ou mot de passe incorrect.');
+        this.error.set(err?.error?.message || this.translate.instant('AUTH.ERR_CREDENTIALS'));
       }
     });
   }
@@ -222,12 +223,12 @@ export class AuthComponent implements OnInit {
         this.loading.set(false);
         this.registerStep.set('otp');
         this.startResendCountdown();
-        this.success.set(`Code envoyé à ${email}`);
+        this.success.set(this.translate.instant('AUTH.OTP_SENT', { email }));
         setTimeout(() => this.success.set(''), 4000);
       },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(err?.error?.message || 'Erreur lors de l\'envoi du code.');
+        this.error.set(err?.error?.message || this.translate.instant('AUTH.ERR_OTP_SEND'));
       }
     });
   }
@@ -242,12 +243,12 @@ export class AuthComponent implements OnInit {
         this.verifyToken = res.token;
         this.loading.set(false);
         this.registerStep.set('password');
-        this.success.set('Email vérifié ! Choisissez maintenant votre mot de passe.');
+        this.success.set(this.translate.instant('AUTH.OTP_VERIFIED'));
         setTimeout(() => this.success.set(''), 4000);
       },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(err?.error?.message || 'Code incorrect ou expiré.');
+        this.error.set(err?.error?.message || this.translate.instant('AUTH.ERR_OTP_INVALID'));
       }
     });
   }
@@ -262,7 +263,7 @@ export class AuthComponent implements OnInit {
       next: () => {
         this.loading.set(false);
         this.startResendCountdown();
-        this.success.set('Nouveau code envoyé.');
+        this.success.set(this.translate.instant('AUTH.OTP_RESENT'));
         setTimeout(() => this.success.set(''), 3000);
       },
       error: () => { this.loading.set(false); }
@@ -289,7 +290,7 @@ export class AuthComponent implements OnInit {
       next: () => { this.loading.set(false); this.router.navigate(['/']); this.tracking.trackEvent('user_registered'); },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(err?.error?.message || 'Erreur lors de la création du compte.');
+        this.error.set(err?.error?.message || this.translate.instant('AUTH.ERR_REGISTER'));
       }
     });
   }
@@ -302,9 +303,9 @@ export class AuthComponent implements OnInit {
 
   get stepLabel(): string {
     const labels: Record<RegisterStep, string> = {
-      info: 'Étape 1 / 3 - Informations',
-      otp: 'Étape 2 / 3 - Vérification email',
-      password: 'Étape 3 / 3 - Mot de passe'
+      info: this.translate.instant('AUTH.STEP_INFO'),
+      otp: this.translate.instant('AUTH.STEP_OTP'),
+      password: this.translate.instant('AUTH.STEP_PASSWORD')
     };
     return labels[this.registerStep()];
   }

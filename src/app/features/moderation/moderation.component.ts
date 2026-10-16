@@ -1,12 +1,13 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Post } from '../../core/models/post.model';
 import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-badge/alert-status-badge.component';
+import { TimeAgoService } from '../../core/services/time-ago.service';
 
 type ModTab = 'reported' | 'disabled';
 
@@ -36,7 +37,9 @@ export class ModerationComponent implements OnInit {
 
   constructor(
     private postService: PostService,
-    public auth: AuthService
+    public auth: AuthService,
+    private timeAgo: TimeAgoService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -106,11 +109,11 @@ export class ModerationComponent implements OnInit {
         this.allPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.reportedPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.disabledPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
-        this.actionSuccess.set('Alerte marquée résolue.');
+        this.actionSuccess.set(this.translate.instant('MOD.MSG_RESOLVED'));
         setTimeout(() => this.actionSuccess.set(''), 3000);
       },
       error: (err) => {
-        this.actionError.set(err?.error?.message || 'Erreur lors de la résolution.');
+        this.actionError.set(err?.error?.message || this.translate.instant('MOD.ERR_RESOLVE'));
         setTimeout(() => this.actionError.set(''), 5000);
       }
     });
@@ -122,11 +125,11 @@ export class ModerationComponent implements OnInit {
         this.allPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.reportedPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
         this.disabledPosts.update(arr => arr.map(p => p._id === updated._id ? updated : p));
-        this.actionSuccess.set('Alerte réouverte.');
+        this.actionSuccess.set(this.translate.instant('MOD.MSG_REOPENED'));
         setTimeout(() => this.actionSuccess.set(''), 3000);
       },
       error: (err) => {
-        this.actionError.set(err?.error?.message || 'Erreur lors de la réouverture.');
+        this.actionError.set(err?.error?.message || this.translate.instant('MOD.ERR_REOPEN'));
         setTimeout(() => this.actionError.set(''), 5000);
       }
     });
@@ -144,14 +147,7 @@ export class ModerationComponent implements OnInit {
   }
 
   getTimeAgo(dateStr: string): string {
-    const now = new Date();
-    const date = new Date(dateStr);
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diff < 60) return 'À l\'instant';
-    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return date.toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 
   trackByPost(_: number, p: Post) { return p._id; }

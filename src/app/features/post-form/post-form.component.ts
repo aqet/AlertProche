@@ -261,13 +261,13 @@ export class PostFormComponent implements OnInit, OnDestroy {
     this.imageError.set('');
     if (!this.ALLOWED_TYPES.includes(file.type)) {
       this.imageError.set(
-        'Format non supporté. Utilisez JPG ou PNG uniquement.',
+        this.translateSvc.instant('POST.IMAGE_FORMAT'),
       );
       return;
     }
     if (file.size > this.MAX_SIZE) {
       this.imageError.set(
-        "L'image dépasse 5 Mo. Veuillez choisir une image plus légère.",
+        this.translateSvc.instant('POST.IMAGE_SIZE'),
       );
       return;
     }
@@ -383,11 +383,11 @@ export class PostFormComponent implements OnInit, OnDestroy {
         this.locationError.set('');
       } else {
         this.locationValid.set(false);
-        this.locationError.set(`"${city}" ne semble pas être une localité valide. Veuillez vérifier le nom ou choisir une ville dans la liste.`);
+        this.locationError.set(this.translateSvc.instant('POST.LOCATION_INVALID', { city }));
         this.form.get('location')?.setValue('');
       }
     } catch {
-      this.locationError.set('Impossible de valider la ville. Veuillez réessayer.');
+      this.locationError.set(this.translateSvc.instant('POST.LOCATION_VALIDATE_ERR'));
     } finally {
       this.locationValidating.set(false);
     }
@@ -414,7 +414,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
         if (this.recordingSeconds() >= 120) this.stopVoiceRecording();
       }, 1000);
     } catch (err: any) {
-      this.recordingError.set(err?.message || 'Impossible d\'accéder au microphone.');
+      this.recordingError.set(err?.message || this.translateSvc.instant('AUDIO.MIC_ACCESS_ERROR'));
       this.recordingState.set('idle');
     }
   }
@@ -432,7 +432,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
       const parsed: ParsedAudioAlertDto = await this.postService.parseAudio(audioBlob);
       this.applyAudioResult(parsed);
     } catch (err: any) {
-      this.recordingError.set(err?.message || 'Erreur lors de l\'analyse vocale. Veuillez réessayer.');
+      this.recordingError.set(err?.message || this.translateSvc.instant('POST.VOICE_ERR'));
     } finally {
       this.recordingState.set('idle');
     }
@@ -484,7 +484,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
       // Avertir l'utilisateur si une image est sélectionnée (l'image sera perdue)
       if (this.selectedFile()) {
         this.error.set(
-          "Vous êtes hors-ligne. L'image jointe ne peut pas être sauvegardée hors-ligne. Supprimez l'image pour mettre votre post en attente, ou attendez d'être reconnecté."
+          this.translateSvc.instant('POST.OFFLINE_IMAGE'),
         );
         return;
       }
@@ -530,7 +530,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
 
           this.error.set(
             err ||
-              'Une erreur est survenue. Vérifiez votre texte et réessayez.',
+              this.translateSvc.instant('POST.ERR_SUBMIT'),
           );
         },
       });

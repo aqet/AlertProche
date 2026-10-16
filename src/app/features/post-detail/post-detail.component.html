@@ -109,8 +109,8 @@
         <div class="detail-cta" *ngIf="post()!.type === 'Disparition'">
           <div class="cta-icon"><i class="fas fa-phone-volume"></i></div>
           <div class="cta-body">
-            <strong>Vous avez une information ?</strong>
-            <p>Contactez les forces de l'ordre ou laissez un commentaire ci-dessous. Chaque information compte.</p>
+            <strong>{{ 'POST.CTA_DISPARITION_TITLE' | translate }}</strong>
+            <p>{{ 'POST.CTA_DISPARITION_DESC' | translate }}</p>
           </div>
         </div>
 
@@ -118,8 +118,8 @@
         <div class="detail-cta detail-cta-appel" *ngIf="post()!.type === 'Appel à l\'aide'">
           <div class="cta-icon cta-icon-appel"><i class="fas fa-hand-holding-heart"></i></div>
           <div class="cta-body">
-            <strong>Vous pouvez aider à retrouver cette famille</strong>
-            <p>Si vous reconnaissez cette personne ou connaissez sa famille, laissez un commentaire ou contactez l'établissement concerné.</p>
+            <strong>{{ 'POST.CTA_APPEL_TITLE' | translate }}</strong>
+            <p>{{ 'POST.CTA_APPEL_DESC' | translate }}</p>
           </div>
         </div>
 

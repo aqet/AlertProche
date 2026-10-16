@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface ModerationResult {
   isClean: boolean;
@@ -8,6 +9,8 @@ export interface ModerationResult {
 
 @Injectable({ providedIn: 'root' })
 export class ModerationService {
+
+  private translate = inject(TranslateService);
 
   // Dictionnaire lexical - termes interdits (insultes, haine, violence)
   private readonly BANNED_WORDS = [
@@ -93,13 +96,13 @@ export class ModerationService {
     if (result.isClean) return '';
     switch (result.reason) {
       case 'lexical':
-        return `Votre texte contient un terme non autorisé ("${result.flaggedWord}"). Veuillez reformuler votre message en restant respectueux.`;
+        return this.translate.instant('MOD.ERR_LEXICAL', { word: result.flaggedWord });
       case 'phone':
-        return 'Votre texte contient un numéro de téléphone. Pour protéger la vie privée, les coordonnées personnelles ne sont pas autorisées. Reformulez sans inclure de numéro.';
+        return this.translate.instant('MOD.ERR_PHONE');
       case 'id':
-        return 'Votre texte contient un identifiant officiel (CNI, passeport). Pour protéger la vie privée, ces informations ne sont pas autorisées.';
+        return this.translate.instant('MOD.ERR_ID');
       default:
-        return 'Votre texte contient du contenu non autorisé. Veuillez le reformuler.';
+        return this.translate.instant('MOD.ERR_DEFAULT');
     }
   }
 }

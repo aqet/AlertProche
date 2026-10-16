@@ -4,7 +4,7 @@ import {
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SosService, SosStatus } from '../../core/services/sos.service';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -21,6 +21,7 @@ export class SosResponseComponent implements OnInit, OnDestroy {
   private sosService  = inject(SosService);
   private authService = inject(AuthService);
   private sanitizer   = inject(DomSanitizer);
+  private translate   = inject(TranslateService);
 
   sosId   = signal<string>('');
   sos     = signal<SosStatus | null>(null);
@@ -71,7 +72,7 @@ export class SosResponseComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Impossible de charger cette alerte.');
+        this.error.set(err?.error?.message || this.translate.instant('SOS.ERR_LOAD'));
         this.loading.set(false);
         clearInterval(this.pollingInterval);
       },
@@ -88,12 +89,12 @@ export class SosResponseComponent implements OnInit, OnDestroy {
       next: () => {
         this.hasConfirmed.set(true);
         this.confirming.set(false);
-        this.actionSuccess.set('Votre réponse a été enregistrée. L\'émetteur sait que vous arrivez.');
+        this.actionSuccess.set(this.translate.instant('SOS.ACTION_CONFIRMED'));
         this.loadStatus(); // rafraîchit immédiatement
       },
       error: (err) => {
         this.confirming.set(false);
-        this.actionError.set(err?.error?.message || 'Erreur lors de la confirmation.');
+        this.actionError.set(err?.error?.message || this.translate.instant('SOS.ERR_CONFIRM'));
       },
     });
   }
@@ -107,12 +108,12 @@ export class SosResponseComponent implements OnInit, OnDestroy {
     this.sosService.resolve(id, 'Incident résolu par un contact de confiance').subscribe({
       next: () => {
         this.resolving.set(false);
-        this.actionSuccess.set('Alerte marquée comme résolue.');
+        this.actionSuccess.set(this.translate.instant('SOS.ACTION_RESOLVED'));
         this.loadStatus();
       },
       error: (err) => {
         this.resolving.set(false);
-        this.actionError.set(err?.error?.message || 'Erreur lors de la résolution.');
+        this.actionError.set(err?.error?.message || this.translate.instant('SOS.ERR_RESOLVE'));
       },
     });
   }
@@ -132,14 +133,15 @@ export class SosResponseComponent implements OnInit, OnDestroy {
     const diff = Math.floor((Date.now() - new Date(s.createdAt).getTime()) / 1000);
     if (diff < 60)   return `${diff}s`;
     if (diff < 3600) return `${Math.floor(diff / 60)} min`;
-    return `${Math.floor(diff / 3600)} h ${Math.floor((diff % 3600) / 60)} min`;
+    return this.translate.instant('COMMON.DURATION_HM', {
+      h: Math.floor(diff / 3600),
+      m: Math.floor((diff % 3600) / 60),
+    });
   }
 
   getThreatLabel(level?: string): string {
-    const map: Record<string, string> = {
-      LOW: 'Faible', MEDIUM: 'Modéré', HIGH: 'Élevé', CRITICAL: 'Critique',
-    };
-    return map[level || 'MEDIUM'] || 'Modéré';
+    const key = { LOW: 'THREAT_LOW', MEDIUM: 'THREAT_MEDIUM', HIGH: 'THREAT_HIGH', CRITICAL: 'THREAT_CRITICAL' }[level || 'MEDIUM'];
+    return key ? this.translate.instant(`SOS.${key}`) : this.translate.instant('SOS.THREAT_MEDIUM');
   }
 
   getThreatClass(level?: string): string {

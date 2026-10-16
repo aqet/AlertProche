@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { SosFloatingButtonComponent } from './shared/components/sos-floating-button/sos-floating-button.component';
 import { UpdateModalComponent } from './shared/components/update-modal/update-modal.component';
@@ -13,7 +14,7 @@ import { OfflineService } from './core/services/offline.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, RouterLink, SosFloatingButtonComponent, UpdateModalComponent, PermissionBannerComponent, ChatbotComponent, NetworkBannerComponent],
+  imports: [RouterOutlet, NavbarComponent, RouterLink, TranslateModule, SosFloatingButtonComponent, UpdateModalComponent, PermissionBannerComponent, ChatbotComponent, NetworkBannerComponent],
   template: `
     <app-network-banner></app-network-banner>
     <app-navbar></app-navbar>
@@ -29,16 +30,16 @@ import { OfflineService } from './core/services/offline.service';
           <span>Alert<span class="footer-accent">Proche</span></span>
         </div>
         <p class="footer-tagline">
-          Plateforme citoyenne de protection des mineurs au Cameroun.
+          {{ 'FOOTER.TAGLINE' | translate }}
         </p>
         <nav class="footer-links">
-          <a routerLink="/">Accueil</a>
-          <a routerLink="/a-propos">À propos</a>
-          <a routerLink="/confidentialite">Confidentialité</a>
-          <a routerLink="/auth">Connexion</a>
+          <a routerLink="/">{{ 'NAV.HOME' | translate }}</a>
+          <a routerLink="/a-propos">{{ 'NAV.ABOUT' | translate }}</a>
+          <a routerLink="/confidentialite">{{ 'FOOTER.LINK_PRIVACY' | translate }}</a>
+          <a routerLink="/auth">{{ 'NAV.LOGIN' | translate }}</a>
         </nav>
         <p class="footer-copy">
-          © 2026 AlertProche - TNIC - Tous droits réservés.
+          {{ 'FOOTER.COPYRIGHT' | translate }}
         </p>
       </div>
     </footer>

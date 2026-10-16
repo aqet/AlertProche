@@ -12,7 +12,8 @@
           "/manifest.webmanifest",
           "/custom-sw.js",
           "/*.css",
-          "/*.js"
+          "/*.js",
+          "/i18n/*.json"
         ]
       }
     },

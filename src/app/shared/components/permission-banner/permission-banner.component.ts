@@ -1,11 +1,13 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { PermissionService } from '../../../core/services/permission.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-permission-banner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <div class="perm-banner" *ngIf="perm.showBanner()" role="alert">
       <div class="perm-banner-inner">
@@ -21,7 +23,7 @@ import { PermissionService } from '../../../core/services/permission.service';
         </div>
 
         <!-- Message -->
-        <p class="perm-banner-msg">{{ perm.bannerMessage }}</p>
+        <p class="perm-banner-msg">{{ bannerMessage() }}</p>
 
         <!-- Actions -->
         <div class="perm-banner-actions">
@@ -34,14 +36,14 @@ import { PermissionService } from '../../../core/services/permission.service';
             [disabled]="perm.isRequesting()">
             <span class="spinner perm-spinner" *ngIf="perm.isRequesting()"></span>
             <i class="fas fa-check" *ngIf="!perm.isRequesting()"></i>
-            {{ perm.isRequesting() ? 'Activation...' : 'Activer' }}
+            {{ (perm.isRequesting() ? 'PERMISSION.BTN_ENABLING' : 'PERMISSION.BTN_ENABLE') | translate }}
           </button>
 
           <!-- Bouton "Fermer" si refus ou iOS guide -->
           <button
             class="perm-btn perm-btn-dismiss"
             (click)="perm.showBanner.set(false)"
-            title="Masquer">
+            [title]="'PERMISSION.BTN_HIDE' | translate">
             <i class="fas fa-xmark"></i>
           </button>
 
@@ -143,4 +145,11 @@ import { PermissionService } from '../../../core/services/permission.service';
 })
 export class PermissionBannerComponent {
   perm = inject(PermissionService);
+  private lang = inject(LanguageService);
+
+  /** Recalculé quand les permissions OU la langue changent */
+  bannerMessage = computed(() => {
+    this.lang.currentLang(); // dépendance explicite à la langue
+    return this.perm.bannerMessage;
+  });
 }
