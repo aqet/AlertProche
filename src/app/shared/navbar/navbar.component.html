@@ -66,8 +66,6 @@
       <ng-container *ngIf="isAuth(); else guestBlock">
         <a routerLink="/posts/new" class="btn-publish">
           <i class="fas fa-plus"></i> {{ 'NAV.PUBLISH' | translate }}
-          <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount()
-            }}</span>
         </a>
         <div class="user-chip">
           <div class="user-avatar">
@@ -124,7 +122,6 @@
         'NAV.ANALYTICS' | translate }}</a>
       <a routerLink="/posts/new" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
           class="fas fa-triangle-exclamation"></i> {{ 'NAV.PUBLISH' | translate }}
-        <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
       </a>
       <a routerLink="/auth" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="!isAuth()"><i
           class="fas fa-right-to-bracket"></i> {{ 'NAV.LOGIN' | translate }}</a>
@@ -163,7 +160,6 @@
     <a routerLink="/posts/new" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="isAuth()">
       <i class="fas fa-plus"></i>
       <span>{{ 'NAV.PUBLISH' | translate }}</span>
-      <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
     </a>
     <a routerLink="/auth" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="!isAuth()">
       <i class="fas fa-plus"></i>

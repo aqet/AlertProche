@@ -1,11 +1,10 @@
-import { Component, Input, inject, computed } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Post } from '../../core/models/post.model';
 import { MediaUrlPipe } from '../pipes/media-url.pipe';
 import { AlertStatusBadgeComponent } from '../components/alert-status-badge/alert-status-badge.component';
-import { OfflineService } from '../../core/services/offline.service';
 import { TimeAgoService } from '../../core/services/time-ago.service';
 
 @Component({
@@ -18,19 +17,7 @@ import { TimeAgoService } from '../../core/services/time-ago.service';
 export class PostCardComponent {
   @Input() post!: Post;
 
-  private offlineService = inject(OfflineService);
   private timeAgo = inject(TimeAgoService);
-
-  isSaved = computed(() => this.offlineService.isPostSaved(this.post._id));
-
-  toggleSave(event: MouseEvent): void {
-    event.stopPropagation();
-    if (this.isSaved()) {
-      this.offlineService.removeSavedPost(this.post._id);
-    } else {
-      this.offlineService.savePostOffline(this.post);
-    }
-  }
 
   getBadgeClass(): string {
     const map: Record<string, string> = {

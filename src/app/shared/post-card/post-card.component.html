@@ -61,11 +61,6 @@
         <i class="fas fa-comment"></i>
         {{ post.commentCount }}
       </div>
-      <!-- Bouton sauvegarder hors-ligne -->
-      <button class="save-offline-btn" (click)="toggleSave($event)"
-              [attr.aria-label]="isSaved() ? ('POST_CARD.ARIA_UNSAVE' | translate) : ('POST_CARD.ARIA_SAVE' | translate)">
-        <i class="fas fa-bookmark" [class.saved]="isSaved()"></i>
-      </button>
     </div>
 
   </div>

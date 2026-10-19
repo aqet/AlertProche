@@ -22,58 +22,6 @@
       </a>
     </div>
 
-    <!-- ── Publications en attente (hors-ligne) ────────── -->
-    <div class="pending-list" *ngIf="pendingPosts().length > 0">
-      <div class="pending-header">
-        <i class="fas fa-clock"></i>
-        <span>{{ 'OFFLINE.PENDING_TITLE' | translate: { count: pendingPosts().length } }}</span>
-        <span class="pending-header-spacer"></span>
-        <button class="btn btn-ghost btn-sm" *ngIf="isAuth()" (click)="syncNow()">
-          <i class="fas fa-rotate-right"></i> {{ 'OFFLINE.SYNC_NOW' | translate }}
-        </button>
-      </div>
-
-      <article class="feed-post-card pending-post" *ngFor="let p of pendingPosts(); trackBy: trackByPending">
-        <div class="post-avatar-col">
-          <div class="post-avatar"><span>{{ currentUserPseudo().charAt(0).toUpperCase() }}</span></div>
-        </div>
-        <div class="post-main">
-          <div class="post-header">
-            <span class="post-pseudo">{{ currentUserPseudo() }}</span>
-            <span class="post-sep">·</span>
-            <span class="post-time">{{ getTimeAgo(p.createdAt) }}</span>
-            <span class="post-header-spacer"></span>
-            <span class="pending-status" [class.pending-status-failed]="p.status === 'failed'">
-              <i class="fas" [class.fa-clock]="p.status !== 'failed'" [class.fa-circle-exclamation]="p.status === 'failed'"></i>
-              {{ (p.status === 'failed' ? 'OFFLINE.STATUS_FAILED' : 'OFFLINE.STATUS_PENDING') | translate }}
-            </span>
-          </div>
-
-          <div class="post-content-wrap" *ngIf="p.content">
-            <p class="post-content">{{ p.content }}</p>
-          </div>
-
-          <div class="post-media" *ngIf="p.media.length > 0">
-            <ng-container *ngFor="let pv of pendingPreviews(p)">
-              <img *ngIf="pv.type === 'image'" [src]="pv.url" class="post-media-single" [attr.alt]="'CREATE_POST.MEDIA_ALT' | translate">
-              <video *ngIf="pv.type === 'video'" [src]="pv.url" class="post-media-video" controls preload="metadata" playsinline muted></video>
-            </ng-container>
-          </div>
-
-          <div class="post-footer">
-            <button class="post-action-btn" *ngIf="p.status === 'failed'" (click)="retryPending(p.tempId)">
-              <i class="fas fa-rotate-right"></i>
-              <span>{{ 'OFFLINE.RETRY' | translate }}</span>
-            </button>
-            <button class="post-action-btn" (click)="discardPending(p.tempId)">
-              <i class="fas fa-trash"></i>
-              <span>{{ 'COMMON.DELETE' | translate }}</span>
-            </button>
-          </div>
-        </div>
-      </article>
-    </div>
-
     <!-- ── Loader initial ─────────────────────────────── -->
     <div class="feed-loading" *ngIf="loading()">
       <div class="feed-skeleton" *ngFor="let s of [1,2,3]">

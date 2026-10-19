@@ -4,7 +4,6 @@ import { CommonModule, NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
-import { OfflineService } from '../../core/services/offline.service';
 import { LanguageService } from '../../core/services/language.service';
 
 @Component({
@@ -37,7 +36,6 @@ export class NavbarComponent {
   constructor(
     public auth: AuthService,
     public theme: ThemeService,
-    public offlineService: OfflineService,
     public lang: LanguageService,
   ) {
     this.checkMobile();

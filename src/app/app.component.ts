@@ -6,17 +6,14 @@ import { SosFloatingButtonComponent } from './shared/components/sos-floating-but
 import { UpdateModalComponent } from './shared/components/update-modal/update-modal.component';
 import { PermissionBannerComponent } from './shared/components/permission-banner/permission-banner.component';
 import { ChatbotComponent } from './shared/components/chatbot/chatbot.component';
-import { NetworkBannerComponent } from './shared/components/network-banner/network-banner.component';
 import { PermissionService } from './core/services/permission.service';
 import { AppInitService } from './core/services/app-init.service';
-import { OfflineService } from './core/services/offline.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, RouterLink, TranslateModule, SosFloatingButtonComponent, UpdateModalComponent, PermissionBannerComponent, ChatbotComponent, NetworkBannerComponent],
+  imports: [RouterOutlet, NavbarComponent, RouterLink, TranslateModule, SosFloatingButtonComponent, UpdateModalComponent, PermissionBannerComponent, ChatbotComponent],
   template: `
-    <app-network-banner></app-network-banner>
     <app-navbar></app-navbar>
     <app-permission-banner></app-permission-banner>
     <router-outlet></router-outlet>
@@ -98,7 +95,6 @@ export class AppComponent implements OnInit {
 
   private appInit   = inject(AppInitService);
   private permSvc   = inject(PermissionService);
-  private offlineService = inject(OfflineService);
 
   ngOnInit() {
     this.applyPwaBodyClass();
@@ -107,9 +103,6 @@ export class AppComponent implements OnInit {
     // Vérifier l'état des permissions au chargement (sans demander)
     // La bannière s'affichera si une permission manque
     this.permSvc.checkPermissionsOnLoad();
-
-    // La synchronisation des posts en attente est gérée dans OfflineService.constructor
-    // pour éviter le double enregistrement du listener 'online'.
   }
 
   /** Ajoute 'pwa-standalone' sur <body> si l'app est installée */
