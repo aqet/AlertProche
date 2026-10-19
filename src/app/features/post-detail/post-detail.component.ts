@@ -8,6 +8,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -18,11 +19,12 @@ import { environment } from '../../../environments/environment';
 import { TrackingService } from '../../core/services/tracking.service';
 import { DonationModalComponent } from '../../shared/components/donation-modal/donation-modal.component';
 import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-badge/alert-status-badge.component';
+import { TimeAgoService } from '../../core/services/time-ago.service';
 
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe, DonationModalComponent, AlertStatusBadgeComponent, DatePipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe, DonationModalComponent, AlertStatusBadgeComponent, DatePipe, TranslateModule],
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.css'],
 })
@@ -99,6 +101,8 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     private meta: Meta,
     private titleService: Title,
     private tracking: TrackingService,
+    private timeAgo: TimeAgoService,
+    private translate: TranslateService,
   ) {
     this.commentForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(10)]],
@@ -117,7 +121,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
         this.updateMetaTags(p);
       },
       error: () => {
-        this.error.set('Publication introuvable.');
+        this.error.set(this.translate.instant('FEED.DETAIL_NOT_FOUND'));
         this.loading.set(false);
       },
     });
@@ -146,7 +150,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Remettre les meta tags par défaut quand on quitte la page
     this.titleService.setTitle(
-      'AlertProche – Protection des Mineurs au Cameroun',
+      this.translate.instant('POST.PAGE_TITLE'),
     );
     this.meta.removeTag('property="og:title"');
     this.meta.removeTag('property="og:description"');
@@ -209,14 +213,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
   }
 
   getTimeAgo(dateStr: string): string {
-    const now = new Date();
-    const date = new Date(dateStr);
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diff < 60) return "À l'instant";
-    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return date.toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 
   submitComment(): void {
@@ -254,7 +251,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
           this.submittingComment.set(false);
           this.commentError.set(
             err ||
-              'Erreur lors de la publication du commentaire.',
+              this.translate.instant('POST.ERR_COMMENT'),
           );
         },
       });
@@ -296,7 +293,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
 
     const text = p
       ? `🚨 ${p.type} - ${p.title}\n📍 ${p.location}`
-      : 'Alerte via AlertProche';
+      : this.translate.instant('POST.SHARE_FALLBACK');
 
     if (navigator.share) {
       navigator

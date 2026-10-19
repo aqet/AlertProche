@@ -1,17 +1,18 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { OfflineService } from '../../../core/services/offline.service';
 
 @Component({
   selector: 'app-network-banner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <div class="net-banner net-offline" *ngIf="!offlineService.online()">
-      <i class="fas fa-wifi-slash"></i> Vous êtes hors-ligne
+      <i class="fas fa-wifi-slash"></i> {{ 'NETWORK.OFFLINE' | translate }}
     </div>
     <div class="net-banner net-reconnected" *ngIf="showReconnected()">
-      <i class="fas fa-wifi"></i> Connexion rétablie
+      <i class="fas fa-wifi"></i> {{ 'NETWORK.RECONNECTED' | translate }}
     </div>
   `,
   styles: [`

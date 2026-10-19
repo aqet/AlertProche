@@ -708,6 +708,52 @@
   transform: translateY(-2px);
 }
 
+/* ── Publications en attente (hors-ligne) ───────────────────── */
+.pending-list {
+  margin: 12px 0;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm, 8px);
+  overflow: hidden;
+  background: var(--bg-input, rgba(127, 127, 127, 0.05));
+}
+
+.pending-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.pending-header i { color: var(--green); }
+.pending-header-spacer { flex: 1; }
+
+.pending-post {
+  opacity: 0.85;
+  background: transparent;
+}
+
+.pending-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg-input, rgba(127, 127, 127, 0.12));
+}
+
+.pending-status-failed {
+  color: var(--urgent, #e5484d);
+  background: var(--urgent-dim, rgba(229, 72, 77, 0.12));
+}
+
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }

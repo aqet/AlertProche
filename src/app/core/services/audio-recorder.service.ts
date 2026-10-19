@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 export type RecordingState = 'idle' | 'recording' | 'processing';
 
@@ -8,6 +9,8 @@ export type RecordingState = 'idle' | 'recording' | 'processing';
  */
 @Injectable({ providedIn: 'root' })
 export class AudioRecorderService {
+  private translate = inject(TranslateService);
+
   private mediaRecorder: MediaRecorder | null = null;
   private chunks: BlobPart[] = [];
   private stream: MediaStream | null = null;
@@ -20,12 +23,12 @@ export class AudioRecorderService {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     } catch (err: any) {
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        throw new Error('Accès au microphone refusé. Veuillez autoriser le microphone dans les paramètres de votre navigateur.');
+        throw new Error(this.translate.instant('AUDIO.MIC_DENIED'));
       }
       if (err.name === 'NotFoundError') {
-        throw new Error('Aucun microphone détecté sur cet appareil.');
+        throw new Error(this.translate.instant('AUDIO.MIC_NOT_FOUND'));
       }
-      throw new Error('Impossible d\'accéder au microphone.');
+      throw new Error(this.translate.instant('AUDIO.MIC_ACCESS_ERROR'));
     }
 
     const mimeType = this.getBestMimeType();
@@ -48,7 +51,7 @@ export class AudioRecorderService {
   stopRecording(): Promise<Blob> {
     return new Promise((resolve, reject) => {
       if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
-        reject(new Error('Aucun enregistrement en cours.'));
+        reject(new Error(this.translate.instant('AUDIO.NO_RECORDING')));
         return;
       }
 
@@ -62,7 +65,7 @@ export class AudioRecorderService {
 
       this.mediaRecorder.onerror = () => {
         this.releaseMic();
-        reject(new Error('Erreur lors de l\'arrêt de l\'enregistrement.'));
+        reject(new Error(this.translate.instant('AUDIO.STOP_ERROR')));
       };
 
       this.mediaRecorder.stop();

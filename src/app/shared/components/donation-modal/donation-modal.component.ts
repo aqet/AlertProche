@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PaymentService } from '../../../core/services/payment.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -9,13 +10,15 @@ const PRESET_AMOUNTS = [100, 500, 1000, 2000, 5000];
 @Component({
   selector: 'app-donation-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './donation-modal.component.html',
   styleUrls: ['./donation-modal.component.css'],
 })
 export class DonationModalComponent {
+  private translate = inject(TranslateService);
+
   @Input() alertId!: string;
-  @Input() alertTitle = 'cette alerte';
+  @Input() alertTitle = '';
   @Output() closed = new EventEmitter<void>();
 
   readonly presets = PRESET_AMOUNTS;
@@ -59,12 +62,12 @@ export class DonationModalComponent {
 // ici
   async submit(): Promise<void> {
     if (this.effectiveAmount < 100) {
-      this.error.set('Le montant minimum est 100 XAF.');
+      this.error.set(this.translate.instant('PAYMENT.ERR_AMOUNT_MIN'));
       return;
     }
     const phoneDigits = this.phone().replace(/\D/g, '');
     if (phoneDigits.length < 8) {
-      this.error.set('Veuillez entrer un numéro Mobile Money valide.');
+      this.error.set(this.translate.instant('PAYMENT.ERR_PHONE_INVALID'));
       return;
     }
 
@@ -81,7 +84,7 @@ export class DonationModalComponent {
       window.open(result.paymentLink, '_blank');
       this.close();
     } catch (err: any) {
-      this.error.set(err?.error?.message ?? 'Une erreur est survenue. Veuillez réessayer.');
+      this.error.set(err?.error?.message ?? this.translate.instant('COMMON.ERR_GENERIC'));
     } finally {
       this.loading.set(false);
     }

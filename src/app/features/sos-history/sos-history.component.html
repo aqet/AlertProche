@@ -6,9 +6,9 @@
       <div class="sos-hist-title-row">
         <div class="sos-hist-icon"><i class="fas fa-clock-rotate-left"></i></div>
         <div>
-          <h1 class="section-title">Historique SOS</h1>
+          <h1 class="section-title">{{ 'SOS_HIST.TITLE' | translate }}</h1>
           <p class="section-subtitle">
-            Toutes vos alertes émises, vos interventions et les alertes reçues.
+            {{ 'SOS_HIST.SUBTITLE' | translate }}
           </p>
         </div>
       </div>
@@ -17,15 +17,15 @@
       <div class="sos-hist-summary" *ngIf="history()">
         <div class="sos-hist-stat">
           <span class="sos-hist-stat-num text-alert">{{ history()!.emitted.length }}</span>
-          <span class="sos-hist-stat-lbl">Émises</span>
+          <span class="sos-hist-stat-lbl">{{ 'SOS_HIST.STAT_EMITTED' | translate }}</span>
         </div>
         <div class="sos-hist-stat">
           <span class="sos-hist-stat-num text-accent">{{ history()!.responded.length }}</span>
-          <span class="sos-hist-stat-lbl">Interventions</span>
+          <span class="sos-hist-stat-lbl">{{ 'SOS_HIST.STAT_RESPONDED' | translate }}</span>
         </div>
         <div class="sos-hist-stat">
           <span class="sos-hist-stat-num">{{ history()!.received.length }}</span>
-          <span class="sos-hist-stat-lbl">Reçues</span>
+          <span class="sos-hist-stat-lbl">{{ 'SOS_HIST.STAT_RECEIVED' | translate }}</span>
         </div>
       </div>
     </div>
@@ -34,24 +34,24 @@
     <div class="history-tabs">
       <button class="history-tab" [class.active]="activeTab() === 'emitted'" (click)="setTab('emitted')">
         <i class="fas fa-circle-radiation"></i>
-        Mes alertes
+        {{ 'SOS_HIST.TAB_EMITTED' | translate }}
         <span class="history-tab-count" *ngIf="history()">{{ history()!.emitted.length }}</span>
       </button>
       <button class="history-tab" [class.active]="activeTab() === 'responded'" (click)="setTab('responded')">
         <i class="fas fa-person-running"></i>
-        Interventions
+        {{ 'SOS_HIST.TAB_RESPONDED' | translate }}
         <span class="history-tab-count" *ngIf="history()">{{ history()!.responded.length }}</span>
       </button>
       <button class="history-tab" [class.active]="activeTab() === 'received'" (click)="setTab('received')">
         <i class="fas fa-bell"></i>
-        Reçues
+        {{ 'SOS_HIST.TAB_RECEIVED' | translate }}
         <span class="history-tab-count" *ngIf="history()">{{ history()!.received.length }}</span>
       </button>
     </div>
 
     <!-- ── LOADING ──────────────────────────────────────────────────── -->
     <div class="loading-state" *ngIf="loading()">
-      <div class="spinner"></div> Chargement de l'historique…
+      <div class="spinner"></div> {{ 'SOS_HIST.LOADING' | translate }}
     </div>
 
     <!-- ── LISTE ────────────────────────────────────────────────────── -->
@@ -60,10 +60,10 @@
       <!-- Vide -->
       <div class="empty-state" *ngIf="currentList().length === 0">
         <div class="empty-icon"><i class="fas fa-clock-rotate-left"></i></div>
-        <h3>Aucune alerte</h3>
-        <p *ngIf="activeTab() === 'emitted'">Vous n'avez pas encore déclenché de SOS.</p>
-        <p *ngIf="activeTab() === 'responded'">Vous n'avez pas encore répondu à un SOS.</p>
-        <p *ngIf="activeTab() === 'received'">Aucune alerte reçue pour l'instant.</p>
+        <h3>{{ 'SOS_HIST.EMPTY_TITLE' | translate }}</h3>
+        <p *ngIf="activeTab() === 'emitted'">{{ 'SOS_HIST.EMPTY_EMITTED' | translate }}</p>
+        <p *ngIf="activeTab() === 'responded'">{{ 'SOS_HIST.EMPTY_RESPONDED' | translate }}</p>
+        <p *ngIf="activeTab() === 'received'">{{ 'SOS_HIST.EMPTY_RECEIVED' | translate }}</p>
       </div>
 
       <!-- Items -->
@@ -91,8 +91,7 @@
             <span class="history-threat-chip" [ngClass]="getThreatClass(item.threatLevel)" *ngIf="item.threatLevel">
               <i class="fas fa-triangle-exclamation"></i>
               {{ getThreatLabel(item.threatLevel) }}
-            </span>
-            <span class="history-date">{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </span>            <span class="history-date">{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
           </div>
 
           <!-- Ligne 2 : profil émetteur (si pas soi-même) -->
@@ -103,7 +102,7 @@
             </div>
             <div>
               <span class="history-emitter-name">{{ item.emitter.pseudo }}</span>
-              <span class="history-emitter-label">Personne en danger</span>
+              <span class="history-emitter-label">{{ 'SOS_HIST.EMITTER_LABEL' | translate }}</span>
             </div>
           </div>
 
@@ -119,11 +118,11 @@
             </span>
             <span class="history-stat" *ngIf="item.respondingCount > 0">
               <i class="fas fa-person-running"></i>
-              {{ item.respondingCount }} intervenant{{ item.respondingCount > 1 ? 's' : '' }}
+              {{ (item.respondingCount > 1 ? 'SOS_HIST.RESPONDERS_MANY' : 'SOS_HIST.RESPONDERS_ONE') | translate:{ count: item.respondingCount } }}
             </span>
             <span class="history-stat" *ngIf="item.role === 'emitted' && item.notifiedCount > 0">
               <i class="fas fa-bell"></i>
-              {{ item.notifiedCount }} notifié{{ item.notifiedCount > 1 ? 's' : '' }}
+              {{ (item.notifiedCount > 1 ? 'SOS_HIST.NOTIFIED_MANY' : 'SOS_HIST.NOTIFIED_ONE') | translate:{ count: item.notifiedCount } }}
             </span>
           </div>
 
@@ -135,11 +134,11 @@
           <!-- Actions -->
           <div class="history-item-footer">
             <a [routerLink]="['/sos', item._id]" class="btn btn-outline btn-sm">
-              <i class="fas fa-arrow-up-right-from-square"></i> Voir le détail
+              <i class="fas fa-arrow-up-right-from-square"></i> {{ 'SOS_HIST.BTN_DETAIL' | translate }}
             </a>
             <a [href]="getMapsUrl(item.latitude, item.longitude)"
                target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
-              <i class="fas fa-map-location-dot"></i> Carte
+              <i class="fas fa-map-location-dot"></i> {{ 'SOS_HIST.BTN_MAP' | translate }}
             </a>
           </div>
 

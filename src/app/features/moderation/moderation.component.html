@@ -5,14 +5,14 @@
     <div class="mod-header animate-fade-in">
       <div class="mod-header-left">
         <a routerLink="/dashboard" class="back-link">
-          <i class="fas fa-arrow-left"></i> Mon Espace
+          <i class="fas fa-arrow-left"></i> {{ 'MOD.BACK_LINK' | translate }}
         </a>
         <div class="mod-title-row">
           <div class="mod-icon"><i class="fas fa-shield-halved"></i></div>
           <div>
-            <h1 class="mod-title">Espace de Modération</h1>
+            <h1 class="mod-title">{{ 'MOD.TITLE' | translate }}</h1>
             <p class="mod-subtitle">
-              Connecté en tant que
+              {{ 'MOD.SUBTITLE' | translate }}
               <span class="role-chip" [class.role-chip-admin]="isAdmin()" [class.role-chip-mod]="!isAdmin()">
                 <i class="fas fa-shield-halved"></i> {{ user()?.role }}
               </span>
@@ -21,7 +21,7 @@
         </div>
       </div>
       <button class="btn btn-ghost btn-sm" (click)="loadData()">
-        <i class="fas fa-rotate-right"></i> Actualiser
+        <i class="fas fa-rotate-right"></i> {{ 'ADMIN.BTN_REFRESH' | translate }}
       </button>
     </div>
 
@@ -31,21 +31,21 @@
         <i class="fas fa-flag"></i>
         <div>
           <span class="mod-stat-num">{{ reportedCount() }}</span>
-          <span class="mod-stat-lbl">Signalement(s) en attente</span>
+          <span class="mod-stat-lbl">{{ 'MOD.STAT_REPORTS' | translate }}</span>
         </div>
       </div>
       <div class="mod-stat mod-stat-warning">
         <i class="fas fa-eye-slash"></i>
         <div>
           <span class="mod-stat-num">{{ disabledCount() }}</span>
-          <span class="mod-stat-lbl">Publication(s) désactivée(s)</span>
+          <span class="mod-stat-lbl">{{ 'MOD.STAT_DISABLED' | translate }}</span>
         </div>
       </div>
       <div class="mod-stat mod-stat-info">
         <i class="fas fa-file-lines"></i>
         <div>
           <span class="mod-stat-num">{{ allPosts().length }}</span>
-          <span class="mod-stat-lbl">Total publications</span>
+          <span class="mod-stat-lbl">{{ 'MOD.STAT_TOTAL' | translate }}</span>
         </div>
       </div>
     </div>
@@ -54,13 +54,13 @@
     <div class="permissions-banner animate-fade-in stagger-2">
       <div class="perm-icon"><i class="fas fa-circle-info"></i></div>
       <div class="perm-body">
-        <strong>Vos permissions en tant que {{ user()?.role }}</strong>
+        <strong>{{ 'MOD.PERMS_INTRO' | translate }} {{ user()?.role }}</strong>
         <div class="perm-list">
-          <span class="perm-item"><i class="fas fa-check"></i> Voir tous les signalements</span>
-          <span class="perm-item"><i class="fas fa-check"></i> Désactiver / Réactiver une publication</span>
-          <span class="perm-item"><i class="fas fa-check"></i> Classer un signalement sans suite</span>
-          <span class="perm-item" *ngIf="isAdmin()"><i class="fas fa-check"></i> Supprimer définitivement une publication</span>
-          <span class="perm-item perm-disabled" *ngIf="!isAdmin()"><i class="fas fa-xmark"></i> Suppression définitive (Admin uniquement)</span>
+          <span class="perm-item"><i class="fas fa-check"></i> {{ 'MOD.PERM_VIEW' | translate }}</span>
+          <span class="perm-item"><i class="fas fa-check"></i> {{ 'MOD.PERM_TOGGLE' | translate }}</span>
+          <span class="perm-item"><i class="fas fa-check"></i> {{ 'MOD.PERM_DISMISS' | translate }}</span>
+          <span class="perm-item" *ngIf="isAdmin()"><i class="fas fa-check"></i> {{ 'MOD.PERM_DELETE' | translate }}</span>
+          <span class="perm-item perm-disabled" *ngIf="!isAdmin()"><i class="fas fa-xmark"></i> {{ 'MOD.PERM_DELETE_DISABLED' | translate }}</span>
         </div>
       </div>
     </div>
@@ -76,35 +76,35 @@
     <!-- Tabs -->
     <div class="mod-tabs animate-fade-in stagger-2">
       <button class="mod-tab" [class.active]="activeTab() === 'reported'" (click)="setTab('reported')">
-        <i class="fas fa-flag"></i> Publications signalées
+        <i class="fas fa-flag"></i> {{ 'MOD.TAB_REPORTED' | translate }}
         <span class="tab-badge tab-badge-alert" *ngIf="reportedCount() > 0">{{ reportedCount() }}</span>
       </button>
       <button class="mod-tab" [class.active]="activeTab() === 'disabled'" (click)="setTab('disabled')">
-        <i class="fas fa-eye-slash"></i> Publications désactivées
+        <i class="fas fa-eye-slash"></i> {{ 'MOD.TAB_DISABLED' | translate }}
         <span class="tab-badge" *ngIf="disabledCount() > 0">{{ disabledCount() }}</span>
       </button>
     </div>
 
     <!-- Loading -->
     <div class="loading-state" *ngIf="loading()">
-      <div class="spinner"></div> Chargement des données...
+      <div class="spinner"></div> {{ 'COMMON.LOADING' | translate }}
     </div>
 
     <!-- REPORTED TAB -->
     <div *ngIf="!loading() && activeTab() === 'reported'" class="animate-fade-in">
       <div class="empty-mod" *ngIf="reportedPosts().length === 0">
         <div class="empty-mod-icon"><i class="fas fa-check-circle"></i></div>
-        <h3>Aucun signalement en attente</h3>
-        <p>Toutes les publications sont conformes. Aucune action requise.</p>
+        <h3>{{ 'MOD.EMPTY_REPORTED_TITLE' | translate }}</h3>
+        <p>{{ 'MOD.EMPTY_REPORTED_DESC' | translate }}</p>
       </div>
 
       <div class="mod-posts-list" *ngIf="reportedPosts().length > 0">
         <div class="mod-post-card" *ngFor="let post of reportedPosts(); trackBy: trackByPost">
           <div class="mod-post-status">
-            <span class="status-chip status-reported"><i class="fas fa-flag"></i> Signalé</span>
+            <span class="status-chip status-reported"><i class="fas fa-flag"></i> {{ 'MOD.STATUS_REPORTED' | translate }}</span>
             <span class="status-chip" [class.status-active]="post.isActive !== false" [class.status-disabled]="post.isActive === false">
               <i class="fas" [ngClass]="post.isActive !== false ? 'fa-eye' : 'fa-eye-slash'"></i>
-              {{ post.isActive !== false ? 'Actif' : 'Désactivé' }}
+              {{ post.isActive !== false ? ('MOD.STATUS_ACTIVE' | translate) : ('MOD.STATUS_DISABLED' | translate) }}
             </span>
             <!-- Badge statut résolution -->
             <app-alert-status-badge [post]="post" [showDate]="true"></app-alert-status-badge>
@@ -118,7 +118,7 @@
             <div class="mod-post-info">
               <div class="mod-post-meta">
                 <span class="badge" [ngClass]="getBadgeClass(post.type)">{{ post.type }}</span>
-                <span class="mod-post-author"><i class="fas fa-user"></i> {{ post.isAnonymous ? 'Anonyme' : post.authorPseudo }}</span>
+                <span class="mod-post-author"><i class="fas fa-user"></i> {{ post.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : post.authorPseudo }}</span>
                 <span class="mod-post-location"><i class="fas fa-location-dot"></i> {{ post.location }}</span>
               </div>
               <h3 class="mod-post-title">
@@ -131,7 +131,7 @@
           </div>
 
           <div class="mod-post-reason">
-            <span class="actions-title">Motifs de signalement :</span>
+            <span class="actions-title">{{ 'MOD.REPORT_REASONS_TITLE' | translate }}</span>
 
             <ul class="reasons-list">
               <li *ngFor="let reason of post.reportReasons" class="reason-item">
@@ -142,30 +142,30 @@
           <div class="mod-post-actions">
             <div class="mod-actions-left">
               <a [routerLink]="['/posts', post._id]" class="btn btn-ghost btn-sm" target="_blank">
-                <i class="fas fa-eye"></i> Voir
+                <i class="fas fa-eye"></i> {{ 'MOD.BTN_VIEW' | translate }}
               </a>
             </div>
             <div class="mod-actions-right">
-              <button class="btn btn-ghost btn-sm" (click)="clearReport(post)" title="Classer sans suite">
-                <i class="fas fa-check"></i> Sans suite
+              <button class="btn btn-ghost btn-sm" (click)="clearReport(post)" [title]="'MOD.PERM_DISMISS' | translate">
+                <i class="fas fa-check"></i> {{ 'MOD.BTN_DISMISS' | translate }}
               </button>
               <button class="btn btn-sm"
                 [class.btn-mod-disable]="post.isActive !== false"
                 [class.btn-mod-enable]="post.isActive === false"
                 (click)="toggleActive(post)">
                 <i class="fas" [ngClass]="post.isActive !== false ? 'fa-eye-slash' : 'fa-eye'"></i>
-                {{ post.isActive !== false ? 'Désactiver' : 'Réactiver' }}
+                {{ post.isActive !== false ? ('MOD.BTN_DISABLE' | translate) : ('MOD.BTN_ENABLE' | translate) }}
               </button>
               <button class="btn btn-sm btn-mod-resolve" *ngIf="!post.isResolved"
-                (click)="resolvePost(post)" title="Marquer comme résolue">
-                <i class="fas fa-circle-check"></i> Résoudre
+                (click)="resolvePost(post)" [title]="'MOD.BTN_RESOLVE' | translate">
+                <i class="fas fa-circle-check"></i> {{ 'MOD.BTN_RESOLVE' | translate }}
               </button>
               <button class="btn btn-sm btn-mod-reopen" *ngIf="post.isResolved"
-                (click)="unresolvePost(post)" title="Réouvrir l'alerte">
-                <i class="fas fa-rotate-left"></i> Réouvrir
+                (click)="unresolvePost(post)" [title]="'MOD.BTN_REOPEN' | translate">
+                <i class="fas fa-rotate-left"></i> {{ 'MOD.BTN_REOPEN' | translate }}
               </button>
               <button class="btn btn-sm btn-mod-delete" *ngIf="isAdmin()" (click)="deletePost(post)">
-                <i class="fas fa-trash"></i> Supprimer
+                <i class="fas fa-trash"></i> {{ 'COMMON.DELETE' | translate }}
               </button>
             </div>
           </div>
@@ -177,16 +177,16 @@
     <div *ngIf="!loading() && activeTab() === 'disabled'" class="animate-fade-in">
       <div class="empty-mod" *ngIf="disabledPosts().length === 0">
         <div class="empty-mod-icon"><i class="fas fa-eye"></i></div>
-        <h3>Aucune publication désactivée</h3>
-        <p>Toutes les publications sont actuellement visibles.</p>
+        <h3>{{ 'MOD.EMPTY_DISABLED_TITLE' | translate }}</h3>
+        <p>{{ 'MOD.EMPTY_DISABLED_DESC' | translate }}</p>
       </div>
 
       <div class="mod-posts-list" *ngIf="disabledPosts().length > 0">
         <div class="mod-post-card mod-post-card-disabled" *ngFor="let post of disabledPosts(); trackBy: trackByPost">
           <div class="mod-post-status">
-            <span class="status-chip status-disabled"><i class="fas fa-eye-slash"></i> Désactivé</span>
+            <span class="status-chip status-disabled"><i class="fas fa-eye-slash"></i> {{ 'MOD.STATUS_DISABLED' | translate }}</span>
             <span class="status-chip status-reported" *ngIf="isPostReported(post)">
-              <i class="fas fa-flag"></i> Signalé
+              <i class="fas fa-flag"></i> {{ 'MOD.STATUS_REPORTED' | translate }}
             </span>
             <!-- Badge statut résolution -->
             <app-alert-status-badge [post]="post" [showDate]="true"></app-alert-status-badge>
@@ -200,7 +200,7 @@
             <div class="mod-post-info">
               <div class="mod-post-meta">
                 <span class="badge" [ngClass]="getBadgeClass(post.type)">{{ post.type }}</span>
-                <span class="mod-post-author"><i class="fas fa-user"></i> {{ post.isAnonymous ? 'Anonyme' : post.authorPseudo }}</span>
+                <span class="mod-post-author"><i class="fas fa-user"></i> {{ post.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : post.authorPseudo }}</span>
                 <span class="mod-post-location"><i class="fas fa-location-dot"></i> {{ post.location }}</span>
               </div>
               <h3 class="mod-post-title">{{ post.title }}</h3>
@@ -211,23 +211,23 @@
           <div class="mod-post-actions">
             <div class="mod-actions-left">
               <a [routerLink]="['/posts', post._id]" class="btn btn-ghost btn-sm" target="_blank">
-                <i class="fas fa-eye"></i> Voir
+                <i class="fas fa-eye"></i> {{ 'MOD.BTN_VIEW' | translate }}
               </a>
             </div>
             <div class="mod-actions-right">
               <button class="btn btn-sm btn-mod-enable" (click)="toggleActive(post)">
-                <i class="fas fa-eye"></i> Réactiver
+                <i class="fas fa-eye"></i> {{ 'MOD.BTN_ENABLE' | translate }}
               </button>
               <button class="btn btn-sm btn-mod-resolve" *ngIf="!post.isResolved"
-                (click)="resolvePost(post)" title="Marquer comme résolue">
-                <i class="fas fa-circle-check"></i> Résoudre
+                (click)="resolvePost(post)" [title]="'MOD.BTN_RESOLVE' | translate">
+                <i class="fas fa-circle-check"></i> {{ 'MOD.BTN_RESOLVE' | translate }}
               </button>
               <button class="btn btn-sm btn-mod-reopen" *ngIf="post.isResolved"
-                (click)="unresolvePost(post)" title="Réouvrir l'alerte">
-                <i class="fas fa-rotate-left"></i> Réouvrir
+                (click)="unresolvePost(post)" [title]="'MOD.BTN_REOPEN' | translate">
+                <i class="fas fa-rotate-left"></i> {{ 'MOD.BTN_REOPEN' | translate }}
               </button>
               <button class="btn btn-sm btn-mod-delete" *ngIf="isAdmin()" (click)="deletePost(post)">
-                <i class="fas fa-trash"></i> Supprimer
+                <i class="fas fa-trash"></i> {{ 'COMMON.DELETE' | translate }}
               </button>
             </div>
           </div>

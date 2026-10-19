@@ -5,11 +5,11 @@
       <!-- Header -->
       <div class="form-header animate-fade-in">
         <a routerLink="/" class="back-link">
-          <i class="fas fa-arrow-left"></i> Retour
+          <i class="fas fa-arrow-left"></i> {{ 'POST.BACK' | translate }}
         </a>
         <div class="form-title-block">
-          <h1 class="section-title">Publier un Cas</h1>
-          <p class="section-subtitle">Votre témoignage sera relu et modéré automatiquement pour protéger la communauté.</p>
+          <h1 class="section-title">{{ 'POST.FORM_TITLE' | translate }}</h1>
+          <p class="section-subtitle">{{ 'POST.FORM_SUBTITLE' | translate }}</p>
         </div>
       </div>
 
@@ -23,37 +23,37 @@
         <div class="notif-report offline-queued-msg" *ngIf="offlineQueued()">
           <div class="notif-report-header">
             <i class="fas fa-clock"></i>
-            <strong>Post mis en attente</strong>
+            <strong>{{ 'POST.OFFLINE_QUEUED_TITLE' | translate }}</strong>
           </div>
-          <p class="notif-report-hint">Vous êtes hors-ligne. Votre post sera publié automatiquement lorsque vous vous reconnecterez.</p>
-          <p class="notif-report-hint">Redirection dans 2 secondes…</p>
+          <p class="notif-report-hint">{{ 'POST.OFFLINE_QUEUED_DESC' | translate }}</p>
+          <p class="notif-report-hint">{{ 'COMMON.REDIRECT_2S' | translate }}</p>
         </div>
 
         <!-- Succès + Rapport de notification push -->
         <div class="notif-report" *ngIf="success() && notifReport() as r">
           <div class="notif-report-header">
             <i class="fas fa-circle-check"></i>
-            <strong>Publication créée avec succès</strong>
+            <strong>{{ 'POST.SUCCESS_TITLE' | translate }}</strong>
           </div>
           <div class="notif-report-body">
             <div class="notif-stat" [class.good]="r.sent > 0">
               <i class="fas fa-bell"></i>
-              <span>{{ r.sent }} notification{{ r.sent > 1 ? 's' : '' }} envoyée{{ r.sent > 1 ? 's' : '' }}</span>
+              <span>{{ r.sent }} {{ 'POST.NOTIF_SENT' | translate }}</span>
             </div>
             <div class="notif-stat" *ngIf="r.failed > 0" style="color: var(--warning)">
               <i class="fas fa-triangle-exclamation"></i>
-              <span>{{ r.failed }} échec{{ r.failed > 1 ? 's' : '' }}</span>
+              <span>{{ r.failed }} {{ 'POST.NOTIF_FAILED' | translate }}</span>
             </div>
             <div class="notif-stat" *ngIf="r.totalTokens === 0" style="color: var(--text-muted)">
               <i class="fas fa-mobile-screen"></i>
-              <span>Aucun appareil abonné aux notifications</span>
+              <span>{{ 'POST.NO_DEVICE' | translate }}</span>
             </div>
             <div class="notif-stat error" *ngIf="r.error">
               <i class="fas fa-xmark-circle"></i>
-              <span>Erreur FCM : {{ r.error }}</span>
+              <span>{{ 'POST.FCM_ERROR' | translate }} {{ r.error }}</span>
             </div>
           </div>
-          <p class="notif-report-hint">Redirection dans 2 secondes…</p>
+          <p class="notif-report-hint">{{ 'COMMON.REDIRECT_2S' | translate }}</p>
         </div>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -66,10 +66,10 @@
                 <div class="voice-recorder-header">
                   <div class="voice-recorder-label">
                     <i class="fas fa-microphone"></i>
-                    <span>Remplir par note vocale</span>
-                    <span class="voice-badge">IA</span>
+                    <span>{{ 'POST.VOICE_LABEL' | translate }}</span>
+                    <span class="voice-badge">{{ 'POST.VOICE_BADGE_AI' | translate }}</span>
                   </div>
-                  <p class="voice-recorder-hint">Décrivez la situation oralement - le formulaire se remplit automatiquement.</p>
+                  <p class="voice-recorder-hint">{{ 'POST.VOICE_HINT' | translate }}</p>
                 </div>
 
                 <!-- Erreur micro -->
@@ -81,7 +81,7 @@
                 <ng-container *ngIf="recordingState() === 'idle'">
                   <button type="button" class="btn-voice-start" (click)="startVoiceRecording()">
                     <i class="fas fa-microphone"></i>
-                    Enregistrer une description vocale
+                    {{ 'POST.VOICE_START_BTN' | translate }}
                   </button>
                 </ng-container>
 
@@ -93,16 +93,16 @@
                       <i class="fas fa-microphone"></i>
                     </div>
                     <div class="voice-recording-info">
-                      <span class="voice-recording-label">Enregistrement en cours…</span>
+                      <span class="voice-recording-label">{{ 'POST.VOICE_RECORDING' | translate }}</span>
                       <span class="voice-timer">{{ recordingLabel }}</span>
-                      <span class="voice-timer-max">Max 2 min</span>
+                      <span class="voice-timer-max">{{ 'POST.VOICE_MAX' | translate }}</span>
                     </div>
                     <div class="voice-recording-actions">
                       <button type="button" class="btn-voice-stop" (click)="stopVoiceRecording()">
-                        <i class="fas fa-stop"></i> Terminer
+                        <i class="fas fa-stop"></i> {{ 'POST.VOICE_STOP_BTN' | translate }}
                       </button>
                       <button type="button" class="btn-voice-cancel" (click)="cancelVoiceRecording()">
-                        <i class="fas fa-xmark"></i> Annuler
+                        <i class="fas fa-xmark"></i> {{ 'COMMON.CANCEL' | translate }}
                       </button>
                     </div>
                   </div>
@@ -112,14 +112,14 @@
                 <ng-container *ngIf="recordingState() === 'processing'">
                   <div class="voice-processing">
                     <span class="spinner"></span>
-                    <span>L'IA analyse votre message vocal…</span>
+                    <span>{{ 'POST.VOICE_PROCESSING' | translate }}</span>
                   </div>
                 </ng-container>
               </div>
 
               <!-- Type Selection -->
               <div class="type-selector form-group">
-                <label class="form-label">Type de publication <span class="required">*</span></label>
+                <label class="form-label">{{ 'POST.LABEL_TYPE' | translate }} <span class="required">*</span></label>
                 <div class="type-cards">
                   <label *ngFor="let t of postTypes" class="type-card"
                     [class.selected]="form.get('type')?.value === t"
@@ -140,48 +140,48 @@
                 <!-- Description contextuelle selon le type sélectionné -->
                 <div class="type-hint" *ngIf="form.get('type')?.value">
                   <i class="fas fa-circle-info"></i>
-                  {{ postTypeDescriptions[form.get('type')?.value] }}
+                  {{ getTypeDescription(form.get('type')?.value) }}
                 </div>
               </div>
 
               <!-- Title -->
               <div class="form-group">
                 <label class="form-label" for="post-title">
-                  Titre de l'alerte <span class="required">*</span>
+                  {{ 'POST.LABEL_TITLE' | translate }} <span class="required">*</span>
                   <span class="char-count">{{ form.get('title')?.value?.length || 0 }}/150</span>
                 </label>
                 <input id="post-title" type="text" class="form-control"
                   formControlName="title"
-                  placeholder="ex: URGENT – Disparition de Kalinda, 7 ans – Yaoundé Centre">
+                  [placeholder]="'POST.TITLE_PLACEHOLDER' | translate">
                 <span class="form-error" *ngIf="hasError('title', 'required')">
-                  <i class="fas fa-circle-exclamation"></i> Titre requis
+                  <i class="fas fa-circle-exclamation"></i> {{ 'POST.ERR_TITLE_REQUIRED' | translate }}
                 </span>
                 <span class="form-error" *ngIf="hasError('title', 'minlength')">
-                  <i class="fas fa-circle-exclamation"></i> 10 caractères minimum
+                  <i class="fas fa-circle-exclamation"></i> {{ 'POST.ERR_TITLE_MIN' | translate }}
                 </span>
               </div>
 
               <!-- Content -->
               <div class="form-group">
                 <label class="form-label" for="post-content">
-                  Description détaillée <span class="required">*</span>
-                  <span class="char-count">{{ form.get('content')?.value?.length || 0 }} car.</span>
+                  {{ 'POST.LABEL_CONTENT' | translate }} <span class="required">*</span>
+                  <span class="char-count">{{ form.get('content')?.value?.length || 0 }} {{ 'POST.CHARS_ABBREV' | translate }}</span>
                 </label>
                 <textarea id="post-content" class="form-control" rows="8"
                   formControlName="content"
-                  placeholder="Décrivez la situation en détail : date, heure, lieu précis, description physique, circonstances... Plus votre description est précise, plus la communauté peut aider."></textarea>
+                  [placeholder]="'POST.CONTENT_PLACEHOLDER' | translate"></textarea>
                 <span class="form-error" *ngIf="hasError('content', 'required')">
-                  <i class="fas fa-circle-exclamation"></i> Description requise
+                  <i class="fas fa-circle-exclamation"></i> {{ 'POST.ERR_CONTENT_MIN' | translate }}
                 </span>
                 <span class="form-error" *ngIf="hasError('content', 'minlength')">
-                  <i class="fas fa-circle-exclamation"></i> 30 caractères minimum
+                  <i class="fas fa-circle-exclamation"></i> {{ 'POST.ERR_CONTENT_MIN' | translate }}
                 </span>
               </div>
 
               <!-- Location - autocomplete + ville libre validée par IA -->
               <div class="form-group location-group">
                 <label class="form-label" for="post-location">
-                  Localisation <span class="required">*</span>
+                  {{ 'POST.LABEL_LOCATION' | translate }} <span class="required">*</span>
                 </label>
                 <div class="location-input-wrap">
                   <div class="input-icon-wrap" style="flex:1">
@@ -196,7 +196,7 @@
                       (input)="onLocationInput($any($event.target).value)"
                       (blur)="hideSuggestions()"
                       (focus)="onLocationInput(locationInput())"
-                      placeholder="Tapez une ville camerounaise…"
+                      [placeholder]="'POST.LOCATION_PLACEHOLDER' | translate"
                       autocomplete="off">
                     <!-- Icône statut -->
                     <i class="fas fa-check location-status-ico valid" *ngIf="locationValid()"></i>
@@ -208,7 +208,7 @@
                     class="btn-validate-city"
                     *ngIf="locationInput() && !locationValid() && !locationValidating() && locationSuggestions().length === 0"
                     (click)="validateFreeCity()">
-                    <i class="fas fa-wand-magic-sparkles"></i> Valider
+                    <i class="fas fa-wand-magic-sparkles"></i> {{ 'POST.LOCATION_VALIDATE_BTN' | translate }}
                   </button>
                 </div>
 
@@ -227,7 +227,7 @@
                 <!-- Hint validation IA -->
                 <div class="location-ai-hint" *ngIf="locationInput() && !locationValid() && !locationValidating() && locationSuggestions().length === 0 && !locationError()">
                   <i class="fas fa-wand-magic-sparkles"></i>
-                  Ville absente de la liste - cliquez sur <strong>Valider</strong> pour vérification IA.
+                  {{ 'POST.LOCATION_AI_HINT' | translate }}
                 </div>
 
                 <!-- Erreur ville invalide -->
@@ -236,7 +236,7 @@
                 </div>
 
                 <span class="form-error" *ngIf="hasError('location', 'required') && !locationInput()">
-                  <i class="fas fa-circle-exclamation"></i> Localisation requise
+                  <i class="fas fa-circle-exclamation"></i> {{ 'POST.ERR_LOCATION_REQUIRED' | translate }}
                 </span>
               </div>
 
@@ -248,8 +248,8 @@
                     <span class="toggle-track"></span>
                   </div>
                   <div class="anon-label">
-                    <strong>Publier anonymement</strong>
-                    <span>Votre pseudo ne sera pas affiché publiquement</span>
+                    <strong>{{ 'POST.LABEL_ANONYMOUS' | translate }}</strong>
+                    <span>{{ 'POST.ANONYMOUS_HINT' | translate }}</span>
                   </div>
                 </label>
               </div>
@@ -258,12 +258,12 @@
                 <button type="submit" class="btn btn-danger w-full btn-lg" [disabled]="loading()">
                   <span class="spinner" *ngIf="loading()"></span>
                   <ng-container *ngIf="!loading()">
-                    <i class="fas fa-paper-plane"></i> Publier le Cas
+                    <i class="fas fa-paper-plane"></i> {{ 'POST.BTN_PUBLISH' | translate }}
                   </ng-container>
                 </button>
 
                 <a routerLink="/" class="btn btn-ghost w-full" style="text-align:center; margin-top:8px">
-                  Annuler
+                  {{ 'COMMON.CANCEL' | translate }}
                 </a>
               </ng-container>
             </div>
@@ -273,7 +273,7 @@
 
               <!-- Image Upload -->
               <div class="form-group">
-                <label class="form-label">Photo associée (optionnel)</label>
+                <label class="form-label">{{ 'POST.LABEL_IMAGE' | translate }}</label>
 
                 <!-- Drop Zone -->
                 <div class="drop-zone"
@@ -285,9 +285,9 @@
                   (click)="fileInput.click()">
                   <input #fileInput type="file" accept=".jpg,.jpeg,.png" hidden (change)="onFileSelect($event)">
                   <div class="drop-icon"><i class="fas fa-cloud-arrow-up"></i></div>
-                  <p class="drop-title">Glissez une photo ici</p>
-                  <p class="drop-sub">ou <span class="drop-link">cliquez pour sélectionner</span></p>
-                  <p class="drop-hint">JPG, PNG - Max 5 Mo</p>
+                  <p class="drop-title">{{ 'POST.IMAGE_DROP_TITLE' | translate }}</p>
+                  <p class="drop-sub">{{ 'POST.IMAGE_DROP_LINK' | translate }}</p>
+                  <p class="drop-hint">{{ 'POST.IMAGE_DROP_HINT' | translate }}</p>
                 </div>
 
                 <!-- Preview -->
@@ -300,18 +300,18 @@
                       <span class="preview-size">{{ getFileSizeLabel() }}</span>
                     </div>
                     <button type="button" class="preview-remove" (click)="removeImage()">
-                      <i class="fas fa-trash"></i> Supprimer
+                      <i class="fas fa-trash"></i> {{ 'COMMON.DELETE' | translate }}
                     </button>
                   </div>
                 </div>
 
                 <div class="image-analysis-banner" *ngIf="analysisStatus() === 'analyzing'">
                   <span class="spinner"></span>
-                  <span>L'IA analyse votre image pour en extraire les informations et remplir votre formulaire automatiquement...</span>
+                  <span>{{ 'POST.IMAGE_ANALYZING' | translate }}</span>
                 </div>
                 <div class="image-analysis-banner image-analysis-done" *ngIf="analysisStatus() === 'done'">
                   <i class="fas fa-check-circle"></i>
-                  <span>Analyse terminée.</span>
+                  <span>{{ 'POST.IMAGE_ANALYZED' | translate }}</span>
                 </div>
 
                 <div class="alert-banner error" *ngIf="imageError()">
@@ -323,15 +323,15 @@
               <div class="moderation-card">
                 <div class="mod-header">
                   <i class="fas fa-robot"></i>
-                  <strong>Modération automatique</strong>
+                  <strong>{{ 'POST.MODERATION_CARD_TITLE' | translate }}</strong>
                 </div>
                 <ul class="mod-rules">
-                  <li><i class="fas fa-check"></i> Filtre anti-discours haineux</li>
-                  <li><i class="fas fa-check"></i> Protection anti-doxxing</li>
-                  <li><i class="fas fa-check"></i> Blocage des numéros de téléphone</li>
-                  <li><i class="fas fa-check"></i> Modération en temps réel</li>
+                  <li><i class="fas fa-check"></i> {{ 'POST.MOD_RULE1' | translate }}</li>
+                  <li><i class="fas fa-check"></i> {{ 'POST.MOD_RULE2' | translate }}</li>
+                  <li><i class="fas fa-check"></i> {{ 'POST.MOD_RULE3' | translate }}</li>
+                  <li><i class="fas fa-check"></i> {{ 'POST.MOD_RULE4' | translate }}</li>
                 </ul>
-                <p class="mod-note">Votre publication sera analysée automatiquement avant d'être publiée.</p>
+                <p class="mod-note">{{ 'POST.MOD_NOTE' | translate }}</p>
               </div>
 
               <!-- Submit Button -->
@@ -339,12 +339,12 @@
                 <button type="submit" class="btn btn-danger w-full btn-lg" [disabled]="loading()">
                   <span class="spinner" *ngIf="loading()"></span>
                   <ng-container *ngIf="!loading()">
-                    <i class="fas fa-paper-plane"></i> Publier le Cas
+                    <i class="fas fa-paper-plane"></i> {{ 'POST.BTN_PUBLISH' | translate }}
                   </ng-container>
                 </button>
 
                 <a routerLink="/" class="btn btn-ghost w-full" style="text-align:center; margin-top:8px">
-                  Annuler
+                  {{ 'COMMON.CANCEL' | translate }}
                 </a>
               </ng-container>
             </div>

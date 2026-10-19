@@ -1,42 +1,90 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { PostType, Post } from '../models/post.model';
+import { PostType, Post, CreatePostDto } from '../models/post.model';
 import { PostService } from './post.service';
+import { FeedService } from './feed.service';
+import { OfflineDbService } from './offline-db.service';
 
-export interface PendingPost {
+export type QueueKind = 'case' | 'feed';
+export type QueueStatus = 'pending' | 'syncing' | 'failed';
+
+/** Métadonnées communes à toute entrée de la file d'attente */
+export interface PendingQueueMeta {
+  status: QueueStatus;
+  /** Nombre d'échecs cumulés (aide au diagnostic) */
+  attempts: number;
+  error?: string;
+}
+
+/** Publication "cas" (formulaire /posts/new) — optionnellement avec une image */
+export interface PendingCasePost extends PendingQueueMeta {
   tempId: string;
+  kind: 'case';
   title: string;
   content: string;
   location: string;
   type: PostType;
   isAnonymous?: boolean;
+  /** Stockée en IndexedDB, envoyée à la reconnexion */
+  image?: File;
   createdAt: string;
 }
+
+/** Publication de flux (composant feed) — avec médias optionnels */
+export interface PendingFeedPost extends PendingQueueMeta {
+  tempId: string;
+  kind: 'feed';
+  content: string;
+  location?: string;
+  /** Stockés en IndexedDB, envoyés à la reconnexion */
+  media: File[];
+  createdAt: string;
+}
+
+export type PendingPost = PendingCasePost | PendingFeedPost;
 
 @Injectable({ providedIn: 'root' })
 export class OfflineService {
   private readonly SAVED_KEY = 'offline_saved_posts';
-  private readonly PENDING_KEY = 'offline_pending_posts';
 
-  /** Signal interne pour posts en attente — réactif */
-  private _pendingPosts = signal<PendingPost[]>(this.getPendingPosts());
+  /** File d'attente — réactive (chargée depuis IndexedDB à l'init) */
+  private _pendingPosts = signal<PendingPost[]>([]);
 
-  /** Signal interne pour posts sauvegardés — réactif (fix: isSaved réactif) */
+  /** Posts sauvegardés manuellement — réactif (localStorage, données texte) */
   private _savedPosts = signal<Post[]>(this.loadSavedPosts());
 
   /** Statut réseau */
   online = signal(navigator.onLine);
 
-  /** Nombre de posts en attente de sync */
+  /** Une passe de synchro est en cours */
+  syncing = signal(false);
+
+  /** Compteur incrémenté à la fin de chaque passe (permet de rafraîchir les écrans) */
+  syncCompleted = signal(0);
+
+  /** Nombre total de publications en attente (badge navbar) */
   pendingCount = computed(() => this._pendingPosts().length);
 
+  /** Publications de flux en attente (affichage optimiste dans le feed) */
+  pendingFeedPosts = computed<PendingFeedPost[]>(() =>
+    this._pendingPosts().filter((p): p is PendingFeedPost => p.kind === 'feed'),
+  );
+
+  /** Publications "cas" en attente */
+  pendingCasePosts = computed<PendingCasePost[]>(() =>
+    this._pendingPosts().filter((p): p is PendingCasePost => p.kind === 'case'),
+  );
+
   private postService = inject(PostService);
+  private feedService = inject(FeedService);
+  private db = inject(OfflineDbService);
 
   constructor() {
+    void this.hydrateFromDb();
+
     window.addEventListener('online', () => {
       this.online.set(true);
-      // Synchroniser les posts en attente dès que la connexion revient (centralisé ici)
-      this.syncPendingPosts();
+      void this.syncPendingPosts();
     });
     window.addEventListener('offline', () => this.online.set(false));
   }
@@ -75,52 +123,160 @@ export class OfflineService {
     return this._savedPosts().some(p => p._id === postId);
   }
 
-  // ── Posts en attente de sync (création hors-ligne) ──────────────
+  // ── File d'attente (création hors-ligne) ───────────────────────
 
-  queuePost(postData: Omit<PendingPost, 'tempId'>): void {
-    const pending = this.getPendingPosts();
-    const entry: PendingPost = {
-      tempId: 'offline_' + Date.now(),
-      ...postData,
-    };
-    pending.push(entry);
-    localStorage.setItem(this.PENDING_KEY, JSON.stringify(pending));
-    this._pendingPosts.set(pending);
-  }
-
-  getPendingPosts(): PendingPost[] {
+  private async hydrateFromDb(): Promise<void> {
     try {
-      return JSON.parse(localStorage.getItem(this.PENDING_KEY) ?? '[]');
+      const items = await this.db.getAll<PendingPost>();
+      // Une entrée laissée en "syncing" par un onglet fermé repasse en attente
+      const restored = items.map(item =>
+        item.status === 'syncing'
+          ? ({ ...item, status: 'pending' } as PendingPost)
+          : item,
+      );
+      restored.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      this._pendingPosts.set(restored);
+
+      if (this.online() && restored.length > 0) {
+        void this.syncPendingPosts();
+      }
     } catch {
-      return [];
+      // IndexedDB indisponible : on dégrade sans faire planter l'app
     }
   }
 
-  removePendingPost(tempId: string): void {
-    const updated = this.getPendingPosts().filter(p => p.tempId !== tempId);
-    localStorage.setItem(this.PENDING_KEY, JSON.stringify(updated));
-    this._pendingPosts.set(updated);
+  getPendingPosts(): PendingPost[] {
+    return this._pendingPosts();
+  }
+
+  async queueCasePost(
+    data: Omit<PendingCasePost, 'tempId' | 'kind' | 'status' | 'attempts'>,
+  ): Promise<string> {
+    const entry: PendingCasePost = {
+      tempId: this.newTempId(),
+      kind: 'case',
+      status: 'pending',
+      attempts: 0,
+      ...data,
+    };
+    await this.persist(entry);
+    return entry.tempId;
+  }
+
+  async queueFeedPost(
+    data: Omit<PendingFeedPost, 'tempId' | 'kind' | 'status' | 'attempts'>,
+  ): Promise<string> {
+    const entry: PendingFeedPost = {
+      tempId: this.newTempId(),
+      kind: 'feed',
+      status: 'pending',
+      attempts: 0,
+      ...data,
+    };
+    await this.persist(entry);
+    return entry.tempId;
+  }
+
+  async removePendingPost(tempId: string): Promise<void> {
+    this._pendingPosts.update(list => list.filter(p => p.tempId !== tempId));
+    try {
+      await this.db.delete(tempId);
+    } catch {
+      // Best effort : l'entrée est déjà retirée de l'affichage
+    }
+  }
+
+  /** Repasse une entrée en attente et tente immédiatement l'envoi */
+  async retryPending(tempId: string): Promise<void> {
+    this.updateEntry(tempId, { status: 'pending', attempts: 0, error: undefined });
+    if (this.online()) await this.syncPendingPosts();
+  }
+
+  private async persist(entry: PendingPost): Promise<void> {
+    // Mise à jour optimiste de l'UI avant l'écriture disque
+    this._pendingPosts.update(list => [entry, ...list.filter(p => p.tempId !== entry.tempId)]);
+    try {
+      await this.db.put(entry);
+    } catch {
+      this._pendingPosts.update(list => list.filter(p => p.tempId !== entry.tempId));
+      throw new Error('INDEXEDDB_UNAVAILABLE');
+    }
+  }
+
+  private updateEntry(tempId: string, patch: Partial<PendingQueueMeta>): void {
+    this._pendingPosts.update(list =>
+      list.map(item =>
+        item.tempId === tempId ? ({ ...item, ...patch } as PendingPost) : item,
+      ),
+    );
+  }
+
+  private newTempId(): string {
+    return `offline_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
   // ── Synchronisation au retour connexion ────────────────────────
 
   async syncPendingPosts(): Promise<void> {
-    const pending = this.getPendingPosts();
-    for (const post of pending) {
-      try {
-        await firstValueFrom(
-          this.postService.createPost({
-            title: post.title,
-            content: post.content,
-            location: post.location,
-            type: post.type,
-            isAnonymous: post.isAnonymous,
-          })
-        );
-        this.removePendingPost(post.tempId);
-      } catch {
-        // Silencieux : sera retenté à la prochaine reconnexion
+    if (this.syncing() || !this.online()) return;
+
+    const queue = this._pendingPosts()
+      .filter(p => p.status !== 'failed')
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt)); // FIFO
+    if (queue.length === 0) return;
+
+    this.syncing.set(true);
+    try {
+      for (const item of queue) {
+        if (!this.online()) break;
+        const outcome = await this.syncOne(item);
+        // Erreur réseau (status 0) : inutile d'échouer sur tous les suivants,
+        // la reprise se fera au prochain évènement « online ».
+        if (outcome === 'stop') break;
       }
+    } finally {
+      this.syncing.set(false);
+      this.syncCompleted.update(n => n + 1);
+    }
+  }
+
+  /** Résultat d'un envoi : publié / échec (poursuite) / coupure réseau (arrêt) */
+  private async syncOne(item: PendingPost): Promise<'ok' | 'continue' | 'stop'> {
+    this.updateEntry(item.tempId, { status: 'syncing' });
+    try {
+      if (item.kind === 'case') {
+        const dto: CreatePostDto = {
+          title: item.title,
+          content: item.content,
+          location: item.location,
+          type: item.type,
+          isAnonymous: item.isAnonymous,
+        };
+        await firstValueFrom(this.postService.createPost(dto, item.image));
+      } else {
+        const formData = new FormData();
+        formData.append('content', item.content);
+        if (item.location) formData.append('location', item.location);
+        (item.media ?? []).forEach(file => formData.append('media', file, file.name));
+        await firstValueFrom(this.feedService.createPost(formData));
+      }
+      await this.removePendingPost(item.tempId);
+      return 'ok';
+    } catch (err: any) {
+      // `status` absent => erreur locale (ex. modération côté client) : réessayer ne sert à rien.
+      // HTTP 4xx métier (hors 408/429) : idem. Réseau/5xx => réessayer plus tard.
+      const status = err?.status as number | undefined;
+      const permanent =
+        status === undefined
+          ? true
+          : status >= 400 && status < 500 && status !== 408 && status !== 429;
+      this.updateEntry(item.tempId, {
+        status: permanent ? 'failed' : 'pending',
+        attempts: item.attempts + 1,
+        error: String(err?.error?.message ?? err?.message ?? 'SYNC_ERROR'),
+      });
+      if (!permanent && status === 0) return 'stop';
+      return 'continue';
     }
   }
 }

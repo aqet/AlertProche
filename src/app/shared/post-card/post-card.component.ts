@@ -1,15 +1,17 @@
 import { Component, Input, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { Post } from '../../core/models/post.model';
 import { MediaUrlPipe } from '../pipes/media-url.pipe';
 import { AlertStatusBadgeComponent } from '../components/alert-status-badge/alert-status-badge.component';
 import { OfflineService } from '../../core/services/offline.service';
+import { TimeAgoService } from '../../core/services/time-ago.service';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent],
+  imports: [CommonModule, RouterLink, MediaUrlPipe, AlertStatusBadgeComponent, TranslateModule],
   templateUrl: './post-card.component.html',
   styleUrls: ['./post-card.component.css']
 })
@@ -17,6 +19,7 @@ export class PostCardComponent {
   @Input() post!: Post;
 
   private offlineService = inject(OfflineService);
+  private timeAgo = inject(TimeAgoService);
 
   isSaved = computed(() => this.offlineService.isPostSaved(this.post._id));
 
@@ -50,13 +53,6 @@ export class PostCardComponent {
   }
 
   getTimeAgo(dateStr: string): string {
-    const now = new Date();
-    const date = new Date(dateStr);
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diff < 60) return 'À l\'instant';
-    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return date.toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 }

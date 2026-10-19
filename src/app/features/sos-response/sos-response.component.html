@@ -2,7 +2,7 @@
 <div class="sos-resp-page" *ngIf="loading()">
   <div class="sos-resp-loading">
     <div class="spinner"></div>
-    <p>Chargement de l'alerte…</p>
+    <p>{{ 'SOS.LOADING' | translate }}</p>
   </div>
 </div>
 
@@ -10,9 +10,9 @@
 <div class="sos-resp-page" *ngIf="!loading() && error()">
   <div class="sos-resp-error">
     <div class="sos-resp-error-icon"><i class="fas fa-circle-exclamation"></i></div>
-    <h2>Alerte introuvable</h2>
+    <h2>{{ 'SOS.NOT_FOUND' | translate }}</h2>
     <p>{{ error() }}</p>
-    <a routerLink="/" class="btn btn-primary"><i class="fas fa-house"></i> Accueil</a>
+    <a routerLink="/" class="btn btn-primary"><i class="fas fa-house"></i> {{ 'COMMON.BTN_HOME' | translate }}</a>
   </div>
 </div>
 
@@ -33,15 +33,15 @@
         </div>
 
         <div>
-          <h1 class="sos-resp-title" *ngIf="!isResolved">🆘 ALERTE SOS EN COURS</h1>
+          <h1 class="sos-resp-title" *ngIf="!isResolved">{{ 'SOS.ACTIVE_TITLE' | translate }}</h1>
           <h1 class="sos-resp-title sos-title-resolved" *ngIf="isResolved">
-            {{ s.status === 'RESOLVED' ? '✅ Alerte résolue' : '🔕 Alerte annulée' }}
+            {{ s.status === 'RESOLVED' ? ('SOS.RESOLVED_TITLE' | translate) : ('SOS.CANCELLED_TITLE' | translate) }}
           </h1>
           <p class="sos-resp-elapsed" *ngIf="!isResolved">
-            Déclenchée il y a <strong>{{ getElapsed() }}</strong>
+            {{ 'SOS.ELAPSED_PREFIX' | translate }} <strong>{{ getElapsed() }}</strong>
           </p>
           <p class="sos-resp-elapsed" *ngIf="isResolved && s.resolvedAt">
-            Clôturée le {{ s.resolvedAt | date:'dd/MM/yyyy à HH:mm' }}
+            {{ 'SOS.CLOSED_AT' | translate }} {{ s.resolvedAt | date:'dd/MM/yyyy à HH:mm' }}
             <span *ngIf="s.resolvedReason"> - {{ s.resolvedReason }}</span>
           </p>
         </div>
@@ -50,7 +50,7 @@
       <!-- Badge niveau de menace -->
       <div class="sos-threat-badge" [ngClass]="getThreatClass(s.threatLevel)">
         <i class="fas fa-triangle-exclamation"></i>
-        Niveau {{ getThreatLabel(s.threatLevel) }}
+        {{ 'SOS.THREAT_LEVEL_PREFIX' | translate }} {{ getThreatLabel(s.threatLevel) }}
       </div>
     </div>
   </div>
@@ -74,7 +74,7 @@
         <!-- Profil émetteur -->
         <div class="sos-resp-card sos-emitter-card">
           <div class="sos-resp-card-title">
-            <i class="fas fa-user-shield"></i> Personne en danger
+            <i class="fas fa-user-shield"></i> {{ 'SOS.EMITTER_CARD_TITLE' | translate }}
           </div>
           <div class="sos-emitter-profile">
             <div class="sos-emitter-avatar">
@@ -84,15 +84,15 @@
               </span>
             </div>
             <div>
-              <h2 class="sos-emitter-name">{{ s.emitter?.pseudo || 'Utilisateur inconnu' }}</h2>
-              <p class="sos-emitter-label">Personne de confiance liée</p>
+              <h2 class="sos-emitter-name">{{ s.emitter?.pseudo || ('COMMON.UNKNOWN' | translate) }}</h2>
+              <p class="sos-emitter-label">{{ 'SOS.EMITTER_LABEL' | translate }}</p>
             </div>
           </div>
 
           <!-- Transcription vocale si disponible -->
           <div class="sos-voice-transcription" *ngIf="s.voiceTranscription">
             <div class="sos-voice-header">
-              <i class="fas fa-microphone"></i> Message vocal
+              <i class="fas fa-microphone"></i> {{ 'SOS.VOICE_MSG_LABEL' | translate }}
             </div>
             <p class="sos-voice-text">"{{ s.voiceTranscription }}"</p>
           </div>
@@ -101,19 +101,19 @@
         <!-- Position GPS -->
         <div class="sos-resp-card sos-position-card">
           <div class="sos-resp-card-title">
-            <i class="fas fa-location-dot"></i> Dernière position connue
+            <i class="fas fa-location-dot"></i> {{ 'SOS.POSITION_TITLE' | translate }}
             <span class="sos-position-live" *ngIf="!isResolved">
-              <span class="live-dot"></span> Live
+              <span class="live-dot"></span> {{ 'SOS.LIVE_BADGE' | translate }}
             </span>
           </div>
 
           <div class="sos-coords">
             <div class="sos-coord-item">
-              <span class="sos-coord-label">Latitude</span>
+              <span class="sos-coord-label">{{ 'SOS.LAT' | translate }}</span>
               <span class="sos-coord-value">{{ s.latitude | number:'1.5-5' }}</span>
             </div>
             <div class="sos-coord-item">
-              <span class="sos-coord-label">Longitude</span>
+              <span class="sos-coord-label">{{ 'SOS.LON' | translate }}</span>
               <span class="sos-coord-value">{{ s.longitude | number:'1.5-5' }}</span>
             </div>
           </div>
@@ -132,7 +132,7 @@
 
           <button class="btn btn-primary w-full" (click)="openNavigation()">
             <i class="fas fa-diamond-turn-right"></i>
-            Ouvrir dans Google Maps
+            {{ 'SOS.BTN_OPEN_MAPS' | translate }}
           </button>
         </div>
 
@@ -144,20 +144,20 @@
         <!-- ACTIONS - uniquement si SOS actif et pas l'émetteur -->
         <div class="sos-resp-card sos-actions-card" *ngIf="!isResolved && !s.isOwner">
           <div class="sos-resp-card-title">
-            <i class="fas fa-hand-holding-heart"></i> Votre réponse
+            <i class="fas fa-hand-holding-heart"></i> {{ 'SOS.YOUR_RESPONSE_TITLE' | translate }}
           </div>
 
           <!-- Déjà confirmé -->
           <div class="sos-confirmed-state" *ngIf="hasConfirmed()">
             <div class="sos-confirmed-icon"><i class="fas fa-person-running"></i></div>
-            <h3>Vous êtes en route</h3>
-            <p>L'émetteur a été averti que vous arrivez.</p>
+            <h3>{{ 'SOS.CONFIRMED_TITLE' | translate }}</h3>
+            <p>{{ 'SOS.CONFIRMED_DESC' | translate }}</p>
           </div>
 
           <!-- Pas encore confirmé -->
           <div class="sos-action-buttons" *ngIf="!hasConfirmed()">
             <p class="sos-action-desc">
-              {{ s.emitter?.pseudo }} a besoin d'aide. Pouvez-vous intervenir ?
+              {{ s.emitter?.pseudo }} {{ 'SOS.ACTION_DESC' | translate }}
             </p>
             <button
               class="btn-sos-arrive"
@@ -166,7 +166,7 @@
               <span class="spinner" *ngIf="confirming()"></span>
               <ng-container *ngIf="!confirming()">
                 <i class="fas fa-person-running"></i>
-                J'arrive - Je vais aider
+                {{ 'SOS.BTN_ARRIVE' | translate }}
               </ng-container>
             </button>
           </div>
@@ -175,7 +175,7 @@
           <div class="sos-resolve-section">
             <p class="sos-resolve-hint">
               <i class="fas fa-circle-info"></i>
-              Si la personne est en sécurité, vous pouvez clôturer l'alerte.
+              {{ 'SOS.RESOLVE_HINT' | translate }}
             </p>
             <button
               class="btn btn-outline w-full"
@@ -184,7 +184,7 @@
               <span class="spinner" *ngIf="resolving()"></span>
               <ng-container *ngIf="!resolving()">
                 <i class="fas fa-circle-check"></i>
-                Marquer comme résolu
+                {{ 'SOS.BTN_RESOLVE' | translate }}
               </ng-container>
             </button>
           </div>
@@ -193,11 +193,10 @@
         <!-- ACTIONS - émetteur qui voit sa propre page SOS -->
         <div class="sos-resp-card sos-actions-card" *ngIf="!isResolved && s.isOwner">
           <div class="sos-resp-card-title">
-            <i class="fas fa-shield-halved"></i> Votre alerte
+            <i class="fas fa-shield-halved"></i> {{ 'SOS.YOUR_ALERT_TITLE' | translate }}
           </div>
           <p class="sos-action-desc">
-            Votre SOS est actif. Vos contacts ont été notifiés.
-            Si vous êtes en sécurité, clôturez l'alerte.
+            {{ 'SOS.OWNER_DESC' | translate }}
           </p>
           <button
             class="btn btn-primary w-full"
@@ -206,7 +205,7 @@
             <span class="spinner" *ngIf="resolving()"></span>
             <ng-container *ngIf="!resolving()">
               <i class="fas fa-circle-check"></i>
-              Je suis en sécurité
+              {{ 'SOS.BTN_SAFE' | translate }}
             </ng-container>
           </button>
         </div>
@@ -217,17 +216,17 @@
             <i class="fas fa-circle-check" *ngIf="s.status === 'RESOLVED'"></i>
             <i class="fas fa-bell-slash" *ngIf="s.status === 'CANCELLED'"></i>
           </div>
-          <h3>{{ s.status === 'RESOLVED' ? 'Alerte résolue' : 'Alerte annulée' }}</h3>
+          <h3>{{ s.status === 'RESOLVED' ? ('SOS.RESOLVED_TITLE_CARD' | translate) : ('SOS.CANCELLED_TITLE_CARD' | translate) }}</h3>
           <p *ngIf="s.resolvedReason">{{ s.resolvedReason }}</p>
           <a routerLink="/" class="btn btn-outline w-full">
-            <i class="fas fa-house"></i> Retour à l'accueil
+            <i class="fas fa-house"></i> {{ 'COMMON.BTN_HOME' | translate }}
           </a>
         </div>
 
         <!-- Personnes en route -->
         <div class="sos-resp-card sos-responders-card">
           <div class="sos-resp-card-title">
-            <i class="fas fa-people-arrows"></i> Personnes en route
+            <i class="fas fa-people-arrows"></i> {{ 'SOS.RESPONDERS_TITLE' | translate }}
             <span class="sos-responders-count" *ngIf="s.respondingCount > 0">
               {{ s.respondingCount }}
             </span>
@@ -241,14 +240,14 @@
               </div>
               <span class="sos-responder-name">{{ r.pseudo }}</span>
               <span class="sos-responder-status">
-                <i class="fas fa-person-running"></i> En route
+                <i class="fas fa-person-running"></i> {{ 'SOS.RESPONDER_STATUS' | translate }}
               </span>
             </div>
           </div>
 
           <div class="sos-no-responders" *ngIf="s.respondingCount === 0">
             <i class="fas fa-hourglass-half"></i>
-            <p>En attente de réponse…</p>
+            <p>{{ 'SOS.NO_RESPONDERS' | translate }}</p>
           </div>
         </div>
 

@@ -7,24 +7,24 @@
       <div class="brand-logo">
         <img src="logo_alertProche.png" alt="AlertProche" class="brand-img">
       </div>
-      <h1 class="brand-title">AlertProche</h1>
-      <p class="brand-sub">Plateforme de signalement & protection</p>
+      <h1 class="brand-title">{{ 'AUTH.BRAND_TITLE' | translate }}</h1>
+      <p class="brand-sub">{{ 'AUTH.BRAND_SUB' | translate }}</p>
       <div class="brand-features">
         <div class="brand-feat">
           <i class="fas fa-shield-halved"></i>
-          <span>Anonymat garanti</span>
+          <span>{{ 'AUTH.FEAT_ANON' | translate }}</span>
         </div>
         <div class="brand-feat">
           <i class="fas fa-robot"></i>
-          <span>Modération automatique</span>
+          <span>{{ 'AUTH.FEAT_MODERATION' | translate }}</span>
         </div>
         <div class="brand-feat">
           <i class="fas fa-people-group"></i>
-          <span>Communauté citoyenne</span>
+          <span>{{ 'AUTH.FEAT_COMMUNITY' | translate }}</span>
         </div>
         <div class="brand-feat">
           <i class="fas fa-bell"></i>
-          <span>Alertes en temps réel</span>
+          <span>{{ 'AUTH.FEAT_ALERTS' | translate }}</span>
         </div>
       </div>
     </div>
@@ -35,10 +35,10 @@
       <!-- Tabs connexion / inscription -->
       <div class="auth-tabs">
         <button class="auth-tab" [class.active]="mode() === 'login'" (click)="switchMode('login')">
-          <i class="fas fa-right-to-bracket"></i> Se connecter
+          <i class="fas fa-right-to-bracket"></i> {{ 'AUTH.TAB_LOGIN' | translate }}
         </button>
         <button class="auth-tab" [class.active]="mode() === 'register'" (click)="switchMode('register')">
-          <i class="fas fa-user-plus"></i> S'inscrire
+          <i class="fas fa-user-plus"></i> {{ 'AUTH.TAB_REGISTER' | translate }}
         </button>
       </div>
 
@@ -54,17 +54,17 @@
       <form *ngIf="mode() === 'login'" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form animate-fade-in">
 
         <div class="form-field">
-          <label class="form-field-label">Adresse email</label>
+          <label class="form-field-label">{{ 'AUTH.LABEL_EMAIL' | translate }}</label>
           <div class="field-input-wrap">
             <i class="fas fa-envelope field-ico"></i>
-            <input type="email" class="field-input" formControlName="email" placeholder="votre@email.com">
+            <input type="email" class="field-input" formControlName="email" [placeholder]="'AUTH.PLACEHOLDER_EMAIL' | translate">
           </div>
-          <span class="field-error" *ngIf="hasError(loginForm, 'email', 'required')">Email requis</span>
-          <span class="field-error" *ngIf="hasError(loginForm, 'email', 'email')">Email invalide</span>
+          <span class="field-error" *ngIf="hasError(loginForm, 'email', 'required')">{{ 'AUTH.ERR_EMAIL_REQUIRED' | translate }}</span>
+          <span class="field-error" *ngIf="hasError(loginForm, 'email', 'email')">{{ 'AUTH.ERR_EMAIL_INVALID' | translate }}</span>
         </div>
 
         <div class="form-field">
-          <label class="form-field-label">Mot de passe</label>
+          <label class="form-field-label">{{ 'AUTH.LABEL_PASSWORD' | translate }}</label>
           <div class="field-input-wrap">
             <i class="fas fa-lock field-ico"></i>
             <input [type]="showPassword() ? 'text' : 'password'" class="field-input" formControlName="password" placeholder="••••••••">
@@ -72,19 +72,19 @@
               <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
           </div>
-          <span class="field-error" *ngIf="hasError(loginForm, 'password', 'required')">Mot de passe requis</span>
+          <span class="field-error" *ngIf="hasError(loginForm, 'password', 'required')">{{ 'AUTH.ERR_PASSWORD_REQUIRED' | translate }}</span>
         </div>
 
         <button type="submit" class="auth-btn-primary" [disabled]="loading()">
           <span class="spinner" *ngIf="loading()"></span>
           <ng-container *ngIf="!loading()">
-            <i class="fas fa-right-to-bracket"></i> Se connecter
+            <i class="fas fa-right-to-bracket"></i> {{ 'AUTH.BTN_LOGIN' | translate }}
           </ng-container>
         </button>
 
         <p class="auth-switch-link">
-          Pas encore de compte ?
-          <button type="button" class="text-link" (click)="switchMode('register')">S'inscrire gratuitement</button>
+          {{ 'AUTH.SWITCH_TO_REGISTER' | translate }}
+          <button type="button" class="text-link" (click)="switchMode('register')">{{ 'AUTH.SWITCH_TO_REGISTER_LINK' | translate }}</button>
         </p>
       </form>
 
@@ -100,7 +100,7 @@
               <i class="fas fa-check" *ngIf="registerStep() === 'otp' || registerStep() === 'password'"></i>
               <span *ngIf="registerStep() === 'info'">1</span>
             </div>
-            <span class="step-label">Infos</span>
+            <span class="step-label">{{ 'AUTH.STEP1_LABEL' | translate }}</span>
           </div>
           <div class="step-line" [class.step-line-done]="registerStep() === 'otp' || registerStep() === 'password'"></div>
           <div class="step-node"
@@ -110,12 +110,12 @@
               <i class="fas fa-check" *ngIf="registerStep() === 'password'"></i>
               <span *ngIf="registerStep() !== 'password'">2</span>
             </div>
-            <span class="step-label">Vérif.</span>
+            <span class="step-label">{{ 'AUTH.STEP2_LABEL' | translate }}</span>
           </div>
           <div class="step-line" [class.step-line-done]="registerStep() === 'password'"></div>
           <div class="step-node" [class.step-active]="registerStep() === 'password'">
             <div class="step-circle">3</div>
-            <span class="step-label">Mot de passe</span>
+            <span class="step-label">{{ 'AUTH.STEP3_LABEL' | translate }}</span>
           </div>
         </div>
 
@@ -123,34 +123,35 @@
         <form *ngIf="registerStep() === 'info'" [formGroup]="infoForm" (ngSubmit)="onSendOtp()" class="auth-form">
           <div class="step-intro">
             <i class="fas fa-user-circle"></i>
-            Renseignez vos informations pour créer votre compte.
+            {{ 'AUTH.STEP_INTRO' | translate }}
           </div>
           <div class="form-field">
-            <label class="form-field-label">Pseudo unique</label>
+            <label class="form-field-label">{{ 'AUTH.LABEL_PSEUDO' | translate }}</label>
             <div class="field-input-wrap">
               <i class="fas fa-user field-ico"></i>
-              <input type="text" class="field-input" formControlName="pseudo" placeholder="VotrePseudo">
+              <input type="text" class="field-input" formControlName="pseudo" [placeholder]="'AUTH.PLACEHOLDER_PSEUDO' | translate">
             </div>
-            <span class="field-error" *ngIf="hasError(infoForm, 'pseudo', 'required')">Pseudo requis</span>
-            <span class="field-error" *ngIf="hasError(infoForm, 'pseudo', 'minlength')">3 caractères minimum</span>
+            <span class="field-error" *ngIf="hasError(infoForm, 'pseudo', 'required')">{{ 'AUTH.ERR_PSEUDO_REQUIRED' | translate }}</span>
+            <span class="field-error" *ngIf="hasError(infoForm, 'pseudo', 'minlength')">{{ 'AUTH.ERR_PSEUDO_MIN' | translate }}</span>
           </div>
           <div class="form-field">
-            <label class="form-field-label">Adresse email</label>
+            <label class="form-field-label">{{ 'AUTH.LABEL_EMAIL' | translate }}</label>
             <div class="field-input-wrap">
               <i class="fas fa-envelope field-ico"></i>
-              <input type="email" class="field-input" formControlName="email" placeholder="votre@email.com">
+              <input type="email" class="field-input" formControlName="email" [placeholder]="'AUTH.PLACEHOLDER_EMAIL' | translate">
             </div>
-            <span class="field-error" *ngIf="hasError(infoForm, 'email', 'required')">Email requis</span>
-            <span class="field-error" *ngIf="hasError(infoForm, 'email', 'email')">Email invalide</span>
+            <span class="field-error" *ngIf="hasError(infoForm, 'email', 'required')">{{ 'AUTH.ERR_EMAIL_REQUIRED' | translate }}</span>
+            <span class="field-error" *ngIf="hasError(infoForm, 'email', 'email')">{{ 'AUTH.ERR_EMAIL_INVALID' | translate }}</span>
           </div>
           <button type="submit" class="auth-btn-primary" [disabled]="loading()">
             <span class="spinner" *ngIf="loading()"></span>
             <ng-container *ngIf="!loading()">
-              <i class="fas fa-paper-plane"></i> Envoyer le code
+              <i class="fas fa-paper-plane"></i> {{ 'AUTH.BTN_SEND_CODE' | translate }}
             </ng-container>
           </button>
           <p class="auth-switch-link">
-            Déjà un compte ? <button type="button" class="text-link" (click)="switchMode('login')">Se connecter</button>
+            {{ 'AUTH.SWITCH_TO_LOGIN' | translate }}
+            <button type="button" class="text-link" (click)="switchMode('login')">{{ 'AUTH.SWITCH_TO_LOGIN_LINK' | translate }}</button>
           </p>
         </form>
 
@@ -159,27 +160,27 @@
           <div class="otp-box">
             <i class="fas fa-envelope-open-text otp-icon"></i>
             <div>
-              <strong>Code envoyé sur votre email</strong>
-              <p>Saisissez le code à 5 chiffres reçu. Valable 10 minutes.</p>
+              <strong>{{ 'AUTH.OTP_TITLE' | translate }}</strong>
+              <p>{{ 'AUTH.OTP_DESC' | translate }}</p>
             </div>
           </div>
           <div class="form-field">
-            <label class="form-field-label">Code de vérification</label>
+            <label class="form-field-label">{{ 'AUTH.LABEL_OTP' | translate }}</label>
             <input type="text" inputmode="numeric" maxlength="5" class="otp-input"
-              formControlName="code" placeholder="_ _ _ _ _" autocomplete="one-time-code">
-            <span class="field-error" *ngIf="hasError(otpForm, 'code', 'pattern')">Le code doit contenir 5 chiffres</span>
+              formControlName="code" [placeholder]="'AUTH.PLACEHOLDER_OTP' | translate" autocomplete="one-time-code">
+            <span class="field-error" *ngIf="hasError(otpForm, 'code', 'pattern')">{{ 'AUTH.ERR_OTP_PATTERN' | translate }}</span>
           </div>
           <button type="submit" class="auth-btn-primary" [disabled]="loading()">
             <span class="spinner" *ngIf="loading()"></span>
             <ng-container *ngIf="!loading()">
-              <i class="fas fa-check-circle"></i> Vérifier le code
+              <i class="fas fa-check-circle"></i> {{ 'AUTH.BTN_VERIFY' | translate }}
             </ng-container>
           </button>
           <div class="resend-row">
-            <span>Pas reçu ?</span>
+            <span>{{ 'AUTH.RESEND_NOT_RECEIVED' | translate }}</span>
             <button type="button" class="text-link" (click)="onResendOtp()" [disabled]="resendCountdown() > 0">
-              <span *ngIf="resendCountdown() === 0">Renvoyer</span>
-              <span *ngIf="resendCountdown() > 0">Renvoyer dans {{ resendCountdown() }}s</span>
+              <span *ngIf="resendCountdown() === 0">{{ 'AUTH.RESEND' | translate }}</span>
+              <span *ngIf="resendCountdown() > 0">{{ 'AUTH.RESEND_COUNTDOWN' | translate : { count: resendCountdown() } }}</span>
             </button>
           </div>
         </form>
@@ -189,12 +190,12 @@
           <div class="otp-box otp-box-success">
             <i class="fas fa-circle-check otp-icon"></i>
             <div>
-              <strong>Email vérifié !</strong>
-              <p>Choisissez un mot de passe pour finaliser votre inscription.</p>
+              <strong>{{ 'AUTH.EMAIL_VERIFIED' | translate }}</strong>
+              <p>{{ 'AUTH.EMAIL_VERIFIED_DESC' | translate }}</p>
             </div>
           </div>
           <div class="form-field">
-            <label class="form-field-label">Mot de passe</label>
+            <label class="form-field-label">{{ 'AUTH.LABEL_PASSWORD' | translate }}</label>
             <div class="field-input-wrap">
               <i class="fas fa-lock field-ico"></i>
               <input [type]="showPassword() ? 'text' : 'password'" class="field-input" formControlName="password" placeholder="••••••••">
@@ -202,44 +203,44 @@
                 <i class="fas" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
               </button>
             </div>
-            <span class="field-error" *ngIf="hasError(passwordForm, 'password', 'minlength')">6 caractères minimum</span>
+            <span class="field-error" *ngIf="hasError(passwordForm, 'password', 'minlength')">{{ 'AUTH.ERR_PASSWORD_MIN' | translate }}</span>
           </div>
           <div class="form-field">
-            <label class="form-field-label">Confirmer le mot de passe</label>
+            <label class="form-field-label">{{ 'AUTH.LABEL_CONFIRM_PASSWORD' | translate }}</label>
             <div class="field-input-wrap">
               <i class="fas fa-lock field-ico"></i>
               <input type="password" class="field-input" formControlName="confirmPassword" placeholder="••••••••">
             </div>
-            <span class="field-error" *ngIf="passwordForm.touched && passwordForm.hasError('passwordMismatch')">Les mots de passe ne correspondent pas</span>
+            <span class="field-error" *ngIf="passwordForm.touched && passwordForm.hasError('passwordMismatch')">{{ 'AUTH.ERR_PASSWORD_MISMATCH' | translate }}</span>
           </div>
           <div class="form-field">
-            <label class="form-field-label">Localisation</label>
+            <label class="form-field-label">{{ 'AUTH.LABEL_LOCATION' | translate }}</label>
             <div class="field-input-wrap">
               <i class="fas fa-location-dot field-ico"></i>
               <select class="field-input" formControlName="location">
-                <option value="">-- Sélectionnez une ville --</option>
+                <option value="">{{ 'AUTH.PLACEHOLDER_CITY' | translate }}</option>
                 <option *ngFor="let city of camerounCities" [value]="city">{{ city }}</option>
               </select>
             </div>
           </div>
           <div class="privacy-notice">
             <i class="fas fa-shield-halved"></i>
-            <p>Vos données sont protégées. Publication anonyme possible à tout moment.
-              <a routerLink="/confidentialite" target="_blank">Lire la politique</a>
+            <p>{{ 'AUTH.PRIVACY_NOTE' | translate }}
+              <a routerLink="/confidentialite" target="_blank">{{ 'AUTH.PRIVACY_LINK' | translate }}</a>
             </p>
           </div>
           <div class="terms-row">
             <label class="checkbox-row">
               <input type="checkbox" formControlName="acceptTerms">
               <span class="checkbox-box"></span>
-              J'accepte la <a routerLink="/confidentialite" target="_blank" class="text-link">politique de confidentialité</a>
+              {{ 'AUTH.LABEL_ACCEPT_TERMS' | translate }}
             </label>
-            <span class="field-error" *ngIf="hasError(passwordForm, 'acceptTerms', 'required')">Vous devez accepter la charte</span>
+            <span class="field-error" *ngIf="hasError(passwordForm, 'acceptTerms', 'required')">{{ 'AUTH.ERR_ACCEPT_TERMS' | translate }}</span>
           </div>
           <button type="submit" class="auth-btn-primary" [disabled]="loading()">
             <span class="spinner" *ngIf="loading()"></span>
             <ng-container *ngIf="!loading()">
-              <i class="fas fa-user-plus"></i> Créer mon compte
+              <i class="fas fa-user-plus"></i> {{ 'AUTH.BTN_CREATE_ACCOUNT' | translate }}
             </ng-container>
           </button>
         </form>
@@ -247,7 +248,7 @@
       </div>
 
       <p class="auth-secure-note">
-        <i class="fas fa-lock"></i> Connexion sécurisée SSL
+        <i class="fas fa-lock"></i> {{ 'AUTH.SECURE_NOTE' | translate }}
       </p>
     </div>
   </div>

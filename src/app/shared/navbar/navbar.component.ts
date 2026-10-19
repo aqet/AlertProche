@@ -1,14 +1,16 @@
 import { Component, computed, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgIf } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { OfflineService } from '../../core/services/offline.service';
+import { LanguageService } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, NgIf ],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NgIf, TranslateModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
@@ -36,6 +38,7 @@ export class NavbarComponent {
     public auth: AuthService,
     public theme: ThemeService,
     public offlineService: OfflineService,
+    public lang: LanguageService,
   ) {
     this.checkMobile();
   }
@@ -70,5 +73,9 @@ export class NavbarComponent {
   logout() {
     this.auth.logout();
     this.closeMenu();
+  }
+
+  toggleLang(): void {
+    this.lang.setLanguage(this.lang.currentLang() === 'fr' ? 'en' : 'fr');
   }
 }

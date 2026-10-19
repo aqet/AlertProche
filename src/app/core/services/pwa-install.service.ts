@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 export type InstallPlatform = 'android' | 'ios' | 'desktop' | 'already-installed';
 
@@ -12,6 +13,8 @@ export class PwaInstallService {
 
   /** Contrôle la modale iOS */
   showIosModal = signal(false);
+
+  private translate = inject(TranslateService);
 
   constructor() {
     // Capturer l'événement beforeinstallprompt (Android/Chrome/Edge)
@@ -52,12 +55,10 @@ export class PwaInstallService {
 
   /** Libellé et icône du bouton selon la plateforme */
   get buttonLabel(): string {
-    switch (this.platform) {
-      case 'ios':             return 'Installer l\'app';
-      case 'android':         return 'Installer l\'app';
-      case 'already-installed': return 'App installée';
-      default:                return 'Installer l\'app';
+    if (this.platform === 'already-installed') {
+      return this.translate.instant('HOME.BTN_INSTALLED_APP');
     }
+    return this.translate.instant('HOME.BTN_INSTALL_APP');
   }
 
   get buttonIcon(): string {

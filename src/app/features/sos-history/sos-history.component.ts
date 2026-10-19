@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SosService, SosHistory, SosHistoryItem } from '../../core/services/sos.service';
 
 type HistoryTab = 'emitted' | 'responded' | 'received';
@@ -8,12 +9,13 @@ type HistoryTab = 'emitted' | 'responded' | 'received';
 @Component({
   selector: 'app-sos-history',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslateModule],
   templateUrl: './sos-history.component.html',
   styleUrls:  ['./sos-history.component.css'],
 })
 export class SosHistoryComponent implements OnInit {
   private sosService = inject(SosService);
+  private translate  = inject(TranslateService);
 
   history      = signal<SosHistory | null>(null);
   loading      = signal(true);
@@ -35,7 +37,8 @@ export class SosHistoryComponent implements OnInit {
   setTab(tab: HistoryTab): void { this.activeTab.set(tab); }
 
   getStatusLabel(s: string): string {
-    return { ACTIVE: 'En cours', RESOLVED: 'Résolu', CANCELLED: 'Annulé' }[s] ?? s;
+    const key = { ACTIVE: 'STATUS_ACTIVE', RESOLVED: 'STATUS_RESOLVED', CANCELLED: 'STATUS_CANCELLED' }[s];
+    return key ? this.translate.instant(`SOS_HIST.${key}`) : s;
   }
 
   getStatusClass(s: string): string {
@@ -47,7 +50,8 @@ export class SosHistoryComponent implements OnInit {
   }
 
   getThreatLabel(l?: string): string {
-    return { LOW: 'Faible', MEDIUM: 'Modéré', HIGH: 'Élevé', CRITICAL: 'Critique' }[l ?? 'MEDIUM'] ?? 'Modéré';
+    const key = { LOW: 'THREAT_LOW', MEDIUM: 'THREAT_MEDIUM', HIGH: 'THREAT_HIGH', CRITICAL: 'THREAT_CRITICAL' }[l ?? 'MEDIUM'];
+    return key ? this.translate.instant(`SOS.${key}`) : this.translate.instant('SOS.THREAT_MEDIUM');
   }
 
   getThreatClass(l?: string): string {
@@ -58,7 +62,8 @@ export class SosHistoryComponent implements OnInit {
   }
 
   getRoleLabel(role: string): string {
-    return { emitted: '🆘 Émis par moi', responded: '🏃 Intervenu', received: '🔔 Reçu' }[role] ?? role;
+    const key = { emitted: 'ROLE_EMITTED', responded: 'ROLE_RESPONDED', received: 'ROLE_RECEIVED' }[role];
+    return key ? this.translate.instant(`SOS_HIST.${key}`) : role;
   }
 
   getDuration(createdAt: string, resolvedAt?: string): string {
@@ -67,7 +72,10 @@ export class SosHistoryComponent implements OnInit {
     );
     if (diff < 60)   return `${diff}s`;
     if (diff < 3600) return `${Math.floor(diff / 60)} min`;
-    return `${Math.floor(diff / 3600)} h ${Math.floor((diff % 3600) / 60)} min`;
+    return this.translate.instant('COMMON.DURATION_HM', {
+      h: Math.floor(diff / 3600),
+      m: Math.floor((diff % 3600) / 60),
+    });
   }
 
   getMapsUrl(lat: number, lng: number): string {

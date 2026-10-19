@@ -2,6 +2,7 @@ import {
   Component, OnInit, OnDestroy, signal, computed, inject, NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SosService } from '../../../core/services/sos.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -20,7 +21,7 @@ const CANCEL_DURATION = 5000;  // 5 secondes de décompte avant envoi
 @Component({
   selector: 'app-sos-floating-button',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './sos-floating-button.component.html',
   styleUrls:   ['./sos-floating-button.component.css'],
 })
@@ -30,6 +31,7 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
   private notifService  = inject(NotificationService);
   private permService   = inject(PermissionService);
   private zone          = inject(NgZone);
+  private translate     = inject(TranslateService);
 
   // ── État ────────────────────────────────────────────────────────────────
   state            = signal<SosState>('idle');
@@ -128,7 +130,7 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
 
     this.sosService.resolve(id, 'Je suis en sécurité').subscribe({
       next: () => this.resetToIdle(),
-      error: () => this.errorMsg.set('Erreur lors de la clôture.'),
+      error: () => this.errorMsg.set(this.translate.instant('SOS_FAB.ERR_CLOSE')),
     });
   }
 
@@ -181,7 +183,7 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.zone.run(() => {
-          this.errorMsg.set('Erreur lors du déclenchement SOS. Vérifiez votre connexion.');
+          this.errorMsg.set(this.translate.instant('SOS_FAB.ERR_TRIGGER'));
         });
       },
     });
@@ -241,7 +243,9 @@ export class SosFloatingButtonComponent implements OnInit, OnDestroy {
     const lat = this.lastPosition?.lat ?? 0;
     const lng = this.lastPosition?.lng ?? 0;
     const msg = encodeURIComponent(
-      `🆘 SOS AlertProche ! J'ai besoin d'aide. Dernière position connue : https://maps.google.com/?q=${lat},${lng}`,
+      this.translate.instant('SOS_FAB.SMS_MSG', {
+        position: `https://maps.google.com/?q=${lat},${lng}`,
+      }),
     );
     window.open(`sms:?body=${msg}`, '_system');
     this.resetToIdle();

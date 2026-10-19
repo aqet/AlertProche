@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { PostType } from '../../core/models/post.model';
 import { TrackingService } from '../../core/services/tracking.service';
@@ -17,7 +18,7 @@ import { OfflineService } from '../../core/services/offline.service';
 @Component({
   selector: 'app-post-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.css'],
 })
@@ -79,13 +80,18 @@ export class PostFormComponent implements OnInit, OnDestroy {
     "Appel à l'aide",
   ];
 
-  postTypeDescriptions: Record<string, string> = {
-    Disparition: 'Personne disparue - enfant, adulte, personne âgée',
-    Abus: 'Maltraitance, exploitation, violence sur mineur ou personne vulnérable',
-    Prevention: 'Sensibilisation, guide, information utile à la communauté',
-    "Appel à l'aide":
-      "Personne à l'hôpital sans famille identifiée, personne en détresse, famille introuvable",
-  };
+  private translateSvc = inject(TranslateService);
+
+  getTypeDescription(type: string): string {
+    const keyMap: Record<string, string> = {
+      'Disparition':    'POST.TYPE_DESC_DISPARITION',
+      'Abus':           'POST.TYPE_DESC_ABUS',
+      'Prevention':     'POST.TYPE_DESC_PREVENTION',
+      "Appel à l'aide": 'POST.TYPE_DESC_APPEL',
+    };
+    const key = keyMap[type];
+    return key ? this.translateSvc.instant(key) : '';
+  }
 
   camerounCities = [
     'National',
@@ -255,13 +261,13 @@ export class PostFormComponent implements OnInit, OnDestroy {
     this.imageError.set('');
     if (!this.ALLOWED_TYPES.includes(file.type)) {
       this.imageError.set(
-        'Format non supporté. Utilisez JPG ou PNG uniquement.',
+        this.translateSvc.instant('POST.IMAGE_FORMAT'),
       );
       return;
     }
     if (file.size > this.MAX_SIZE) {
       this.imageError.set(
-        "L'image dépasse 5 Mo. Veuillez choisir une image plus légère.",
+        this.translateSvc.instant('POST.IMAGE_SIZE'),
       );
       return;
     }
@@ -377,11 +383,11 @@ export class PostFormComponent implements OnInit, OnDestroy {
         this.locationError.set('');
       } else {
         this.locationValid.set(false);
-        this.locationError.set(`"${city}" ne semble pas être une localité valide. Veuillez vérifier le nom ou choisir une ville dans la liste.`);
+        this.locationError.set(this.translateSvc.instant('POST.LOCATION_INVALID', { city }));
         this.form.get('location')?.setValue('');
       }
     } catch {
-      this.locationError.set('Impossible de valider la ville. Veuillez réessayer.');
+      this.locationError.set(this.translateSvc.instant('POST.LOCATION_VALIDATE_ERR'));
     } finally {
       this.locationValidating.set(false);
     }
@@ -408,7 +414,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
         if (this.recordingSeconds() >= 120) this.stopVoiceRecording();
       }, 1000);
     } catch (err: any) {
-      this.recordingError.set(err?.message || 'Impossible d\'accéder au microphone.');
+      this.recordingError.set(err?.message || this.translateSvc.instant('AUDIO.MIC_ACCESS_ERROR'));
       this.recordingState.set('idle');
     }
   }
@@ -426,7 +432,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
       const parsed: ParsedAudioAlertDto = await this.postService.parseAudio(audioBlob);
       this.applyAudioResult(parsed);
     } catch (err: any) {
-      this.recordingError.set(err?.message || 'Erreur lors de l\'analyse vocale. Veuillez réessayer.');
+      this.recordingError.set(err?.message || this.translateSvc.instant('POST.VOICE_ERR'));
     } finally {
       this.recordingState.set('idle');
     }
@@ -473,27 +479,9 @@ export class PostFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Mode hors-ligne : mettre le post en attente
+    // Mode hors-ligne : mettre le post (image comprise) en file d'attente
     if (!this.offlineService.online()) {
-      // Avertir l'utilisateur si une image est sélectionnée (l'image sera perdue)
-      if (this.selectedFile()) {
-        this.error.set(
-          "Vous êtes hors-ligne. L'image jointe ne peut pas être sauvegardée hors-ligne. Supprimez l'image pour mettre votre post en attente, ou attendez d'être reconnecté."
-        );
-        return;
-      }
-      const v = this.form.value;
-      this.offlineService.queuePost({
-        title: v.title,
-        content: v.content,
-        location: v.location,
-        type: v.type,
-        isAnonymous: v.isAnonymous ?? false,
-        createdAt: new Date().toISOString(),
-      });
-      this.offlineQueued.set(true);
-      this.error.set('');
-      setTimeout(() => this.router.navigate(['/']), 2500);
+      this.enqueueOffline();
       return;
     }
 
@@ -520,13 +508,42 @@ export class PostFormComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.loading.set(false);
-          console.log(err);
+
+          // Perte de connexion en cours d'envoi : basculer en file d'attente
+          if (err?.status === 0) {
+            this.enqueueOffline();
+            return;
+          }
 
           this.error.set(
-            err ||
-              'Une erreur est survenue. Vérifiez votre texte et réessayez.',
+            err?.error?.message ||
+              err?.message ||
+              this.translateSvc.instant('POST.ERR_SUBMIT'),
           );
         },
+      });
+  }
+
+  /** Met le post en file d'attente hors-ligne (image stockée en IndexedDB) */
+  private enqueueOffline(): void {
+    const v = this.form.value;
+    this.offlineService
+      .queueCasePost({
+        title: v.title,
+        content: v.content,
+        location: v.location,
+        type: v.type,
+        isAnonymous: v.isAnonymous ?? false,
+        image: this.selectedFile() ?? undefined,
+        createdAt: new Date().toISOString(),
+      })
+      .then(() => {
+        this.offlineQueued.set(true);
+        this.error.set('');
+        setTimeout(() => this.router.navigate(['/']), 2500);
+      })
+      .catch(() => {
+        this.error.set(this.translateSvc.instant('OFFLINE.STORAGE_ERROR'));
       });
   }
 

@@ -4,7 +4,7 @@
     <div class="error-state">
       <i class="fas fa-circle-exclamation"></i>
       <h2>{{ error() }}</h2>
-      <a routerLink="/" class="btn btn-outline btn-sm">Retour à l'accueil</a>
+      <a routerLink="/" class="btn btn-outline btn-sm">{{ 'POST.BACK_TO_FEED' | translate }}</a>
     </div>
   </div>
 </div>
@@ -18,20 +18,20 @@
 
         <!-- Back + Actions -->
         <div class="detail-topbar">
-          <a routerLink="/" class="back-link"><i class="fas fa-arrow-left"></i> Retour au flux</a>
+          <a routerLink="/" class="back-link"><i class="fas fa-arrow-left"></i> {{ 'POST.BACK_TO_FEED' | translate }}</a>
           <div class="topbar-actions">
             <!-- Share button with feedback -->
             <button class="btn btn-ghost btn-sm" (click)="sharePost()" [class.btn-success]="shareSuccess()">
               <i class="fas" [ngClass]="shareSuccess() ? 'fa-check' : 'fa-share-nodes'"></i>
-              {{ shareSuccess() ? 'Lien copié !' : 'Partager' }}
+              {{ shareSuccess() ? ('POST.BTN_SHARED' | translate) : ('POST.BTN_SHARE' | translate) }}
             </button>
             <!-- Report button -->
             <button class="btn btn-ghost btn-sm btn-report"
               (click)="openReportModal()"
               [disabled]="isAlreadyReported()"
-              [title]="isAlreadyReported() ? 'Déjà signalé' : 'Signaler cette publication'">
+              [title]="isAlreadyReported() ? ('POST.ALREADY_REPORTED' | translate) : ('POST.BTN_REPORT' | translate)">
               <i class="fas fa-flag"></i>
-              {{ isAlreadyReported() ? 'Signalé' : 'Signaler' }}
+              {{ isAlreadyReported() ? ('POST.ALREADY_REPORTED' | translate) : ('POST.BTN_REPORT' | translate) }}
             </button>
             <!-- Boutons résolution - visibles uniquement si l'utilisateur peut résoudre -->
             <ng-container *ngIf="canResolve()">
@@ -42,7 +42,7 @@
                 [disabled]="resolveLoading()">
                 <span class="spinner" *ngIf="resolveLoading()"></span>
                 <span *ngIf="!resolveLoading()">
-                  <i class="fas fa-circle-check"></i> Marquer résolue
+                  <i class="fas fa-circle-check"></i> {{ 'POST.BTN_MARK_RESOLVED' | translate }}
                 </span>
               </button>
               <!-- Réouvrir -->
@@ -52,7 +52,7 @@
                 [disabled]="resolveLoading()">
                 <span class="spinner" *ngIf="resolveLoading()"></span>
                 <span *ngIf="!resolveLoading()">
-                  <i class="fas fa-rotate-left"></i> Réouvrir
+                  <i class="fas fa-rotate-left"></i> {{ 'POST.BTN_REOPEN' | translate }}
                 </span>
               </button>
             </ng-container>
@@ -67,10 +67,10 @@
           <!-- Badge statut résolution -->
           <app-alert-status-badge [post]="post()!" [showDate]="true"></app-alert-status-badge>
           <span class="text-muted small ms-2" *ngIf="post()!.isResolved && post()!.resolvedBy">
-            <i class="fas fa-user-check"></i> Résolu par {{ post()!.resolvedBy }}
+            <i class="fas fa-user-check"></i> {{ 'POST.RESOLVED_BY' | translate }} {{ post()!.resolvedBy }}
           </span>
           <div class="pulse-indicator" *ngIf="post()!.type === 'Disparition' && !post()!.isResolved">
-            <span class="pulse-dot"></span> Alerte active
+            <span class="pulse-dot"></span> {{ 'POST.BADGE_ACTIVE_ALERT' | translate }}
           </div>
         </div>
 
@@ -81,7 +81,7 @@
         <div class="detail-infobar">
           <span class="info-item">
             <i class="fas fa-user"></i>
-            {{ post()!.isAnonymous ? 'Anonyme' : post()!.authorPseudo }}
+            {{ post()!.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : post()!.authorPseudo }}
           </span>
           <span class="info-item">
             <i class="fas fa-location-dot"></i> {{ post()!.location }}
@@ -90,14 +90,14 @@
             <i class="fas fa-clock"></i> {{ getTimeAgo(post()!.createdAt) }}
           </span>
           <span class="info-item">
-            <i class="fas fa-comment"></i> {{ post()!.commentCount || comments().length }} commentaires
+            <i class="fas fa-comment"></i> {{ post()!.commentCount || comments().length }} {{ 'COMMON.COMMENTS_COUNT' | translate }}
           </span>
         </div>
 
         <!-- Image -->
         <div class="detail-image" *ngIf="post()!.image_url" (click)="openImageModal()">
           <img [src]="post()!.image_url | mediaUrl" [alt]="post()!.title" class="detail-img">
-          <div class="image-zoom-hint"><i class="fas fa-magnifying-glass-plus"></i> Agrandir</div>
+          <div class="image-zoom-hint"><i class="fas fa-magnifying-glass-plus"></i></div>
         </div>
 
         <!-- Content -->
@@ -109,8 +109,8 @@
         <div class="detail-cta" *ngIf="post()!.type === 'Disparition'">
           <div class="cta-icon"><i class="fas fa-phone-volume"></i></div>
           <div class="cta-body">
-            <strong>Vous avez une information ?</strong>
-            <p>Contactez les forces de l'ordre ou laissez un commentaire ci-dessous. Chaque information compte.</p>
+            <strong>{{ 'POST.CTA_DISPARITION_TITLE' | translate }}</strong>
+            <p>{{ 'POST.CTA_DISPARITION_DESC' | translate }}</p>
           </div>
         </div>
 
@@ -118,8 +118,8 @@
         <div class="detail-cta detail-cta-appel" *ngIf="post()!.type === 'Appel à l\'aide'">
           <div class="cta-icon cta-icon-appel"><i class="fas fa-hand-holding-heart"></i></div>
           <div class="cta-body">
-            <strong>Vous pouvez aider à retrouver cette famille</strong>
-            <p>Si vous reconnaissez cette personne ou connaissez sa famille, laissez un commentaire ou contactez l'établissement concerné. Votre aide peut changer une vie.</p>
+            <strong>{{ 'POST.CTA_APPEL_TITLE' | translate }}</strong>
+            <p>{{ 'POST.CTA_APPEL_DESC' | translate }}</p>
           </div>
         </div>
 
@@ -129,14 +129,14 @@
         <section class="comments-section">
           <h2 class="comments-title">
             <i class="fas fa-comments"></i>
-            Espace d'Échange
+            {{ 'POST.COMMENT_TITLE' | translate }}
             <span class="comments-count">{{ comments().length }}</span>
           </h2>
 
           <!-- Comment Form -->
           <div class="comment-form-wrap" *ngIf="isAuth(); else loginPrompt">
             <div class="alert-banner success" *ngIf="commentSuccess()">
-              <i class="fas fa-circle-check"></i> Commentaire publié avec succès.
+              <i class="fas fa-circle-check"></i> {{ 'POST.BTN_COMMENT' | translate }}
             </div>
             <div class="alert-banner error" *ngIf="commentError()">
               <i class="fas fa-circle-exclamation"></i> {{ commentError() }}
@@ -151,18 +151,18 @@
                 <div class="comment-input-body">
                   <textarea class="form-control comment-textarea" rows="3"
                     formControlName="content"
-                    placeholder="Partagez une information, un soutien ou un conseil..."></textarea>
+                    [placeholder]="'POST.COMMENT_PLACEHOLDER' | translate"></textarea>
                   <span class="form-error" *ngIf="commentForm.get('content')?.touched && commentForm.get('content')?.invalid">
-                    <i class="fas fa-circle-exclamation"></i> 10 caractères minimum
+                    <i class="fas fa-circle-exclamation"></i>
                   </span>
                   <div class="comment-form-actions">
                     <label class="anon-check">
                       <input type="checkbox" formControlName="isAnonymous">
-                      <span>Anonyme</span>
+                      <span>{{ 'COMMON.ANONYMOUS' | translate }}</span>
                     </label>
                     <button type="submit" class="btn btn-primary btn-sm" [disabled]="submittingComment()">
                       <span class="spinner" *ngIf="submittingComment()"></span>
-                      <span *ngIf="!submittingComment()"><i class="fas fa-paper-plane"></i> Envoyer</span>
+                      <span *ngIf="!submittingComment()"><i class="fas fa-paper-plane"></i> {{ 'POST.BTN_COMMENT' | translate }}</span>
                     </button>
                   </div>
                 </div>
@@ -173,14 +173,13 @@
           <ng-template #loginPrompt>
             <div class="login-prompt">
               <i class="fas fa-lock"></i>
-              <p>Connectez-vous pour participer à l'espace d'échange.</p>
-              <a routerLink="/auth" class="btn btn-outline btn-sm">Se connecter</a>
+              <a routerLink="/auth" class="btn btn-outline btn-sm">{{ 'AUTH.BTN_LOGIN' | translate }}</a>
             </div>
           </ng-template>
 
           <!-- Comments Loading -->
           <div class="comments-loading" *ngIf="commentsLoading()">
-            <div class="spinner"></div> Chargement des commentaires...
+            <div class="spinner"></div> {{ 'COMMON.LOADING' | translate }}
           </div>
 
           <!-- Comments List -->
@@ -191,9 +190,9 @@
               </div>
               <div class="comment-body">
                 <div class="comment-header">
-                  <span class="comment-author">{{ c.isAnonymous ? 'Anonyme' : c.authorPseudo }}</span>
+                  <span class="comment-author">{{ c.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : c.authorPseudo }}</span>
                   <span class="comment-time">{{ getTimeAgo(c.createdAt) }}</span>
-                  <button class="comment-delete" *ngIf="canDeleteComment(c)" (click)="deleteComment(c._id)" title="Supprimer">
+                  <button class="comment-delete" *ngIf="canDeleteComment(c)" (click)="deleteComment(c._id)" [title]="'COMMON.DELETE' | translate">
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>
@@ -203,7 +202,7 @@
 
             <div class="no-comments" *ngIf="comments().length === 0">
               <i class="fas fa-comment-slash"></i>
-              <p>Aucun commentaire pour l'instant. Soyez le premier à réagir.</p>
+              <p>{{ 'POST.NO_COMMENTS' | translate }}</p>
             </div>
           </div>
         </section>
@@ -216,48 +215,37 @@
           <h3 class="sidebar-title"><i class="fas fa-circle-info"></i> Informations</h3>
           <div class="info-list">
             <div class="info-row">
-              <span class="info-key">Type</span>
+              <span class="info-key">{{ 'POST.LABEL_TYPE' | translate }}</span>
               <span class="badge" [ngClass]="getBadgeClass()">{{ post()!.type }}</span>
             </div>
             <div class="info-row">
-              <span class="info-key">Lieu</span>
+              <span class="info-key">{{ 'POST.LABEL_LOCATION' | translate }}</span>
               <span class="info-val">{{ post()!.location }}</span>
             </div>
             <div class="info-row">
-              <span class="info-key">Publié</span>
+              <span class="info-key">{{ 'COMMON.RESOLVED_ON' | translate }}</span>
               <span class="info-val">{{ getTimeAgo(post()!.createdAt) }}</span>
             </div>
             <div class="info-row">
-              <span class="info-key">Auteur</span>
-              <span class="info-val">{{ post()!.isAnonymous ? 'Anonyme' : post()!.authorPseudo }}</span>
+              <span class="info-key">{{ 'POST.LABEL_ANONYMOUS' | translate }}</span>
+              <span class="info-val">{{ post()!.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : post()!.authorPseudo }}</span>
             </div>
             <div class="info-row" *ngIf="post()!.isResolved && post()!.resolvedAt">
-              <span class="info-key">Résolue le</span>
+              <span class="info-key">{{ 'COMMON.RESOLVED_ON' | translate }}</span>
               <span class="info-val resolved-date-val">{{ post()!.resolvedAt | date:'dd/MM/yyyy' }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Safety Tips -->
-        <div class="sidebar-card safety-card">
-          <h3 class="sidebar-title"><i class="fas fa-shield-heart"></i> Conseils de Sécurité</h3>
-          <ul class="safety-list">
-            <li><i class="fas fa-check-circle"></i> Contactez les forces de l'ordre en priorité</li>
-            <li><i class="fas fa-check-circle"></i> Ne divulguez pas d'informations personnelles</li>
-            <li><i class="fas fa-check-circle"></i> Signalez tout contenu suspect</li>
-            <li><i class="fas fa-check-circle"></i> Respectez la présomption d'innocence</li>
-          </ul>
-        </div>
-
         <!-- Actions -->
         <button class="btn btn-outline w-full" (click)="sharePost()" [class.btn-success-outline]="shareSuccess()">
           <i class="fas" [ngClass]="shareSuccess() ? 'fa-check' : 'fa-share-nodes'"></i>
-          {{ shareSuccess() ? 'Lien copié !' : 'Partager cette alerte' }}
+          {{ shareSuccess() ? ('POST.BTN_SHARED' | translate) : ('POST.BTN_SHARE' | translate) }}
         </button>
 
         <!-- Bouton don -->
         <button class="btn btn-primary w-full" style="margin-top:8px" (click)="donationModalOpen.set(true)">
-          <i class="fas fa-hand-holding-heart"></i> Soutenir cette alerte
+          <i class="fas fa-hand-holding-heart"></i> {{ 'POST.DONATION_SECTION' | translate }}
         </button>
 
         <button class="btn btn-ghost w-full btn-report-sidebar"
@@ -265,11 +253,11 @@
           [disabled]="isAlreadyReported()"
           style="margin-top:8px">
           <i class="fas fa-flag"></i>
-          {{ isAlreadyReported() ? 'Publication signalée' : 'Signaler cette publication' }}
+          {{ isAlreadyReported() ? ('POST.ALREADY_REPORTED' | translate) : ('POST.BTN_REPORT' | translate) }}
         </button>
 
         <a routerLink="/posts/new" *ngIf="isAuth()" class="btn btn-danger w-full" style="margin-top:8px">
-          <i class="fas fa-plus"></i> Publier un cas
+          <i class="fas fa-plus"></i>
         </a>
       </aside>
     </div>
@@ -303,28 +291,27 @@
 <div class="report-modal-overlay" *ngIf="reportModalOpen()" (click)="closeReportModal()">
   <div class="report-modal" (click)="$event.stopPropagation()">
     <div class="report-modal-header">
-      <h3><i class="fas fa-flag"></i> Signaler cette publication</h3>
+      <h3><i class="fas fa-flag"></i> {{ 'POST.BTN_REPORT' | translate }}</h3>
       <button class="modal-close-btn" (click)="closeReportModal()"><i class="fas fa-xmark"></i></button>
     </div>
 
     <div *ngIf="!reportSubmitted()">
-      <p class="report-desc">Indiquez la raison du signalement. Notre équipe examinera votre demande.</p>
       <div class="report-reasons">
         <label class="report-reason-item" *ngFor="let r of ['Contenu haineux ou offensant', 'Doxxing / informations personnelles', 'Fausse information', 'Contenu inapproprié pour des mineurs', 'Autre']">
           <input type="radio" name="reason" [value]="r" (change)="setReportReason(r)" [checked]="reportReason() === r">
           <span class="reason-custom"></span>
           <span>{{ r }}</span>
         </label>
-        <label for="mytextarea" *ngIf="this.textReportReason()" class="report-reason-item"> <span>Renseigner votre raison</span>
+        <label for="mytextarea" *ngIf="this.textReportReason()" class="report-reason-item">
           <textarea id="mytextarea" row="4" name="reason" #moi (input)="setReportReason('Autre', moi.value)"></textarea>
         </label>
       </div>
       <div class="report-actions">
-        <button class="btn btn-ghost btn-sm" (click)="closeReportModal()">Annuler</button>
+        <button class="btn btn-ghost btn-sm" (click)="closeReportModal()">{{ 'COMMON.CANCEL' | translate }}</button>
         <button class="btn btn-danger btn-sm" (click)="submitReport()"
           [disabled]="!reportReason() || reportLoading()">
           <span class="spinner" *ngIf="reportLoading()"></span>
-          <span *ngIf="!reportLoading()"><i class="fas fa-flag"></i> Envoyer le signalement</span>
+          <span *ngIf="!reportLoading()"><i class="fas fa-flag"></i> {{ 'POST.BTN_REPORT' | translate }}</span>
         </button>
       </div>
     </div>

@@ -4,65 +4,75 @@
     <!-- Logo -->
     <a routerLink="/" class="logo" (click)="closeMenu()">
       <div class="logo-icon">
-        <!-- <i class="fas fa-shield-heart"></i> -->
         <img src="logo_alertProche.png" alt="">
       </div>
-      <!-- <span class="logo-name">Alert<span class="logo-accent">Proche</span></span> -->
     </a>
 
     <!-- Nav Links - desktop -->
     <ul class="nav-links">
       <li>
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">
-          Accueil
+          {{ 'NAV.HOME' | translate }}
         </a>
       </li>
       <li>
         <a routerLink="/feed" routerLinkActive="active" class="nav-link">
-          <i class="fas fa-rss"></i> Fil d'actualité
+          <i class="fas fa-rss"></i> {{ 'NAV.FEED' | translate }}
         </a>
       </li>
       <li *ngIf="isAuth()">
         <a routerLink="/sos/history" routerLinkActive="active" class="nav-link" *ngIf="isAuth()"><i
-            class="fas fa-clock-rotate-left"></i> Historique </a>
+            class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">À propos</a>
+        <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">{{ 'NAV.ABOUT' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/avis" routerLinkActive="active" class="nav-link">Avis</a>
+        <a routerLink="/avis" routerLinkActive="active" class="nav-link">{{ 'NAV.REVIEWS' | translate }}</a>
       </li>
       <li *ngIf="isAuth()">
-        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Mon Espace</a>
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">{{ 'NAV.DASHBOARD' | translate }}</a>
       </li>
       <li *ngIf="canModerate()">
         <a routerLink="/moderation" routerLinkActive="active" class="nav-link nav-link-mod">
-          Modération <span class="mod-dot"></span>
+          {{ 'NAV.MODERATION' | translate }} <span class="mod-dot"></span>
         </a>
       </li>
       <li *ngIf="user()?.role === 'Admin'">
         <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"
-          class="nav-link nav-link-admin">Admin</a>
+          class="nav-link nav-link-admin">{{ 'NAV.ADMIN' | translate }}</a>
       </li>
       <li *ngIf="user()?.role === 'Admin'">
-        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">Analytics</a>
+        <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">{{ 'NAV.ANALYTICS' |
+          translate }}</a>
       </li>
     </ul>
 
     <!-- Actions - desktop -->
     <div class="nav-actions">
-      <button class="theme-btn" (click)="theme.toggleTheme()" [title]="isDark() ? 'Mode clair' : 'Mode sombre'">
+      <!-- Language switcher -->
+      <button class="theme-btn lang-btn" (click)="toggleLang()"
+        [title]="'NAV.LANG_SWITCH' | translate">
+        <strong>
+          {{ lang.currentLang() === 'fr' ? 'FR' : 'EN' }}
+        </strong>
+      </button>
+
+      <button class="theme-btn" (click)="theme.toggleTheme()"
+        [title]="isDark() ? ('NAV.THEME_LIGHT' | translate) : ('NAV.THEME_DARK' | translate)">
         <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
       </button>
 
       <ng-container *ngIf="isAuth(); else guestBlock">
         <a routerLink="/posts/new" class="btn-publish">
-          <i class="fas fa-plus"></i> Publier un Cas
-          <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
+          <i class="fas fa-plus"></i> {{ 'NAV.PUBLISH' | translate }}
+          <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount()
+            }}</span>
         </a>
         <div class="user-chip">
           <div class="user-avatar">
-            <img *ngIf="user()?.photoUrl" [src]="user()!.photoUrl!" [alt]="user()?.pseudo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            <img *ngIf="user()?.photoUrl" [src]="user()!.photoUrl!" [alt]="user()?.pseudo"
+              style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             <span *ngIf="!user()?.photoUrl">{{ user()?.pseudo?.charAt(0)?.toUpperCase() }}</span>
           </div>
           <span class="user-pseudo">{{ user()?.pseudo }}</span>
@@ -70,15 +80,16 @@
             [class.admin]="user()?.role === 'Admin'">
             {{ user()?.role }}
           </span>
-          <button class="logout-btn" (click)="logout()" title="Se déconnecter">
+          <button class="logout-btn" (click)="logout()" [title]="'NAV.LOGOUT' | translate">
             <i class="fas fa-right-from-bracket"></i>
           </button>
         </div>
       </ng-container>
 
       <ng-template #guestBlock>
-        <a routerLink="/auth" [queryParams]="{mode: 'login'}" class="btn-login">Se connecter</a>
-        <a routerLink="/auth" [queryParams]="{mode: 'register'}" class="btn-register">S'inscrire</a>
+        <a routerLink="/auth" [queryParams]="{mode: 'login'}" class="btn-login">{{ 'NAV.LOGIN' | translate }}</a>
+        <a routerLink="/auth" [queryParams]="{mode: 'register'}" class="btn-register">{{ 'NAV.REGISTER' | translate
+          }}</a>
       </ng-template>
     </div>
 
@@ -91,90 +102,88 @@
   <!-- Menu mobile -->
   <div class="mobile-menu" *ngIf="isOpen">
     <div class="mobile-menu-inner">
-      <a routerLink="/" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> Accueil</a>
+      <a routerLink="/" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> {{
+        'NAV.HOME' | translate }}</a>
       <a routerLink="/feed" routerLinkActive="active" (click)="closeMenu()" class="m-link">
-        <i class="fas fa-rss"></i> Fil d'actualité
+        <i class="fas fa-rss"></i> {{ 'NAV.FEED' | translate }}
       </a>
       <a routerLink="/sos/history" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
-          class="fas fa-clock-rotate-left"></i> Historique </a>
-      <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-circle-info"></i> À propos</a>
-      <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i> Avis</a>
-      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i class="fas fa-gauge"></i> Mon
-        Espace</a>
-      <a routerLink="/moderation" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-mod" *ngIf="canModerate()"><i
-          class="fas fa-shield-halved"></i> Modération</a>
-      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-admin" *ngIf="user()?.role === 'Admin'"><i
-          class="fas fa-crown"></i> Administration</a>
-      <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-administration"
-        *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+          class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
+      <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i
+          class="fas fa-circle-info"></i> {{ 'NAV.ABOUT' | translate }}</a>
+      <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i>
+        {{ 'NAV.REVIEWS' | translate }}</a>
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
+          class="fas fa-gauge"></i> {{ 'NAV.DASHBOARD' | translate }}</a>
+      <a routerLink="/moderation" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-mod"
+        *ngIf="canModerate()"><i class="fas fa-shield-halved"></i> {{ 'NAV.MODERATION' | translate }}</a>
+      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-admin"
+        *ngIf="user()?.role === 'Admin'"><i class="fas fa-crown"></i> {{ 'NAV.ADMIN' | translate }}</a>
+      <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMenu()"
+        class="m-link m-link-administration" *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> {{
+        'NAV.ANALYTICS' | translate }}</a>
       <a routerLink="/posts/new" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
-          class="fas fa-triangle-exclamation"></i> Publier un Cas
+          class="fas fa-triangle-exclamation"></i> {{ 'NAV.PUBLISH' | translate }}
         <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
       </a>
       <a routerLink="/auth" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="!isAuth()"><i
-          class="fas fa-right-to-bracket"></i> Connexion</a>
+          class="fas fa-right-to-bracket"></i> {{ 'NAV.LOGIN' | translate }}</a>
       <a href="javascript:void(0)" routerLinkActive="active" (click)="logout()" class="m-link" *ngIf="isAuth()"><i
-          class="fas fa-right-from-bracket"></i> Se déconnecter</a>
-      <a href="javascript:void(0)" routerLinkActive="active" (click)="theme.toggleTheme(); closeMenu()" class="m-link">
+          class="fas fa-right-from-bracket"></i> {{ 'NAV.LOGOUT' | translate }}</a>
+      <a href="javascript:void(0)" (click)="theme.toggleTheme(); closeMenu()" class="m-link">
         <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
-        {{ isDark() ? 'Mode clair' : 'Mode sombre' }}
+        {{ isDark() ? ('NAV.THEME_LIGHT' | translate) : ('NAV.THEME_DARK' | translate) }}
+      </a>
+      <a href="javascript:void(0)" (click)="toggleLang(); closeMenu()" class="m-link">
+        {{ lang.currentLang() === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN' }}
+        &nbsp;{{ 'NAV.LANG_SWITCH' | translate }}
       </a>
     </div>
   </div>
 </nav>
 
 <!-- ══ BOTTOM NAV - Mobile uniquement ══════════════════════════ -->
-<nav  *ngIf="IsMobile" class="bottom-nav">
+<nav *ngIf="IsMobile" class="bottom-nav">
   <div class="bottom-nav-inner">
 
     <!-- Accueil -->
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="bn-item"
       (click)="closeMenu()">
       <i class="fas fa-house"></i>
-      <span>Accueil</span>
+      <span>{{ 'NAV.HOME' | translate }}</span>
     </a>
 
     <!-- Feed -->
     <a routerLink="/feed" routerLinkActive="active" class="bn-item" (click)="closeMenu()">
       <i class="fas fa-rss"></i>
-      <span>Actualité</span>
+      <span>{{ 'NAV.FEED' | translate }}</span>
     </a>
-
-    <!-- Alertes / Historique SOS -->
-    <!-- <a routerLink="/sos/history" routerLinkActive="active" class="bn-item" (click)="closeMenu()" *ngIf="isAuth()">
-      <i class="fas fa-clock-rotate-left"></i>
-      <span>Historique</span>
-    </a>
-    <a routerLink="/avis" routerLinkActive="active" class="bn-item" (click)="closeMenu()" *ngIf="!isAuth()">
-      <i class="fas fa-gauge"></i>
-      <span>Avis</span>
-    </a> -->
 
     <!-- Publier - bouton central vert -->
     <a routerLink="/posts/new" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="isAuth()">
       <i class="fas fa-plus"></i>
-      <span>Publier</span>
+      <span>{{ 'NAV.PUBLISH' | translate }}</span>
       <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
     </a>
     <a routerLink="/auth" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="!isAuth()">
       <i class="fas fa-plus"></i>
-      <span>Publier</span>
+      <span>{{ 'NAV.PUBLISH' | translate }}</span>
     </a>
 
     <!-- Mon Espace -->
     <a routerLink="/dashboard" routerLinkActive="active" class="bn-item" (click)="closeMenu()" *ngIf="isAuth()">
       <i class="fas fa-gauge"></i>
-      <span>Mon Espace</span>
+      <span>{{ 'NAV.DASHBOARD' | translate }}</span>
     </a>
     <a routerLink="/auth" [queryParams]="{mode:'login'}" class="bn-item" (click)="closeMenu()" *ngIf="!isAuth()">
       <i class="fas fa-right-to-bracket"></i>
-      <span>Connexion</span>
+      <span>{{ 'NAV.LOGIN' | translate }}</span>
     </a>
 
     <!-- À propos -->
     <a routerLink="/a-propos" routerLinkActive="active" class="bn-item" (click)="closeMenu()">
       <i class="fas fa-circle-info"></i>
-      <span>À propos</span>
+      <span>{{ 'NAV.ABOUT' | translate }}</span>
     </a>
 
   </div>

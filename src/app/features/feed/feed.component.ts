@@ -1,11 +1,14 @@
 import {
-  Component, OnInit, OnDestroy, signal, computed, inject, AfterViewInit, NgZone, ElementRef
+  Component, OnInit, OnDestroy, signal, computed, inject, AfterViewInit, NgZone, ElementRef, effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeedService, FeedPost } from '../../core/services/feed.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CreateFeedPostComponent } from './create-feed-post/create-feed-post.component';
+import { TimeAgoService } from '../../core/services/time-ago.service';
+import { OfflineService, PendingFeedPost } from '../../core/services/offline.service';
 import { environment } from '../../../environments/environment';
 
 const TEXT_TRUNCATE_LIMIT = 280; // caractères avant troncature
@@ -13,7 +16,7 @@ const TEXT_TRUNCATE_LIMIT = 280; // caractères avant troncature
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, RouterLink, CreateFeedPostComponent],
+  imports: [CommonModule, RouterLink, CreateFeedPostComponent, TranslateModule],
   templateUrl: './feed.component.html',
   styleUrls: ['./feed.component.css'],
 })
@@ -22,6 +25,9 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
   private auth    = inject(AuthService);
   private zone    = inject(NgZone);
   private el      = inject(ElementRef);
+  private timeAgo = inject(TimeAgoService);
+  private translate = inject(TranslateService);
+  private offlineService = inject(OfflineService);
 
   posts        = signal<FeedPost[]>([]);
   loading      = signal(true);
@@ -31,8 +37,12 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
   hasMore      = signal(false);
   deletingId   = signal<string | null>(null);
 
+  /** Publications créées hors-ligne, en attente d'envoi */
+  readonly pendingPosts = this.offlineService.pendingFeedPosts;
+
   isAuth        = computed(() => this.auth.isAuthenticated());
   currentUserId = computed(() => this.auth.currentUser()?._id);
+  currentUserPseudo = computed(() => this.auth.currentUser()?.pseudo ?? '');
 
   likedIds = signal<Set<string>>(new Set());
 
@@ -72,6 +82,19 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
 
   readonly TEXT_LIMIT = TEXT_TRUNCATE_LIMIT;
 
+  constructor() {
+    // Après une synchronisation réussie (retour en ligne), rafraîchir le feed
+    effect(
+      () => {
+        const done = this.offlineService.syncCompleted();
+        if (done > 0 && this.offlineService.online()) {
+          this.loadFeed(1);
+        }
+      },
+      { allowSignalWrites: true },
+    );
+  }
+
   ngOnInit(): void {
     this.loadFeed(1);
     this.setupScrollListeners();
@@ -85,6 +108,7 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.scrollListener) window.removeEventListener('scroll', this.scrollListener);
     if (this.videoObserver) this.videoObserver.disconnect();
     this.detachKeyboardListener();
+    this.releaseAllPendingPreviews();
   }
 
   // ── Chargement ──────────────────────────────────────────────────────────
@@ -130,7 +154,7 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => this.observeVideos(), 100);
       },
       error: () => {
-        this.error.set('Impossible de charger le fil d\'actualité.');
+        this.error.set(this.translate.instant('FEED.ERR_LOAD'));
         this.loading.set(false);
         this.loadingMore.set(false);
       },
@@ -233,8 +257,8 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (navigator.share) {
       navigator.share({
-        title: `${post.author.pseudo} sur AlertProche`,
-        text:  post.content?.slice(0, 100) || 'Découvrez cette publication sur AlertProche.',
+        title: this.translate.instant('FEED.SHARE_TITLE', { pseudo: post.author.pseudo }),
+        text:  post.content?.slice(0, 100) || this.translate.instant('FEED.SHARE_TEXT'),
         url:   shareUrl,
       }).catch(() => {
         navigator.clipboard.writeText(frontendUrl).catch(() => {});
@@ -413,18 +437,58 @@ export class FeedComponent implements OnInit, OnDestroy, AfterViewInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // ── Publications en attente (hors-ligne) ────────────────────────────────
+
+  /** Cache des URL locales (blob) des médias en attente, par tempId */
+  private pendingPreviewCache = new Map<string, { url: string; type: 'image' | 'video' }[]>();
+
+  pendingPreviews(p: PendingFeedPost): { url: string; type: 'image' | 'video' }[] {
+    let cached = this.pendingPreviewCache.get(p.tempId);
+    if (!cached) {
+      cached = (p.media ?? []).map(file => ({
+        url: URL.createObjectURL(file),
+        type: file.type.startsWith('video') ? 'video' : 'image',
+      }));
+      this.pendingPreviewCache.set(p.tempId, cached);
+    }
+    return cached;
+  }
+
+  retryPending(tempId: string): void {
+    void this.offlineService.retryPending(tempId);
+  }
+
+  discardPending(tempId: string): void {
+    this.releasePendingPreview(tempId);
+    void this.offlineService.removePendingPost(tempId);
+  }
+
+  syncNow(): void {
+    void this.offlineService.syncPendingPosts();
+  }
+
+  private releasePendingPreview(tempId: string): void {
+    const cached = this.pendingPreviewCache.get(tempId);
+    if (cached) {
+      cached.forEach(p => URL.revokeObjectURL(p.url));
+      this.pendingPreviewCache.delete(tempId);
+    }
+  }
+
+  private releaseAllPendingPreviews(): void {
+    this.pendingPreviewCache.forEach(urls => urls.forEach(p => URL.revokeObjectURL(p.url)));
+    this.pendingPreviewCache.clear();
+  }
+
   // ── Utilitaires ──────────────────────────────────────────────────────────
 
   getTimeAgo(dateStr: string): string {
-    const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-    if (diff < 60)      return 'À l\'instant';
-    if (diff < 3600)    return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400)   return `Il y a ${Math.floor(diff / 3600)} h`;
-    if (diff < 2592000) return `Il y a ${Math.floor(diff / 86400)} j`;
-    return new Date(dateStr).toLocaleDateString('fr-FR');
+    return this.timeAgo.format(dateStr);
   }
 
   trackByPost(_: number, p: FeedPost): string { return p._id; }
+
+  trackByPending(_: number, p: PendingFeedPost): string { return p.tempId; }
 
   getMediaType(post: FeedPost, index: number): 'image' | 'video' {
     const types = post.mediaFileTypes;

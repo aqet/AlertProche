@@ -1,11 +1,12 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { VersionCheckService } from '../../../core/services/version-check.service';
 
 @Component({
   selector: 'app-update-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './update-modal.component.html',
   styleUrls:  ['./update-modal.component.css'],
 })

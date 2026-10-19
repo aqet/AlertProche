@@ -1,6 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   VersionAdminService,
   AppVersionConfig,
@@ -10,11 +11,13 @@ import {
 @Component({
   selector: 'app-version-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './version-management.component.html',
   styleUrls: ['./version-management.component.css'],
 })
 export class VersionManagementComponent implements OnInit {
+  private translate = inject(TranslateService);
+
   // ── État ─────────────────────────────────────────────────────────────────
   currentConfig  = signal<AppVersionConfig | null>(null);
   configLoading  = signal(true);
@@ -89,12 +92,15 @@ export class VersionManagementComponent implements OnInit {
       next: (config) => {
         this.currentConfig.set(config);
         this.versionSaving.set(false);
-        this.versionSuccess.set(`Version enregistrée : latest ${config.latestVersion} / min ${config.minSupportedVersion}`);
+        this.versionSuccess.set(this.translate.instant('VERSION_MGMT.MSG_VERSION_SAVED', {
+          latest: config.latestVersion,
+          min: config.minSupportedVersion,
+        }));
         setTimeout(() => this.versionSuccess.set(''), 5000);
       },
       error: (err) => {
         this.versionSaving.set(false);
-        this.versionError.set(err?.error?.message || 'Erreur lors de l\'enregistrement.');
+        this.versionError.set(err?.error?.message || this.translate.instant('VERSION_MGMT.ERR_SAVE'));
       },
     });
   }
@@ -118,7 +124,7 @@ export class VersionManagementComponent implements OnInit {
       },
       error: (err) => {
         this.notifSending.set(false);
-        this.notifError.set(err?.error?.message || 'Erreur lors de l\'envoi.');
+        this.notifError.set(err?.error?.message || this.translate.instant('VERSION_MGMT.ERR_SEND'));
       },
     });
   }
@@ -132,7 +138,7 @@ export class VersionManagementComponent implements OnInit {
 
   formatDate(dateStr?: string): string {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleString('fr-FR', {
+    return new Date(dateStr).toLocaleString(this.translate.currentLang || 'fr-FR', {
       day: '2-digit', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
     });

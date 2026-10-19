@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, signal, computed, effect } from '@angular
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PostService } from '../../core/services/post.service';
 import { Post, PostType } from '../../core/models/post.model';
 import { PostCardComponent } from '../../shared/post-card/post-card.component';
@@ -16,7 +17,7 @@ import { OfflineService } from '../../core/services/offline.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PostCardComponent, InstallModalComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PostCardComponent, InstallModalComponent, TranslateModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
@@ -131,11 +132,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ];
 
   filteredPosts = computed(() => {
-    // Mode hors-ligne : retourner uniquement les posts sauvegardés
-    if (this.isOffline()) {
-      return this.offlineService.getSavedPosts();
+    // Hors-ligne : si le cache du Service Worker n'a rien fourni,
+    // on retombe sur les publications sauvegardées manuellement.
+    let base = this.posts();
+    if (base.length === 0 && this.isOffline()) {
+      base = this.offlineService.getSavedPosts();
     }
-    let result = this.posts();
+    let result = base;
     // Masquer les résolues par défaut
     if (!this.showResolved()) {
       result = result.filter(p => p.isResolved !== true);
@@ -184,52 +187,50 @@ export class HomeComponent implements OnInit, OnDestroy {
   currentSlide = signal(0);
   private slideInterval: any;
 
-  readonly heroSlides = [
-    {
-      type: 'Disparition',
-      icon: 'fa-triangle-exclamation',
-      color: 'slide-disparition',
-      title: 'Chaque disparition mérite une réponse.',
-      subtitle:
-        'Publiez un avis de recherche, mobilisez la communauté et retrouvez les personnes disparues.',
-      cta: 'Signaler une disparition',
-      ctaRoute: '/posts/new',
-      ctaIcon: 'fa-triangle-exclamation',
-    },
-    {
-      type: 'Abus',
-      icon: 'fa-shield-exclamation',
-      color: 'slide-abus',
-      title: "Ensemble contre les abus et l'exploitation.",
-      subtitle:
-        'Témoignez, signalez et protégez les enfants et personnes vulnérables contre toute forme de maltraitance.',
-      cta: 'Signaler un abus',
-      ctaRoute: '/posts/new',
-      ctaIcon: 'fa-shield-exclamation',
-    },
-    {
-      type: "Appel à l'aide",
-      icon: 'fa-hand-holding-heart',
-      color: 'slide-appel',
-      title: 'Une personne a besoin de vous.',
-      subtitle:
-        'Personne hospitalisée sans famille identifiée, individu en détresse - votre aide peut changer une vie.',
-      cta: "Lancer un appel à l'aide",
-      ctaRoute: '/posts/new',
-      ctaIcon: 'fa-hand-holding-heart',
-    },
-    {
-      type: 'Prévention',
-      icon: 'fa-circle-info',
-      color: 'slide-prevention',
-      title: "Informer, c'est aussi protéger.",
-      subtitle:
-        'Partagez des guides, des conseils juridiques et des ressources pour sensibiliser la communauté.',
-      cta: 'Publier une prévention',
-      ctaRoute: '/posts/new',
-      ctaIcon: 'fa-circle-info',
-    },
-  ];
+  get heroSlides() {
+    return [
+      {
+        type: 'Disparition',
+        icon: 'fa-triangle-exclamation',
+        color: 'slide-disparition',
+        title: this.translate.instant('HOME.SLIDE1_TITLE'),
+        subtitle: this.translate.instant('HOME.SLIDE1_SUBTITLE'),
+        cta: this.translate.instant('HOME.SLIDE1_CTA'),
+        ctaRoute: '/posts/new',
+        ctaIcon: 'fa-triangle-exclamation',
+      },
+      {
+        type: 'Abus',
+        icon: 'fa-shield-exclamation',
+        color: 'slide-abus',
+        title: this.translate.instant('HOME.SLIDE2_TITLE'),
+        subtitle: this.translate.instant('HOME.SLIDE2_SUBTITLE'),
+        cta: this.translate.instant('HOME.SLIDE2_CTA'),
+        ctaRoute: '/posts/new',
+        ctaIcon: 'fa-shield-exclamation',
+      },
+      {
+        type: "Appel à l'aide",
+        icon: 'fa-hand-holding-heart',
+        color: 'slide-appel',
+        title: this.translate.instant('HOME.SLIDE3_TITLE'),
+        subtitle: this.translate.instant('HOME.SLIDE3_SUBTITLE'),
+        cta: this.translate.instant('HOME.SLIDE3_CTA'),
+        ctaRoute: '/posts/new',
+        ctaIcon: 'fa-hand-holding-heart',
+      },
+      {
+        type: 'Prévention',
+        icon: 'fa-circle-info',
+        color: 'slide-prevention',
+        title: this.translate.instant('HOME.SLIDE4_TITLE'),
+        subtitle: this.translate.instant('HOME.SLIDE4_SUBTITLE'),
+        cta: this.translate.instant('HOME.SLIDE4_CTA'),
+        ctaRoute: '/posts/new',
+        ctaIcon: 'fa-circle-info',
+      },
+    ];
+  }
 
   startSlider(): void {
     this.slideInterval = setInterval(() => {
@@ -254,6 +255,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private tracking: TrackingService,
     public pwa: PwaInstallService,
     private offlineService: OfflineService,
+    private translate: TranslateService,
   ) {
     // Relancer l'appel API quand la connexion revient pour ne pas laisser la liste vide.
     // _initialized flag évite le double appel au premier rendu (effect() s'exécute immédiatement).
@@ -267,17 +269,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (online) {
         this.loadPosts();
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
     this.startSlider();
     this.loadAppDownloadCount();
-    if (!this.offlineService.online()) {
-      this.posts.set(this.offlineService.getSavedPosts());
-      this.loading.set(false);
-      return;
-    }
+    // Hors-ligne, le Service Worker sert la dernière version en cache (dataGroups) :
+    // on tente donc toujours la requête, le repli se fait dans loadPosts().
     this.loadPosts();
   }
 
@@ -289,6 +288,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: () => {
+        // Hors-ligne sans cache disponible : repli sur les posts sauvegardés
+        if (!this.offlineService.online()) {
+          this.posts.set(this.offlineService.getSavedPosts());
+        }
         this.loading.set(false);
       },
     });

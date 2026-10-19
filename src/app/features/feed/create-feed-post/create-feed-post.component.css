@@ -59,6 +59,19 @@
   color: var(--urgent);
 }
 
+/* Confirmation hors-ligne (mise en attente) */
+.cp-queued {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--green);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--green);
+}
+
 /* Previews */
 .cp-previews {
   display: grid;

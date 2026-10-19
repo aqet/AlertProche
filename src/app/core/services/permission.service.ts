@@ -1,4 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { NotificationService } from './notification.service';
 
 /**
@@ -19,6 +20,7 @@ import { NotificationService } from './notification.service';
 @Injectable({ providedIn: 'root' })
 export class PermissionService {
   private notifSvc = inject(NotificationService);
+  private translate = inject(TranslateService);
 
   // ── État des permissions ───────────────────────────────────────────────
   notificationStatus  = signal<NotificationPermission | 'unsupported' | 'needs-pwa'>('default');
@@ -204,22 +206,23 @@ export class PermissionService {
     const geo   = this.geolocationStatus();
 
     if (notif === 'needs-pwa') {
-      return 'Pour recevoir les alertes SOS sur iOS, installez l\'app via Safari → "Sur l\'écran d\'accueil".';
+      return this.translate.instant('PERMISSION.MSG_NEEDS_PWA');
     }
     if (notif === 'denied' && geo === 'denied') {
-      return 'Notifications et localisation bloquées. Autorisez-les dans les réglages de votre navigateur.';
+      return this.translate.instant('PERMISSION.MSG_BOTH_DENIED');
     }
     if (notif === 'denied') {
-      return 'Notifications bloquées. Autorisez-les dans les réglages pour recevoir les alertes SOS.';
+      return this.translate.instant('PERMISSION.MSG_NOTIF_DENIED');
     }
     if (geo === 'denied') {
-      return 'Localisation bloquée. Autorisez-la pour que vos contacts puissent vous localiser lors d\'un SOS.';
+      return this.translate.instant('PERMISSION.MSG_GEO_DENIED');
     }
 
     const missing: string[] = [];
-    if (notif === 'default') missing.push('les notifications');
-    if (geo === 'default')   missing.push('la localisation');
-    return `Activez ${missing.join(' et ')} pour utiliser AlertProche en toute sécurité.`;
+    if (notif === 'default') missing.push(this.translate.instant('PERMISSION.ITEM_NOTIF'));
+    if (geo === 'default')   missing.push(this.translate.instant('PERMISSION.ITEM_GEO'));
+    const and = this.translate.instant('PERMISSION.LIST_AND');
+    return this.translate.instant('PERMISSION.MSG_ENABLE_TEMPLATE', { list: missing.join(` ${and} `) });
   }
 
   /** True si la bannière doit afficher un bouton d'action (pas juste un guide) */

@@ -1,6 +1,7 @@
-import { Component, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PaymentService } from '../../../core/services/payment.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -9,7 +10,7 @@ const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 @Component({
   selector: 'app-platform-support-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   template: `
     <div class="donation-presets">
       <button
@@ -26,7 +27,7 @@ const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
       <input
         type="number"
         class="form-control"
-        placeholder="Autre montant (min. 100 XAF)"
+        [placeholder]="'PAYMENT.CUSTOM_AMOUNT_PLACEHOLDER' | translate"
         [value]="customAmount()"
         (input)="onCustomInput($any($event.target).value)"
         min="100">
@@ -34,19 +35,19 @@ const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
     <div class="donation-phone">
       <label style="font-size:0.78rem;font-weight:600;color:var(--text-sub);display:flex;align-items:center;gap:5px;">
-        <i class="fas fa-mobile-alt"></i> Numéro Mobile Money (MTN / Orange)
+        <i class="fas fa-mobile-alt"></i> {{ 'PAYMENT.PHONE_LABEL' | translate }}
       </label>
       <input
         type="tel"
         class="form-control"
-        placeholder="Ex: 6XXXXXXXX"
+        [placeholder]="'PAYMENT.PHONE_PLACEHOLDER' | translate"
         [value]="phone()"
         (input)="phone.set($any($event.target).value)">
     </div>
-<!-- ici -->
+
     <div class="donation-recap" *ngIf="effectiveAmount >= 100">
       <i class="fas fa-circle-check"></i>
-      <span>Don de <strong>{{ effectiveAmount | number }} XAF</strong></span>
+      <span>{{ 'PAYMENT.RECAP_PREFIX' | translate }} <strong>{{ effectiveAmount | number }} {{ 'PAYMENT.RECAP_SUFFIX' | translate }}</strong></span>
     </div>
 
     <div class="donation-error" *ngIf="error()">
@@ -59,13 +60,13 @@ const PRESET_AMOUNTS = [500, 1000, 2000, 5000, 10000];
       (click)="submit()">
       <span class="spinner" *ngIf="loading()"></span>
       <ng-container *ngIf="!loading()">
-        <i class="fas fa-credit-card"></i> Valider le don
+        <i class="fas fa-credit-card"></i> {{ 'PAYMENT.BTN_DONATE' | translate }}
       </ng-container>
     </button>
 
     <p class="donation-hint">
       <i class="fas fa-lock"></i>
-      Paiement sécurisé via <strong>digiKUNTZ</strong> · MTN / Orange Money
+      {{ 'PAYMENT.SECURE_HINT' | translate }}
     </p>
   `,
   styles: [`
@@ -126,6 +127,8 @@ export class PlatformSupportModalComponent {
   loading        = signal(false);
   error          = signal('');
 
+  private translate = inject(TranslateService);
+
   constructor(
     private payment: PaymentService,
     private auth: AuthService,
@@ -150,15 +153,19 @@ export class PlatformSupportModalComponent {
 
   get isValid(): boolean {
     const phoneDigits = this.phone().replace(/\D/g, '');
-    // ici
     return this.effectiveAmount >= 100 && phoneDigits.length >= 8;
   }
 
   async submit(): Promise<void> {
-    // ici
-    if (this.effectiveAmount < 100) { this.error.set('Montant minimum : 100 XAF.'); return; }
+    if (this.effectiveAmount < 100) {
+      this.error.set(this.translate.instant('PAYMENT.ERR_AMOUNT_MIN'));
+      return;
+    }
     const phoneDigits = this.phone().replace(/\D/g, '');
-    if (phoneDigits.length < 8) { this.error.set('Veuillez entrer un numéro Mobile Money valide.'); return; }
+    if (phoneDigits.length < 8) {
+      this.error.set(this.translate.instant('PAYMENT.ERR_PHONE_INVALID'));
+      return;
+    }
 
     this.loading.set(true);
     this.error.set('');
@@ -168,7 +175,7 @@ export class PlatformSupportModalComponent {
       window.open(result.paymentLink, '_blank');
       this.closed.emit();
     } catch (err: any) {
-      this.error.set(err?.error?.message ?? 'Une erreur est survenue. Veuillez réessayer.');
+      this.error.set(err?.error?.message ?? this.translate.instant('COMMON.ERR_GENERIC'));
     } finally {
       this.loading.set(false);
     }

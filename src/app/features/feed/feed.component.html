@@ -4,8 +4,8 @@
     <!-- ── En-tête ─────────────────────────────────────── -->
     <div class="feed-header">
       <div>
-        <h1 class="feed-title"><i class="fas fa-rss"></i> Fil d'actualité</h1>
-        <p class="feed-subtitle">Partagez et restez informé de l'activité de la communauté.</p>
+        <h1 class="feed-title"><i class="fas fa-rss"></i> {{ 'FEED.TITLE' | translate }}</h1>
+        <p class="feed-subtitle">{{ 'FEED.SUBTITLE' | translate }}</p>
       </div>
     </div>
 
@@ -16,10 +16,62 @@
     <!-- Invitation à se connecter -->
     <div class="feed-auth-cta" *ngIf="!isAuth()">
       <i class="fas fa-users"></i>
-      <p>Rejoignez la communauté pour partager et interagir.</p>
+      <p>{{ 'FEED.AUTH_CTA_MSG' | translate }}</p>
       <a routerLink="/auth" [queryParams]="{mode:'login'}" class="btn btn-primary btn-sm">
-        Se connecter
+        {{ 'NAV.LOGIN' | translate }}
       </a>
+    </div>
+
+    <!-- ── Publications en attente (hors-ligne) ────────── -->
+    <div class="pending-list" *ngIf="pendingPosts().length > 0">
+      <div class="pending-header">
+        <i class="fas fa-clock"></i>
+        <span>{{ 'OFFLINE.PENDING_TITLE' | translate: { count: pendingPosts().length } }}</span>
+        <span class="pending-header-spacer"></span>
+        <button class="btn btn-ghost btn-sm" *ngIf="isAuth()" (click)="syncNow()">
+          <i class="fas fa-rotate-right"></i> {{ 'OFFLINE.SYNC_NOW' | translate }}
+        </button>
+      </div>
+
+      <article class="feed-post-card pending-post" *ngFor="let p of pendingPosts(); trackBy: trackByPending">
+        <div class="post-avatar-col">
+          <div class="post-avatar"><span>{{ currentUserPseudo().charAt(0).toUpperCase() }}</span></div>
+        </div>
+        <div class="post-main">
+          <div class="post-header">
+            <span class="post-pseudo">{{ currentUserPseudo() }}</span>
+            <span class="post-sep">·</span>
+            <span class="post-time">{{ getTimeAgo(p.createdAt) }}</span>
+            <span class="post-header-spacer"></span>
+            <span class="pending-status" [class.pending-status-failed]="p.status === 'failed'">
+              <i class="fas" [class.fa-clock]="p.status !== 'failed'" [class.fa-circle-exclamation]="p.status === 'failed'"></i>
+              {{ (p.status === 'failed' ? 'OFFLINE.STATUS_FAILED' : 'OFFLINE.STATUS_PENDING') | translate }}
+            </span>
+          </div>
+
+          <div class="post-content-wrap" *ngIf="p.content">
+            <p class="post-content">{{ p.content }}</p>
+          </div>
+
+          <div class="post-media" *ngIf="p.media.length > 0">
+            <ng-container *ngFor="let pv of pendingPreviews(p)">
+              <img *ngIf="pv.type === 'image'" [src]="pv.url" class="post-media-single" [attr.alt]="'CREATE_POST.MEDIA_ALT' | translate">
+              <video *ngIf="pv.type === 'video'" [src]="pv.url" class="post-media-video" controls preload="metadata" playsinline muted></video>
+            </ng-container>
+          </div>
+
+          <div class="post-footer">
+            <button class="post-action-btn" *ngIf="p.status === 'failed'" (click)="retryPending(p.tempId)">
+              <i class="fas fa-rotate-right"></i>
+              <span>{{ 'OFFLINE.RETRY' | translate }}</span>
+            </button>
+            <button class="post-action-btn" (click)="discardPending(p.tempId)">
+              <i class="fas fa-trash"></i>
+              <span>{{ 'COMMON.DELETE' | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </article>
     </div>
 
     <!-- ── Loader initial ─────────────────────────────── -->
@@ -71,13 +123,13 @@
               <span class="post-header-spacer"></span>
               <div class="post-menu" *ngIf="canDelete(post)">
                 <button class="post-menu-btn" *ngIf="deletingId() !== post._id" (click)="confirmDelete(post._id)"
-                  title="Supprimer">
+                  [title]="'FEED.BTN_DELETE_TITLE' | translate">
                   <i class="fas fa-trash"></i>
                 </button>
                 <div class="confirm-delete" *ngIf="deletingId() === post._id">
-                  <span>Supprimer ?</span>
-                  <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">Oui</button>
-                  <button class="btn btn-ghost btn-sm" (click)="cancelDelete()">Non</button>
+                  <span>{{ 'FEED.CONFIRM_DELETE' | translate }}</span>
+                  <button class="btn btn-danger btn-sm" (click)="deletePost(post._id)">{{ 'COMMON.YES' | translate }}</button>
+                  <button class="btn btn-ghost btn-sm" (click)="cancelDelete()">{{ 'COMMON.NO' | translate }}</button>
                 </div>
               </div>
             </div>
@@ -86,7 +138,7 @@
             <div class="post-content-wrap" *ngIf="post.content">
               <p class="post-content" style="cursor:pointer">{{ getDisplayText(post) }}</p>
               <button *ngIf="isTextLong(post)" class="post-expand-btn" (click)="toggleExpand(post._id)">
-                {{ isExpanded(post._id) ? 'Voir moins' : 'Voir plus' }}
+                {{ isExpanded(post._id) ? ('FEED.SEE_LESS' | translate) : ('FEED.SEE_MORE' | translate) }}
               </button>
             </div>
           </div>
@@ -142,7 +194,7 @@
 
             <div class="comments-loading" *ngIf="loadingComments() === post._id">
               <div class="spinner" style="width:14px;height:14px;border-width:2px"></div>
-              <span>Chargement...</span>
+              <span>{{ 'COMMON.LOADING' | translate }}</span>
             </div>
 
             <div class="comments-list" *ngIf="loadingComments() !== post._id && getComments(post._id).length > 0">
@@ -162,12 +214,12 @@
             </div>
 
             <p class="comments-empty" *ngIf="loadingComments() !== post._id && getComments(post._id).length === 0">
-              <i class="fas fa-comment-slash"></i> Aucun commentaire encore.
+              <i class="fas fa-comment-slash"></i> {{ 'FEED.NO_COMMENTS' | translate }}
             </p>
 
             <div class="comment-input-row" *ngIf="isAuth()">
               <div class="cp-avatar-sm">{{ currentUserInitial() }}</div>
-              <input type="text" class="comment-input" placeholder="Répondre..." [value]="getCommentText(post._id)"
+              <input type="text" class="comment-input" [placeholder]="'FEED.COMMENT_PLACEHOLDER' | translate" [value]="getCommentText(post._id)"
                 (input)="setCommentText(post._id, $any($event.target).value)" (keydown.enter)="submitComment(post._id)">
               <button class="comment-send-btn" (click)="submitComment(post._id)">
                 <i class="fas fa-paper-plane"></i>
@@ -182,8 +234,8 @@
       <!-- État vide -->
       <div class="feed-empty" *ngIf="posts().length === 0 && !loading()">
         <div class="empty-icon"><i class="fas fa-rss"></i></div>
-        <h3>Aucune publication pour l'instant</h3>
-        <p>Soyez le premier à partager quelque chose avec la communauté.</p>
+        <h3>{{ 'FEED.EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'FEED.EMPTY_DESC' | translate }}</p>
       </div>
 
     </div>
@@ -191,12 +243,12 @@
     <!-- ── Loader "charger plus" ───────────────────────── -->
     <div class="feed-load-more" *ngIf="loadingMore()">
       <div class="spinner"></div>
-      <span>Chargement...</span>
+      <span>{{ 'COMMON.LOADING' | translate }}</span>
     </div>
 
     <!-- ── Fin du feed ────────────────────────────────── -->
     <div class="feed-end" *ngIf="!hasMore() && posts().length > 0 && !loading()">
-      <i class="fas fa-check-circle"></i> Vous avez tout vu !
+      <i class="fas fa-check-circle"></i> {{ 'FEED.END_OF_FEED' | translate }}
     </div>
 
   </div>
@@ -219,7 +271,7 @@
     <!-- Média actuel -->
     <ng-container *ngIf="lightboxCurrent">
       <img *ngIf="lightboxCurrent.type === 'image'" [src]="lightboxCurrent.url" class="lightbox-media"
-        alt="Média en plein écran">
+        [attr.alt]="'FEED.LIGHTBOX_MEDIA_ALT' | translate">
       <video *ngIf="lightboxCurrent.type === 'video'" [src]="lightboxCurrent.url" controls autoplay
         class="lightbox-media">
       </video>
@@ -248,6 +300,6 @@
 </div>
 
 <!-- ── Bouton retour en haut ──────────────────────────────── -->
-<button class="scroll-top-btn" *ngIf="showScrollTop()" (click)="scrollToTop()" title="Retour en haut">
+<button class="scroll-top-btn" *ngIf="showScrollTop()" (click)="scrollToTop()" [title]="'FEED.BTN_SCROLL_TOP_TITLE' | translate">
   <i class="fas fa-arrow-up"></i>
 </button>

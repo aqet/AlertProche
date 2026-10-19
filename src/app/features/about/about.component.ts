@@ -1,6 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { InstallModalComponent } from '../../shared/components/install-modal/install-modal.component';
@@ -9,7 +10,7 @@ import { PlatformSupportModalComponent } from '../../shared/components/platform-
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule, RouterLink, InstallModalComponent, PlatformSupportModalComponent],
+  imports: [CommonModule, RouterLink, InstallModalComponent, PlatformSupportModalComponent, TranslateModule],
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.css']
 })
