@@ -27,5 +27,29 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-feed",
+      "urls": ["/feed**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "5s",
+        "maxSize": 50,
+        "maxAge": "3d",
+        "refreshAhead": "1h"
+      }
+    },
+    {
+      "name": "api-posts",
+      "urls": ["/posts**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "5s",
+        "maxSize": 100,
+        "maxAge": "3d",
+        "refreshAhead": "1h"
+      }
+    }
   ]
 }

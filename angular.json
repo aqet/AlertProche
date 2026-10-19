@@ -83,6 +83,25 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "local-sw": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "50kB",
+                  "maximumError": "100kB"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": true,
+              "extractLicenses": false,
+              "sourceMap": false,
+              "serviceWorker": "ngsw-config.json"
             }
           },
           "defaultConfiguration": "production"
@@ -95,6 +114,9 @@
             },
             "development": {
               "buildTarget": "AlertProche:build:development"
+            },
+            "local-sw": {
+              "buildTarget": "AlertProche:build:local-sw"
             }
           },
           "defaultConfiguration": "development"

@@ -479,27 +479,9 @@ export class PostFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Mode hors-ligne : mettre le post en attente
+    // Mode hors-ligne : mettre le post (image comprise) en file d'attente
     if (!this.offlineService.online()) {
-      // Avertir l'utilisateur si une image est sélectionnée (l'image sera perdue)
-      if (this.selectedFile()) {
-        this.error.set(
-          this.translateSvc.instant('POST.OFFLINE_IMAGE'),
-        );
-        return;
-      }
-      const v = this.form.value;
-      this.offlineService.queuePost({
-        title: v.title,
-        content: v.content,
-        location: v.location,
-        type: v.type,
-        isAnonymous: v.isAnonymous ?? false,
-        createdAt: new Date().toISOString(),
-      });
-      this.offlineQueued.set(true);
-      this.error.set('');
-      setTimeout(() => this.router.navigate(['/']), 2500);
+      this.enqueueOffline();
       return;
     }
 
@@ -526,13 +508,42 @@ export class PostFormComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.loading.set(false);
-          console.log(err);
+
+          // Perte de connexion en cours d'envoi : basculer en file d'attente
+          if (err?.status === 0) {
+            this.enqueueOffline();
+            return;
+          }
 
           this.error.set(
-            err ||
+            err?.error?.message ||
+              err?.message ||
               this.translateSvc.instant('POST.ERR_SUBMIT'),
           );
         },
+      });
+  }
+
+  /** Met le post en file d'attente hors-ligne (image stockée en IndexedDB) */
+  private enqueueOffline(): void {
+    const v = this.form.value;
+    this.offlineService
+      .queueCasePost({
+        title: v.title,
+        content: v.content,
+        location: v.location,
+        type: v.type,
+        isAnonymous: v.isAnonymous ?? false,
+        image: this.selectedFile() ?? undefined,
+        createdAt: new Date().toISOString(),
+      })
+      .then(() => {
+        this.offlineQueued.set(true);
+        this.error.set('');
+        setTimeout(() => this.router.navigate(['/']), 2500);
+      })
+      .catch(() => {
+        this.error.set(this.translateSvc.instant('OFFLINE.STORAGE_ERROR'));
       });
   }
 

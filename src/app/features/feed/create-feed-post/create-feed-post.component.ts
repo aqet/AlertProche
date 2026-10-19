@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { FeedService, FeedPost } from '../../../core/services/feed.service';
+import { OfflineService } from '../../../core/services/offline.service';
 import { environment } from '../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
@@ -61,6 +62,7 @@ export class CreateFeedPostComponent {
   private feedSvc  = inject(FeedService);
   private http     = inject(HttpClient);
   private translate = inject(TranslateService);
+  private offlineService = inject(OfflineService);
 
   /** Émis quand un post est créé avec succès */
   posted = output<FeedPost>();
@@ -72,6 +74,8 @@ export class CreateFeedPostComponent {
   previews  = signal<{ url: string; type: 'image' | 'video' }[]>([]);
   loading   = signal(false);
   error     = signal('');
+  /** Confirmation « mis en attente » (mode hors-ligne) */
+  queued    = signal(false);
   charCount = computed(() => this.content().length);
 
   // ── Localisation avec autocomplétion + validation IA ────────────────────
@@ -269,11 +273,20 @@ export class CreateFeedPostComponent {
 
     this.loading.set(true);
     this.error.set('');
+    this.queued.set(false);
+
+    const loc = this.locationInput().trim();
+    const location = loc && this.locationValid() ? loc : undefined;
+
+    // Hors-ligne : la publication (médias compris) est mise en file d'attente
+    if (!this.offlineService.online()) {
+      await this.enqueue(location);
+      return;
+    }
 
     const formData = new FormData();
     if (this.content().trim()) formData.append('content', this.content().trim());
-    const loc = this.locationInput().trim();
-    if (loc && this.locationValid()) formData.append('location', loc);
+    if (location) formData.append('location', location);
     this.files().forEach(f => formData.append('media', f));
 
     this.feedSvc.createPost(formData).subscribe({
@@ -282,11 +295,40 @@ export class CreateFeedPostComponent {
         this.reset();
         this.loading.set(false);
       },
-      error: (err) => {
+      error: async (err) => {
+        // Perte de connexion pendant l'envoi : on bascule en file d'attente
+        if (err?.status === 0) {
+          const ok = await this.enqueue(location);
+          if (ok) return;
+        }
         this.error.set(err?.error?.message || this.translate.instant('CREATE_POST.ERR_PUBLISH'));
         this.loading.set(false);
       },
     });
+  }
+
+  /**
+   * Met la publication en file d'attente hors-ligne (IndexedDB).
+   * Retourne true si l'enregistrement a réussi.
+   */
+  private async enqueue(location?: string): Promise<boolean> {
+    try {
+      await this.offlineService.queueFeedPost({
+        content: this.content().trim(),
+        location,
+        media: this.files(),
+        createdAt: new Date().toISOString(),
+      });
+      this.reset();
+      this.loading.set(false);
+      this.queued.set(true);
+      setTimeout(() => this.queued.set(false), 5000);
+      return true;
+    } catch {
+      this.error.set(this.translate.instant('OFFLINE.STORAGE_ERROR'));
+      this.loading.set(false);
+      return false;
+    }
   }
 
   reset(): void {

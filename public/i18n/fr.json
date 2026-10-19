@@ -48,7 +48,7 @@
     "LANG_SWITCH": "Switch to English"
   },
   "HOME": {
-    "OFFLINE_BANNER": "Mode hors-ligne — vous consultez vos posts sauvegardés",
+    "OFFLINE_BANNER": "Mode hors-ligne — affichage du contenu en cache et de vos posts sauvegardés",
     "HERO_EYEBROW": "Plateforme citoyenne de signalement",
     "HERO_TITLE": "Protéger ensemble.",
     "HERO_ACCENT": "Signaler. Alerter. Agir.",
@@ -687,6 +687,7 @@
     "BTN_REMOVE_TITLE": "Retirer",
     "BTN_MEDIA_TITLE": "Ajouter photo ou vidéo",
     "BTN_LOCATION_TITLE": "Ajouter localisation",
+    "BTN_LOCATION_LABEL": "Lieu",
     "LOCATION_PLACEHOLDER": "Ville, pays...",
     "BTN_PUBLISHING": "Publication...",
     "BTN_PUBLISH": "Publier",
@@ -886,6 +887,15 @@
   "NETWORK": {
     "OFFLINE": "Vous êtes hors-ligne",
     "RECONNECTED": "Connexion rétablie"
+  },
+  "OFFLINE": {
+    "QUEUED_DESC": "Vous êtes hors-ligne. Votre publication sera envoyée automatiquement au retour de la connexion.",
+    "PENDING_TITLE": "Publications en attente ({{count}})",
+    "STATUS_PENDING": "En attente d'envoi",
+    "STATUS_FAILED": "Échec de l'envoi",
+    "SYNC_NOW": "Synchroniser",
+    "RETRY": "Réessayer",
+    "STORAGE_ERROR": "Stockage hors-ligne indisponible : la publication n'a pas pu être mise en attente."
   },
   "PERMISSION": {
     "BTN_ENABLE": "Activer",

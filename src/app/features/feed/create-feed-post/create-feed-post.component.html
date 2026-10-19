@@ -20,6 +20,11 @@
     <i class="fas fa-circle-exclamation"></i> {{ error() }}
   </div>
 
+  <!-- Confirmation hors-ligne -->
+  <div class="cp-queued" *ngIf="queued()">
+    <i class="fas fa-clock"></i> {{ 'OFFLINE.QUEUED_DESC' | translate }}
+  </div>
+
   <!-- Previews médias -->
   <div class="cp-previews" *ngIf="previews().length > 0">
     <div class="cp-preview-item" *ngFor="let p of previews(); let i = index">
@@ -83,7 +88,7 @@
         [class.cp-action-btn-active]="showLocationField()"
         [title]="'CREATE_POST.BTN_LOCATION_TITLE' | translate">
         <i class="fas fa-location-dot"></i>
-        <span>Lieu</span>
+        <span>{{ 'CREATE_POST.BTN_LOCATION_LABEL' | translate }}</span>
       </button>
     </div>
 

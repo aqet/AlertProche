@@ -132,11 +132,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   // ];
 
   filteredPosts = computed(() => {
-    // Mode hors-ligne : retourner uniquement les posts sauvegardés
-    if (this.isOffline()) {
-      return this.offlineService.getSavedPosts();
+    // Hors-ligne : si le cache du Service Worker n'a rien fourni,
+    // on retombe sur les publications sauvegardées manuellement.
+    let base = this.posts();
+    if (base.length === 0 && this.isOffline()) {
+      base = this.offlineService.getSavedPosts();
     }
-    let result = this.posts();
+    let result = base;
     // Masquer les résolues par défaut
     if (!this.showResolved()) {
       result = result.filter(p => p.isResolved !== true);
@@ -267,17 +269,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (online) {
         this.loadPosts();
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
     this.startSlider();
     this.loadAppDownloadCount();
-    if (!this.offlineService.online()) {
-      this.posts.set(this.offlineService.getSavedPosts());
-      this.loading.set(false);
-      return;
-    }
+    // Hors-ligne, le Service Worker sert la dernière version en cache (dataGroups) :
+    // on tente donc toujours la requête, le repli se fait dans loadPosts().
     this.loadPosts();
   }
 
@@ -289,6 +288,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: () => {
+        // Hors-ligne sans cache disponible : repli sur les posts sauvegardés
+        if (!this.offlineService.online()) {
+          this.posts.set(this.offlineService.getSavedPosts());
+        }
         this.loading.set(false);
       },
     });

@@ -48,7 +48,7 @@
     "LANG_SWITCH": "Passer en français"
   },
   "HOME": {
-    "OFFLINE_BANNER": "Offline mode — viewing saved posts",
+    "OFFLINE_BANNER": "Offline mode — showing cached content and your saved posts",
     "HERO_EYEBROW": "Citizen reporting platform",
     "HERO_TITLE": "Protecting together.",
     "HERO_ACCENT": "Report. Alert. Act.",
@@ -687,6 +687,7 @@
     "BTN_REMOVE_TITLE": "Remove",
     "BTN_MEDIA_TITLE": "Add photo or video",
     "BTN_LOCATION_TITLE": "Add location",
+    "BTN_LOCATION_LABEL": "Location",
     "LOCATION_PLACEHOLDER": "City, country...",
     "BTN_PUBLISHING": "Publishing...",
     "BTN_PUBLISH": "Publish",
@@ -886,6 +887,15 @@
   "NETWORK": {
     "OFFLINE": "You are offline",
     "RECONNECTED": "Connection restored"
+  },
+  "OFFLINE": {
+    "QUEUED_DESC": "You're offline. Your post will be sent automatically when the connection returns.",
+    "PENDING_TITLE": "Pending posts ({{count}})",
+    "STATUS_PENDING": "Waiting to send",
+    "STATUS_FAILED": "Send failed",
+    "SYNC_NOW": "Sync now",
+    "RETRY": "Retry",
+    "STORAGE_ERROR": "Offline storage unavailable: the post could not be queued."
   },
   "PERMISSION": {
     "BTN_ENABLE": "Enable",
