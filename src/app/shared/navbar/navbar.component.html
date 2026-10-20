@@ -24,6 +24,12 @@
         <a routerLink="/sos/history" routerLinkActive="active" class="nav-link" *ngIf="isAuth()"><i
             class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
       </li>
+      <li *ngIf="isAuth()">
+        <a routerLink="/messages" routerLinkActive="active" class="nav-link nav-link-msg">
+          <i class="fas fa-comment-dots"></i> {{ 'NAV.MESSAGES' | translate }}
+          <span class="msg-badge" *ngIf="dm.unreadTotal() > 0">{{ dm.unreadTotal() > 99 ? '99+' : dm.unreadTotal() }}</span>
+        </a>
+      </li>
       <li>
         <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">{{ 'NAV.ABOUT' | translate }}</a>
       </li>
@@ -107,6 +113,10 @@
       </a>
       <a routerLink="/sos/history" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
           class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
+      <a routerLink="/messages" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()">
+        <i class="fas fa-comment-dots"></i> {{ 'NAV.MESSAGES' | translate }}
+        <span class="msg-badge" *ngIf="dm.unreadTotal() > 0">{{ dm.unreadTotal() > 99 ? '99+' : dm.unreadTotal() }}</span>
+      </a>
       <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i
           class="fas fa-circle-info"></i> {{ 'NAV.ABOUT' | translate }}</a>
       <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i>

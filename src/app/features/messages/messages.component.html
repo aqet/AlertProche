@@ -1,0 +1,66 @@
+<div class="messages-page page-wrapper">
+  <div class="container">
+
+    <!-- ── HEADER ──────────────────────────────────────────────────── -->
+    <div class="msg-header">
+      <div class="msg-title-row">
+        <div class="msg-icon"><i class="fas fa-comments"></i></div>
+        <div>
+          <h1 class="section-title">{{ 'CHAT.INBOX_TITLE' | translate }}</h1>
+          <p class="section-subtitle">{{ 'CHAT.INBOX_SUBTITLE' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="msg-unread-pill" *ngIf="totalUnread > 0">
+        <i class="fas fa-envelope"></i>
+        {{ totalUnread }}
+      </div>
+    </div>
+
+    <!-- ── LOADING ─────────────────────────────────────────────────── -->
+    <div class="loading-state" *ngIf="loading()">
+      <div class="spinner"></div> {{ 'CHAT.LOADING' | translate }}
+    </div>
+
+    <!-- ── LISTE DES CONVERSATIONS ─────────────────────────────────── -->
+    <div class="conv-list animate-fade-in" *ngIf="!loading()">
+
+      <div class="conv-empty" *ngIf="conversations().length === 0">
+        <div class="conv-empty-icon"><i class="fas fa-comment-dots"></i></div>
+        <h3>{{ 'CHAT.EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'CHAT.EMPTY_DESC' | translate }}</p>
+        <a routerLink="/feed" class="btn-go-feed">
+          <i class="fas fa-rss"></i> {{ 'CHAT.EMPTY_CTA' | translate }}
+        </a>
+      </div>
+
+      <button
+        class="conv-item"
+        *ngFor="let conv of conversations()"
+        (click)="openConversation(conv._id)"
+        [class.unread]="conv.unreadCount > 0">
+
+        <!-- Avatar -->
+        <div class="conv-avatar">
+          <img *ngIf="conv.peer.photoUrl" [src]="conv.peer.photoUrl" [alt]="conv.peer.pseudo">
+          <span *ngIf="!conv.peer.photoUrl">{{ initials(conv.peer.pseudo) }}</span>
+        </div>
+
+        <!-- Contenu -->
+        <div class="conv-body">
+          <div class="conv-top">
+            <span class="conv-pseudo">{{ conv.peer.pseudo }}</span>
+            <span class="conv-time">{{ getTimeAgo(conv.lastMessageAt) }}</span>
+          </div>
+          <div class="conv-bottom">
+            <span class="conv-preview">{{ conv.lastMessagePreview || ('CHAT.NO_MESSAGE' | translate) }}</span>
+            <span class="conv-badge" *ngIf="conv.unreadCount > 0">{{ conv.unreadCount }}</span>
+          </div>
+        </div>
+
+        <i class="fas fa-chevron-right conv-chevron"></i>
+      </button>
+    </div>
+
+  </div>
+</div>

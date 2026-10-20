@@ -1,0 +1,81 @@
+<div class="conv-page page-wrapper">
+  <div class="container conv-container">
+
+    <!-- ── HEADER ──────────────────────────────────────────────────── -->
+    <div class="conv-header">
+      <button class="back-btn" (click)="goBack()" [title]="'CHAT.BACK' | translate">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+
+      <div class="conv-header-avatar">
+        <img *ngIf="peer()?.photoUrl" [src]="peer()!.photoUrl!" [alt]="peer()?.pseudo">
+        <span *ngIf="!peer()?.photoUrl">{{ initials(peer()?.pseudo ?? '') }}</span>
+      </div>
+
+      <div class="conv-header-info">
+        <h1 class="conv-header-pseudo">{{ peer()?.pseudo || ('CHAT.SOMEONE' | translate) }}</h1>
+        <span class="conv-header-sub">{{ 'CHAT.DIRECT_SUB' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- ── MESSAGES ────────────────────────────────────────────────── -->
+    <div class="conv-scroll" #scrollBox>
+
+      <div class="conv-loading" *ngIf="loading()">
+        <div class="spinner"></div> {{ 'CHAT.LOADING' | translate }}
+      </div>
+
+      <div class="conv-error" *ngIf="error() && !loading()">
+        <i class="fas fa-triangle-exclamation"></i> {{ error() }}
+      </div>
+
+      <div class="conv-no-messages" *ngIf="!loading() && messages().length === 0 && !error()">
+        <i class="fas fa-hand-wave"></i>
+        <p>{{ 'CHAT.NO_MESSAGES_HINT' | translate }}</p>
+      </div>
+
+      <div
+        class="msg-row"
+        *ngFor="let m of messages()"
+        [class.mine]="isMine(m)"
+        [class.theirs]="!isMine(m)">
+        <div class="msg-bubble">
+          <p class="msg-text">{{ m.text }}</p>
+          <span class="msg-time">
+            {{ formatTime(m.createdAt) }}
+            <i
+              *ngIf="isMine(m)"
+              class="fas msg-receipt"
+              [ngClass]="receiptIcon(m)"
+              [title]="receiptLabel(m) | translate"
+              [attr.aria-label]="receiptLabel(m) | translate">
+            </i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COMPOSER ────────────────────────────────────────────────── -->
+    <form class="conv-composer" (ngSubmit)="send()">
+      <textarea
+        class="composer-input"
+        [(ngModel)]="draft"
+        name="draft"
+        [placeholder]="'CHAT.PLACEHOLDER' | translate"
+        rows="1"
+        maxlength="2000"
+        (keydown)="onKeydown($event)"
+        [disabled]="sending()">
+      </textarea>
+      <button
+        type="submit"
+        class="send-btn"
+        [class.busy]="sending()"
+        [disabled]="!draft().trim() || sending()"
+        [title]="'CHAT.SEND' | translate">
+        <i class="fas" [ngClass]="sending() ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+      </button>
+    </form>
+
+  </div>
+</div>

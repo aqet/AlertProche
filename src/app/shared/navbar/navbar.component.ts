@@ -1,10 +1,11 @@
-import { Component, computed, ElementRef, HostListener, inject, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { LanguageService } from '../../core/services/language.service';
+import { DirectMessageService } from '../../core/services/direct-message.service';
 
 @Component({
   selector: 'app-navbar',
@@ -37,8 +38,18 @@ export class NavbarComponent {
     public auth: AuthService,
     public theme: ThemeService,
     public lang: LanguageService,
+    public dm: DirectMessageService,
   ) {
     this.checkMobile();
+
+    // Badge "messages non lus" : polling uniquement si connecté
+    effect(() => {
+      if (this.isAuth()) {
+        this.dm.startBadgePolling();
+      } else {
+        this.dm.stopBadgePolling();
+      }
+    });
   }
 
   private checkMobile(): void {

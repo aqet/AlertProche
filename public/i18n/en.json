@@ -45,7 +45,29 @@
     "LOGOUT": "Sign Out",
     "THEME_LIGHT": "Light mode",
     "THEME_DARK": "Dark mode",
-    "LANG_SWITCH": "Passer en français"
+    "LANG_SWITCH": "Passer en français",
+    "MESSAGES": "Messages"
+  },
+  "CHAT": {
+    "INBOX_TITLE": "Messages",
+    "INBOX_SUBTITLE": "Your private conversations with other users",
+    "LOADING": "Loading…",
+    "EMPTY_TITLE": "No conversations",
+    "EMPTY_DESC": "Start a conversation from a post or comment to chat privately with someone.",
+    "EMPTY_CTA": "Browse the news feed",
+    "NO_MESSAGE": "No message",
+    "BACK": "Back",
+    "SOMEONE": "User",
+    "DIRECT_SUB": "Private conversation",
+    "NO_MESSAGES_HINT": "Say hello! Send the first message to start the conversation.",
+    "PLACEHOLDER": "Type your message…",
+    "SEND": "Send",
+    "ERROR_LOAD": "Could not load the conversation.",
+    "ERROR_SEND": "Could not send the message.",
+    "ERROR_OPEN": "Could not open the conversation.",
+    "STATUS_SENT": "Sent",
+    "STATUS_DELIVERED": "Delivered",
+    "STATUS_READ": "Read"
   },
   "HOME": {
     "OFFLINE_BANNER": "Offline mode — showing cached content and your saved posts",

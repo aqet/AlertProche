@@ -152,6 +152,11 @@ export class NotificationService {
       case 'NEW_POST':
         if (postId) this.router.navigate(['/posts', postId]);
         break;
+      case 'CHAT_MESSAGE': {
+        const conversationId = data.conversationId;
+        if (conversationId) this.router.navigate(['/messages', conversationId]);
+        break;
+      }
       default:
         if (sosId) this.router.navigate(['/sos', sosId]);
         break;
