@@ -24,6 +24,12 @@
         <a routerLink="/sos/history" routerLinkActive="active" class="nav-link" *ngIf="isAuth()"><i
             class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
       </li>
+      <li *ngIf="isAuth()">
+        <a routerLink="/messages" routerLinkActive="active" class="nav-link nav-link-msg">
+          <i class="fas fa-comment-dots"></i> {{ 'NAV.MESSAGES' | translate }}
+          <span class="msg-badge" *ngIf="dm.unreadTotal() > 0">{{ dm.unreadTotal() > 99 ? '99+' : dm.unreadTotal() }}</span>
+        </a>
+      </li>
       <li>
         <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">{{ 'NAV.ABOUT' | translate }}</a>
       </li>
@@ -66,8 +72,6 @@
       <ng-container *ngIf="isAuth(); else guestBlock">
         <a routerLink="/posts/new" class="btn-publish">
           <i class="fas fa-plus"></i> {{ 'NAV.PUBLISH' | translate }}
-          <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount()
-            }}</span>
         </a>
         <div class="user-chip">
           <div class="user-avatar">
@@ -109,6 +113,10 @@
       </a>
       <a routerLink="/sos/history" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
           class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
+      <a routerLink="/messages" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()">
+        <i class="fas fa-comment-dots"></i> {{ 'NAV.MESSAGES' | translate }}
+        <span class="msg-badge" *ngIf="dm.unreadTotal() > 0">{{ dm.unreadTotal() > 99 ? '99+' : dm.unreadTotal() }}</span>
+      </a>
       <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i
           class="fas fa-circle-info"></i> {{ 'NAV.ABOUT' | translate }}</a>
       <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i>
@@ -124,7 +132,6 @@
         'NAV.ANALYTICS' | translate }}</a>
       <a routerLink="/posts/new" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
           class="fas fa-triangle-exclamation"></i> {{ 'NAV.PUBLISH' | translate }}
-        <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
       </a>
       <a routerLink="/auth" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="!isAuth()"><i
           class="fas fa-right-to-bracket"></i> {{ 'NAV.LOGIN' | translate }}</a>
@@ -163,7 +170,6 @@
     <a routerLink="/posts/new" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="isAuth()">
       <i class="fas fa-plus"></i>
       <span>{{ 'NAV.PUBLISH' | translate }}</span>
-      <span class="pending-badge" *ngIf="offlineService.pendingCount() > 0">{{ offlineService.pendingCount() }}</span>
     </a>
     <a routerLink="/auth" class="bn-item bn-publish" (click)="closeMenu()" *ngIf="!isAuth()">
       <i class="fas fa-plus"></i>

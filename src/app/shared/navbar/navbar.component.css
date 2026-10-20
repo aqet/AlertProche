@@ -134,6 +134,26 @@
 .nav-link-admin.active { color: #E65100 !important; }
 .nav-link-admin.active::after { background: #E65100; }
 
+/* Badge "messages non lus" */
+.msg-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+.m-link .msg-badge { margin-left: auto; }
+
 /* ── Actions desktop ──────────────────────────── */
 .nav-actions {
   display: flex;

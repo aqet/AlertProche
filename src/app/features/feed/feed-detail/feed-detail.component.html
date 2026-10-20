@@ -66,6 +66,13 @@
           </span>
         </div>
         <span class="fd-time">{{ getTimeAgo(post()!.createdAt) }}</span>
+        <button
+          class="fd-msg-btn"
+          *ngIf="canMessage(post()!.author.userId)"
+          (click)="openChat(post()!.author.userId)"
+          [title]="'CHAT.DIRECT_SUB' | translate">
+          <i class="fas fa-comment-dots"></i>
+        </button>
       </div>
 
       <!-- Texte complet (pas tronqué sur la page de détail) -->
@@ -202,6 +209,13 @@
             <div class="fd-comment-header">
               <span class="fd-comment-pseudo">{{ c.pseudo }}</span>
               <span class="fd-comment-time">{{ getTimeAgo(c.createdAt) }}</span>
+              <button
+                class="fd-msg-btn fd-msg-btn-sm"
+                *ngIf="canMessage(c.userId)"
+                (click)="openChat(c.userId)"
+                [title]="'CHAT.DIRECT_SUB' | translate">
+                <i class="fas fa-comment-dots"></i>
+              </button>
             </div>
             <p class="fd-comment-text">{{ c.content }}</p>
           </div>

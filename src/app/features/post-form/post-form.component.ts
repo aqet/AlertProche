@@ -13,7 +13,6 @@ import { PostType } from '../../core/models/post.model';
 import { TrackingService } from '../../core/services/tracking.service';
 import { AudioRecorderService, RecordingState } from '../../core/services/audio-recorder.service';
 import { ParsedAudioAlertDto } from '../../core/models/parsed-audio-alert.dto';
-import { OfflineService } from '../../core/services/offline.service';
 
 @Component({
   selector: 'app-post-form',
@@ -44,7 +43,6 @@ export class PostFormComponent implements OnInit, OnDestroy {
   loading = signal(false);
   error = signal('');
   success = signal(false);
-  offlineQueued = signal(false);
 
   // Rapport de notification push reçu après la création du post
   notifReport = signal<{ sent: number; failed: number; totalTokens: number; error: string | null } | null>(null);
@@ -219,7 +217,6 @@ export class PostFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private tracking: TrackingService,
     public audioRecorder: AudioRecorderService,
-    private offlineService: OfflineService,
   ) {
     this.form = this.fb.group({
       title: [
@@ -479,12 +476,6 @@ export class PostFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Mode hors-ligne : mettre le post (image comprise) en file d'attente
-    if (!this.offlineService.online()) {
-      this.enqueueOffline();
-      return;
-    }
-
     this.loading.set(true);
     this.error.set('');
     this.postService
@@ -508,42 +499,12 @@ export class PostFormComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.loading.set(false);
-
-          // Perte de connexion en cours d'envoi : basculer en file d'attente
-          if (err?.status === 0) {
-            this.enqueueOffline();
-            return;
-          }
-
           this.error.set(
             err?.error?.message ||
               err?.message ||
               this.translateSvc.instant('POST.ERR_SUBMIT'),
           );
         },
-      });
-  }
-
-  /** Met le post en file d'attente hors-ligne (image stockée en IndexedDB) */
-  private enqueueOffline(): void {
-    const v = this.form.value;
-    this.offlineService
-      .queueCasePost({
-        title: v.title,
-        content: v.content,
-        location: v.location,
-        type: v.type,
-        isAnonymous: v.isAnonymous ?? false,
-        image: this.selectedFile() ?? undefined,
-        createdAt: new Date().toISOString(),
-      })
-      .then(() => {
-        this.offlineQueued.set(true);
-        this.error.set('');
-        setTimeout(() => this.router.navigate(['/']), 2500);
-      })
-      .catch(() => {
-        this.error.set(this.translateSvc.instant('OFFLINE.STORAGE_ERROR'));
       });
   }
 

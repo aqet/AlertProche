@@ -19,16 +19,6 @@
           <i class="fas fa-circle-exclamation"></i> {{ error() }}
         </div>
 
-        <!-- Post mis en attente hors-ligne -->
-        <div class="notif-report offline-queued-msg" *ngIf="offlineQueued()">
-          <div class="notif-report-header">
-            <i class="fas fa-clock"></i>
-            <strong>{{ 'POST.OFFLINE_QUEUED_TITLE' | translate }}</strong>
-          </div>
-          <p class="notif-report-hint">{{ 'POST.OFFLINE_QUEUED_DESC' | translate }}</p>
-          <p class="notif-report-hint">{{ 'COMMON.REDIRECT_2S' | translate }}</p>
-        </div>
-
         <!-- Succès + Rapport de notification push -->
         <div class="notif-report" *ngIf="success() && notifReport() as r">
           <div class="notif-report-header">

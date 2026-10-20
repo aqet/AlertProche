@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeedService, FeedPost } from '../../../core/services/feed.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { DirectMessageService } from '../../../core/services/direct-message.service';
 import { TimeAgoService } from '../../../core/services/time-ago.service';
 import { environment } from '../../../../environments/environment';
 
@@ -24,6 +25,7 @@ export class FeedDetailComponent implements OnInit {
   private auth       = inject(AuthService);
   private translate  = inject(TranslateService);
   private timeAgo    = inject(TimeAgoService);
+  private dm         = inject(DirectMessageService);
 
   post           = signal<FeedPost | null>(null);
   loading        = signal(true);
@@ -144,6 +146,30 @@ export class FeedDetailComponent implements OnInit {
 
   getTimeAgo(dateStr: string): string {
     return this.timeAgo.format(dateStr);
+  }
+
+  /** Ouvre (ou crée) une conversation privée avec un utilisateur */
+  openChat(userId: string | undefined): void {
+    if (!userId || !this.isAuth() || userId === this.currentUser()?._id) return;
+    this.dm.startConversation(userId).subscribe({
+      next: (conv) => this.router.navigate(['/messages', conv._id]),
+      error: (err) => {
+        // Erreur visible : avant, tout échec était silencieux (« rien ne se passe »)
+        console.error('[openChat] échec ouverture conversation', err);
+        const raw = err?.error?.message;
+        const msg = Array.isArray(raw) ? raw.join(' · ') : raw;
+        alert(
+          typeof msg === 'string' && msg
+            ? msg
+            : this.translate.instant('CHAT.ERROR_OPEN'),
+        );
+      },
+    });
+  }
+
+  /** true si le bouton "message" doit s'afficher pour cet auteur */
+  canMessage(userId: string | undefined): boolean {
+    return !!userId && this.isAuth() && userId !== this.currentUser()?._id;
   }
 
   goBack(): void {

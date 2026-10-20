@@ -67,6 +67,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/sos-history/sos-history.component').then(m => m.SosHistoryComponent)
   },
   {
+    path: 'messages',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/messages/messages.component').then(m => m.MessagesComponent)
+  },
+  {
+    path: 'messages/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/messages/conversation.component').then(m => m.ConversationComponent)
+  },
+  {
     path: 'sos/:sosId',
     canActivate: [authGuard],
     loadComponent: () => import('./features/sos-response/sos-response.component').then(m => m.SosResponseComponent)
