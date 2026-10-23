@@ -337,6 +337,7 @@
               <th>{{ 'AUTH.LABEL_PSEUDO' | translate }}</th>
               <th>{{ 'AUTH.LABEL_EMAIL' | translate }}</th>
               <th>{{ 'ADMIN.PAYOUT_USER_LABEL' | translate }}</th>
+              <th>{{ 'ADMIN.COL_TRUST' | translate }}</th>
               <th>{{ 'ADMIN.TAB_POSTS' | translate }}</th>
               <th>{{ 'ADMIN.KPI_COMMENTS' | translate }}</th>
               <th>{{ 'COMMON.DATE' | translate }}</th>
@@ -372,6 +373,24 @@
                   </button>
                 </div>
               </td>
+              <td>
+                <span class="trust-chip" [ngClass]="'trust-' + trustBadge(user)">
+                  <i class="fas" [ngClass]="{
+                    'fa-seedling': trustBadge(user) === 'new',
+                    'fa-circle-check': trustBadge(user) === 'confirmed',
+                    'fa-award': trustBadge(user) === 'reference',
+                    'fa-minus': trustBadge(user) === 'none'
+                  }"></i>
+                  <ng-container *ngIf="trustBadge(user) !== 'none'; else noTrust">
+                    {{ trustKey(user) | translate }}
+                  </ng-container>
+                  <ng-template #noTrust>—</ng-template>
+                </span>
+                <span class="trust-strikes" *ngIf="(user.strikes ?? 0) > 0"
+                  [title]="'ADMIN.TRUST_STRIKES_HINT' | translate">
+                  <i class="fas fa-triangle-exclamation"></i> {{ user.strikes }}
+                </span>
+              </td>
               <td class="num-cell">{{ user.postCount }}</td>
               <td class="num-cell">{{ user.commentCount }}</td>
               <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
@@ -380,6 +399,12 @@
                   <button class="btn btn-sm btn-ghost-icon" (click)="startRoleChange(user)"
                     *ngIf="roleChangeUserId() !== user._id">
                     <i class="fas fa-user-pen"></i>
+                  </button>
+                  <button class="btn btn-sm btn-ghost-icon"
+                    *ngIf="trustBadge(user) !== 'reference'"
+                    (click)="makeTrusted(user)"
+                    [title]="'ADMIN.BTN_TRUSTED' | translate">
+                    <i class="fas fa-user-shield"></i>
                   </button>
                   <button class="btn btn-sm btn-ghost-icon" (click)="viewUserTransactions(user._id)">
                     <i class="fas fa-receipt"></i>

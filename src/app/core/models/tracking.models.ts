@@ -4,6 +4,8 @@ export type TrackingEventType =
   | 'post_created'
   | 'comment_posted'
   | 'post_reported'
+  | 'post_confirmed'
+  | 'post_confirmation_removed'
   | 'image_search_performed'
   | 'user_login'
   | 'user_registered';
@@ -19,6 +21,8 @@ export interface TrackingSessionPayload {
   entryPage: string;
   trafficSource: TrafficSource;
   isNewVisitor: boolean;
+  isBot: boolean;
+  isStaff: boolean;
   startedAt: string; // ISO date
 }
 
@@ -30,6 +34,8 @@ export interface PageviewPayload {
   type: 'pageview';  // requis par le DTO backend
   url: string;       // URL normalisée
   duration: number;  // ms passés sur la page
+  isBot: boolean;
+  isStaff: boolean;
   timestamp: string; // ISO date
 }
 
@@ -40,55 +46,148 @@ export interface TrackingEventPayload {
   userId?: string;
   type: TrackingEventType;
   metadata?: Record<string, any>;
+  isBot: boolean;
+  isStaff: boolean;
   timestamp: string;
 }
 
-// Réponse GET /tracking/analytics/overview
-export interface AnalyticsOverview {
-  totalSessions: number;
-  totalPageviews: number;
-  uniqueVisitors: number;
-  newVisitors: number;
-  returningVisitors: number;
-  conversionRate: number;    // %
-  activeSessions: number;    // sessions actives dans les 5 dernières minutes
-  todaySessions: number;
-}
+export type AnalyticsPeriod = '7d' | '30d' | '90d' | '12m' | 'all';
+export type AnalyticsTab = 'audience' | 'alerts';
+export type AnalyticsGranularity = 'day' | 'month';
 
-// Réponse GET /tracking/analytics/pages et /top-posts
-export interface PageStat {
-  url: string;
-  views: number;
-}
-
-// Réponse GET /tracking/analytics/geo
-export interface GeoStat {
-  country: string;
-  city?: string;
-  count: number;
-}
-
-// Réponse GET /tracking/analytics/devices
-export interface DeviceStat {
-  device: DeviceType;
-  count: number;
-  percentage: number;
-}
-
-// Réponse GET /tracking/analytics/sources
-export interface SourceStat {
-  source: TrafficSource;
-  count: number;
-  percentage: number;
-}
-
-// Réponse GET /tracking/analytics/activity (un point par jour)
-export interface ActivityPoint {
-  date: string;       // YYYY-MM-DD
+export interface AnalyticsSeriesPoint {
+  date: string;
+  visitors: number;
   sessions: number;
   pageviews: number;
 }
 
-// Type union pour les onglets de la page analytics
-export type AnalyticsTab = 'overview' | 'pages' | 'geo' | 'sources' | 'devices';
-export type AnalyticsPeriod = '7d' | '30d' | '90d';
+export interface BreakdownItem {
+  label: string;
+  count: number;
+  percentage: number;
+}
+
+export interface CountryItem {
+  code: string;
+  country: string;
+  count: number;
+  percentage: number;
+}
+
+export interface CityItem {
+  city: string;
+  country: string;
+  count: number;
+}
+
+export interface PageItem {
+  url: string;
+  views: number;
+}
+
+export interface AudiencePrevious {
+  visitors: number;
+  sessions: number;
+  pageviews: number;
+  avgDurationMs: number;
+}
+
+export interface AudienceResponse {
+  period: AnalyticsPeriod;
+  since: string;
+  until: string;
+  granularity: AnalyticsGranularity;
+  kpis: {
+    visitors: number;
+    sessions: number;
+    pageviews: number;
+    avgDurationMs: number;
+    pagesPerSession: number;
+    newVisitors: number;
+    returningVisitors: number;
+    staffSessions: number;
+    botsExcluded: number;
+  };
+  previous: AudiencePrevious | null;
+  series: AnalyticsSeriesPoint[];
+  pages: PageItem[];
+  devices: BreakdownItem[];
+  browsers: BreakdownItem[];
+  sources: BreakdownItem[];
+  countries: CountryItem[];
+  localization: { localized: number; total: number; rate: number };
+  cities: CityItem[];
+}
+
+export interface MissionSeriesPoint {
+  date: string;
+  published: number;
+  resolved: number;
+}
+
+export interface MissionPost {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  imageUrl: string | null;
+  isResolved: boolean;
+  createdAt: string;
+  views: number;
+}
+
+export interface MissionNoViewPost {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  createdAt: string;
+}
+
+export interface MissionResponse {
+  period: AnalyticsPeriod;
+  since: string;
+  until: string;
+  live: {
+    activeAlerts: number;
+    disappearances: number;
+    resolvedTotal: number;
+    activeNow: number;
+    imageSearches24h: number;
+  };
+  kpis: {
+    published: number;
+    views: number;
+    contacts: number;
+    comments: number;
+    conversations: number;
+    resolved: number;
+    medianResolutionHours: number | null;
+  };
+  previous: {
+    published: number;
+    views: number;
+    contacts: number;
+    resolved: number;
+  } | null;
+  funnel: {
+    active: number;
+    viewed: number;
+    contacted: number;
+    resolved: number;
+  };
+  series: MissionSeriesPoint[];
+  topPosts: MissionPost[];
+  noViews: MissionNoViewPost[];
+  cities: { city: string; count: number }[];
+  community: {
+    registrations: number;
+    previousRegistrations: number | null;
+    activeMembers: number;
+    messages: number;
+    comments: number;
+    imageSearches: number;
+    reports: number;
+  };
+}

@@ -19,13 +19,15 @@
 }
 
 .navbar-inner {
-  max-width: 1400px;
+  max-width: 1520px;
   margin: 0 auto;
   padding: 0 20px;
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 16px;
+  /* Autorise les enfants à rétrécir : sans ça, la barre déborde. */
+  min-width: 0;
 }
 
 /* ── Logo ─────────────────────────────────────── */
@@ -35,18 +37,21 @@
   gap: 10px;
   text-decoration: none;
   flex-shrink: 0;
-  margin-right: 28px;
 }
 
 .logo-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Le logo ne doit jamais dépasser de la barre (60 px). */
+  height: 44px;
 }
 
 .logo-icon img {
-  width: 100px;
-  height: 100px;
+  display: block;
+  width: auto;
+  height: 44px;
+  max-width: 120px;
   object-fit: contain;
 }
 
@@ -75,14 +80,28 @@
 /* ── Nav links desktop ────────────────────────── */
 .nav-links {
   display: flex;
+  align-items: center;
   list-style: none;
   gap: 2px;
-  flex: 1;
+  flex: 1 1 auto;
+  /* Filet de sécurité : si la place manque, la zone défile au lieu de
+     déborder par-dessus les boutons de droite. */
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
 }
+
+.nav-links::-webkit-scrollbar { display: none; }
+
+.nav-links li { flex: 0 0 auto; }
 
 .nav-link {
   display: block;
-  padding: 7px 12px;
+  padding: 7px 11px;
   border-radius: var(--radius-sm);
   font-size: 0.84rem;
   font-weight: 500;
@@ -104,7 +123,7 @@
 .nav-link.active::after {
   content: '';
   position: absolute;
-  bottom: -2px; left: 12px; right: 12px;
+  bottom: 2px; left: 11px; right: 11px;
   height: 2px;
   background: var(--green);
   border-radius: 2px;
@@ -158,13 +177,13 @@
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 /* Bouton langue */
 .lang-btn {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   line-height: 1;
 }
 
@@ -237,6 +256,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  max-width: 220px;
   padding: 4px 10px 4px 4px;
   background: var(--green-pale);
   border: 1.5px solid var(--green-border);
@@ -319,6 +340,13 @@
   background: var(--bg-card);
   border-top: 1px solid var(--green-border);
   box-shadow: var(--shadow-md);
+  /* Un compte admin a beaucoup d'entrées : le menu doit pouvoir défiler
+     au lieu de sortir de l'écran sur un petit téléphone. */
+  max-height: calc(100vh - var(--nav-height));
+  max-height: calc(100dvh - var(--nav-height));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .mobile-menu-inner {
@@ -351,8 +379,41 @@
 .m-link-admin { color: #E65100 !important; }
 
 
-/* ── Responsive ───────────────────────────────── */
-@media (max-width: 1000px) {
+/* ── Responsive : on retire d'abord le moins important ─────────────
+   Principe : garder les liens utiles le plus longtemps possible, cacher
+   d'abord les outils de modération, puis les rubriques secondaires, et ne
+   passer au menu hamburger qu'en dernier recours. Les entrées masquées
+   restent accessibles dans le menu (bouton hamburger). */
+
+/* Desktop étroit : on compacte les espacements. */
+@media (max-width: 1500px) {
+  .navbar-inner { padding: 0 16px; gap: 10px; }
+  .nav-link { padding: 7px 8px; font-size: 0.79rem; }
+  .logo-icon { height: 38px; }
+  .logo-icon img { height: 38px; }
+  .user-role-badge { display: none; }
+  .user-chip { max-width: 170px; gap: 6px; }
+  .user-pseudo { max-width: 68px; }
+  .btn-publish { padding: 8px 12px; font-size: 0.79rem; }
+  .btn-login,
+  .btn-register { padding: 7px 11px; font-size: 0.79rem; }
+}
+
+/* 1er niveau de repli : on masque Modération / Admin / Analytics.
+   Le hamburger reste affiché pour y accéder. */
+@media (max-width: 1360px) {
+  .nav-staff { display: none; }
+  .hamburger { display: flex; }
+  .mobile-menu { display: block; }
+}
+
+/* 2e niveau : on masque aussi Historique / À propos / Avis. */
+@media (max-width: 1120px) {
+  .nav-secondary { display: none; }
+}
+
+/* 3e niveau : plus assez de place pour les liens + les boutons → menu complet. */
+@media (max-width: 940px) {
   .nav-links { display: none; }
   .nav-actions { display: none; }
   .hamburger { display: flex; }

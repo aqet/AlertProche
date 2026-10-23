@@ -21,6 +21,13 @@ export class NavbarComponent {
   scrolled = signal(false);
 
   /**
+   * Largeur de la fenêtre, réactive.
+   * Sert à n'afficher dans le menu burger que les liens réellement masqués
+   * dans la barre (voir les seuils dans navbar.component.css).
+   */
+  winWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 1920);
+
+  /**
    * true sur mobile (largeur ≤ 1000px) OU en mode PWA standalone installée.
    * Contrôle l'affichage de la bottom nav.
    */
@@ -65,7 +72,17 @@ export class NavbarComponent {
 
   @HostListener('window:resize')
   onResize(): void {
+    this.winWidth.set(window.innerWidth);
     this.checkMobile();
+
+    // Si la barre repasse en mode bureau, le menu mobile n'a plus de bouton
+    // pour le refermer : on le ferme automatiquement.
+    const hamburger = (this.el.nativeElement as HTMLElement).querySelector(
+      '.hamburger',
+    ) as HTMLElement | null;
+    if (this.isOpen && hamburger && getComputedStyle(hamburger).display === 'none') {
+      this.isOpen = false;
+    }
   }
 
   @HostListener('window:scroll')
@@ -86,5 +103,33 @@ export class NavbarComponent {
 
   toggleLang(): void {
     this.lang.setLanguage(this.lang.currentLang() === 'fr' ? 'en' : 'fr');
+  }
+
+  /* ── Ce qui reste visible dans la barre, selon la largeur ──────────
+     Les seuils doivent rester alignés avec navbar.component.css :
+       ≤ 940  : plus aucun lien (ni actions) dans la barre
+       ≤ 1120 : plus de liens secondaires (À propos, Avis)
+       ≤ 1360 : plus de liens staff (Modération, Admin, Analytics)
+       ≤ 1500 : compactage (l'Historique est un lien secondaire)
+     Le menu burger n'affiche que ce qui est masqué. */
+
+  /** Les liens de navigation sont-ils visibles dans la barre ? */
+  get showNavLinks(): boolean {
+    return this.winWidth() > 940;
+  }
+
+  /** Les actions de droite (thème, langue, publier, compte) sont-elles visibles ? */
+  get showNavActions(): boolean {
+    return this.winWidth() > 940;
+  }
+
+  /** Les liens staff sont-ils visibles dans la barre ? */
+  get showStaffLinks(): boolean {
+    return this.winWidth() > 1360;
+  }
+
+  /** Les liens secondaires sont-ils visibles dans la barre ? */
+  get showSecondaryLinks(): boolean {
+    return this.winWidth() > 1120;
   }
 }

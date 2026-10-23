@@ -1,178 +1,240 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, signal, computed, inject, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx-charts';
+import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { forkJoin } from 'rxjs';
+
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
+import { MiniChartComponent, MiniChartPoint } from './mini-chart.component';
 import {
-  AnalyticsPeriod, AnalyticsTab, AnalyticsOverview,
-  PageStat, GeoStat, DeviceStat, SourceStat, ActivityPoint
+  AnalyticsPeriod,
+  AnalyticsTab,
+  AudienceResponse,
+  MissionResponse,
 } from '../../../core/models/tracking.models';
-import { curveMonotoneX, curveCardinal } from 'd3-shape';
-type ChartSerie = 'sessions' | 'pageviews' | 'both';
+
+type AudienceMetric = 'visitors' | 'sessions' | 'pageviews';
+type AlertMetric = 'published' | 'resolved';
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, NgxChartsModule, TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule, MiniChartComponent, MediaUrlPipe],
   templateUrl: './analytics.component.html',
-  styleUrls: ['./analytics.component.css']
+  styleUrls: ['./analytics.component.css'],
 })
-export class AnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AnalyticsComponent implements OnInit, OnDestroy {
   private analytics = inject(AnalyticsService);
-  private el = inject(ElementRef);
   private translate = inject(TranslateService);
 
-  curveMonotoneX=curveMonotoneX
   period = signal<AnalyticsPeriod>('30d');
-  activeTab = signal<AnalyticsTab>('overview');
+  tab = signal<AnalyticsTab>('audience');
   loading = signal(false);
-  chartSerie = signal<ChartSerie>('both');
+  error = signal<string | null>(null);
 
-  overview = signal<AnalyticsOverview | null>(null);
-  pages = signal<PageStat[]>([]);
-  topPosts = signal<PageStat[]>([]);
-  geo = signal<GeoStat[]>([]);
-  devices = signal<DeviceStat[]>([]);
-  sources = signal<SourceStat[]>([]);
-  activity = signal<ActivityPoint[]>([]);
+  audience = signal<AudienceResponse | null>(null);
+  mission = signal<MissionResponse | null>(null);
 
-  // Dimensions calculées dynamiquement selon la largeur réelle du conteneur
-  lineView = signal<[number, number]>([700, 280]);
-  barView  = signal<[number, number]>([700, 320]);
-  pieView  = signal<[number, number]>([340, 280]);
+  metric = signal<AudienceMetric>('visitors');
+  alertMetric = signal<AlertMetric>('published');
+  private refresh?: ReturnType<typeof setInterval>;
 
-  private refreshInterval: ReturnType<typeof setInterval> | undefined;
-  private resizeObserver: ResizeObserver | undefined;
+  readonly periods: { value: AnalyticsPeriod; label: string }[] = [
+    { value: '7d', label: 'ANALYTICS.PERIOD_7D' },
+    { value: '30d', label: 'ANALYTICS.PERIOD_30D' },
+    { value: '90d', label: 'ANALYTICS.PERIOD_90D' },
+    { value: '12m', label: 'ANALYTICS.PERIOD_12M' },
+    { value: 'all', label: 'ANALYTICS.PERIOD_ALL' },
+  ];
 
-  readonly LegendPosition = LegendPosition;
+  // ── Graphiques ────────────────────────────────────────────────
 
-  // ── Données formatées pour ngx-charts ──────────────────────────
-
-  lineChartData = computed(() => {
-    const data  = this.activity();
-    const serie = this.chartSerie();
-    const result: any[] = [];
-    if (serie !== 'pageviews') {
-      result.push({ name: this.translate.instant('ANALYTICS.KPI_SESSIONS'),   series: data.map(d => ({ name: d.date.slice(5), value: d.sessions  })) });
-    }
-    if (serie !== 'sessions') {
-      result.push({ name: this.translate.instant('ANALYTICS.KPI_PAGEVIEWS'), series: data.map(d => ({ name: d.date.slice(5), value: d.pageviews })) });
-    }
-    return result; 
+  audienceChartPoints = computed<MiniChartPoint[]>(() => {
+    const data = this.audience();
+    if (!data) return [];
+    const metric = this.metric();
+    return data.series.map((point) => ({
+      label: this.chartLabel(point.date, data.granularity),
+      value: point[metric],
+      title: `${this.chartLabel(point.date, data.granularity)} - ${this.formatNumber(point[metric])}`,
+    }));
   });
 
-  pagesChartData  = computed(() => this.pages().map(p    => ({ name: p.url,    value: p.views })));
-  postsChartData  = computed(() => this.topPosts().map(p  => ({ name: p.url,    value: p.views })));
-  devicesChartData = computed(() => this.devices().map(d  => ({ name: d.device, value: d.count })));
-  sourcesChartData = computed(() => this.sources().map(s  => ({ name: s.source, value: s.count })));
+  missionChartPoints = computed<MiniChartPoint[]>(() => {
+    const data = this.mission();
+    if (!data) return [];
+    const metric = this.alertMetric();
+    return data.series.map((point) => ({
+      label: this.chartLabel(point.date, 'month'),
+      value: point[metric],
+      title: `${this.chartLabel(point.date, 'month')} - ${this.formatNumber(point[metric])}`,
+    }));
+  });
 
-  lineColors: Color = {
-    name: 'activity', selectable: true, group: ScaleType.Ordinal,
-    domain: ['#e53935', '#1976d2']
-  };
-  deviceColors: Color = {
-    name: 'devices',  selectable: true, group: ScaleType.Ordinal,
-    domain: ['#e53935', '#1976d2', '#43a047']
-  };
-  sourceColors: Color = {
-    name: 'sources',  selectable: true, group: ScaleType.Ordinal,
-    domain: ['#e53935', '#1976d2', '#fb8c00', '#8e24aa', '#00897b']
-  };
+  pagesMain = computed(() =>
+    (this.audience()?.pages ?? []).filter((p) => !this.isTechnical(p.url)),
+  );
 
-  // Ticks X adaptatifs - moins de labels sur petit écran pour éviter l'entassement
-  xTicks = signal<string[]>([]);
+  pagesTechnical = computed(() =>
+    (this.audience()?.pages ?? []).filter((p) => this.isTechnical(p.url)),
+  );
 
   ngOnInit(): void {
-    this.loadAll();
-    this.refreshInterval = setInterval(() => {
-      if (this.activeTab() === 'overview') this.loadOverview();
-    }, 60_000);
-  }
-
-  ngAfterViewInit(): void {
-    // Observe le conteneur pour adapter les graphiques à sa largeur réelle
-    this.resizeObserver = new ResizeObserver(() => this.updateSizes());
-    this.resizeObserver.observe(this.el.nativeElement);
-    this.updateSizes();
+    this.load();
+    this.refresh = setInterval(() => this.load(false), 60_000);
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.refreshInterval);
-    this.resizeObserver?.disconnect();
+    clearInterval(this.refresh);
   }
 
-  private updateSizes(): void {
-    const w = this.el.nativeElement.clientWidth;
-    if (!w) return;
-
-    // padding .container (16–24px × 2) + padding .chart-card (14–20px × 2)
-    const pad  = w < 420 ? 32 + 28 : w < 650 ? 32 + 40 : 48 + 40;
-    const gap  = 20;
-    const full = Math.max(180, w - pad);
-    const isMobile = w < 700;
-    const isTiny = w < 420;
-    const half = isMobile ? full : Math.max(220, Math.floor((full - gap) / 2));
-
-    const lineH = isTiny ? 160 : isMobile ? 200 : 280;
-    const barH  = Math.max(140, Math.min(400, this.pages().length * 30 + 40));
-    const pieH  = isTiny ? 180 : isMobile ? 220 : 280;
-
-    this.lineView.set([full, lineH]);
-    this.barView.set([full, barH]);
-    this.pieView.set([half, pieH]);
-
-    this.computeXTicks(full);
-  }
-
-  // Sélectionne un sous-ensemble de dates pour l'axe X selon la largeur
-  private computeXTicks(width: number): void {
-    const data = this.activity();
-    if (!data.length) return;
-    // Espace minimal entre deux labels : ~55px
-    const maxTicks = Math.max(2, Math.floor(width / 55));
-    const step = Math.ceil(data.length / maxTicks);
-    const ticks = data
-      .filter((_, i) => i % step === 0)
-      .map(d => d.date.slice(5));
-    this.xTicks.set(ticks);
-  }
-
-  setPeriod(p: AnalyticsPeriod): void {
-    this.period.set(p);
-    this.loadAll();
+  setPeriod(period: AnalyticsPeriod): void {
+    if (period === this.period()) return;
+    this.period.set(period);
+    this.load();
   }
 
   setTab(tab: AnalyticsTab): void {
-    this.activeTab.set(tab);
-    // Re-calculer après que le DOM change d'onglet
-    setTimeout(() => this.updateSizes(), 50);
+    this.tab.set(tab);
   }
 
-  private loadAll(): void {
-    const p = this.period();
-    this.loading.set(true);
-    this.loadOverview();
-    this.analytics.getPages(p).subscribe({
-      next: v => { this.pages.set(v); this.updateSizes(); }, error: () => {}
-    });
-    this.analytics.getTopPosts(p).subscribe({ next: v => this.topPosts.set(v), error: () => {} });
-    this.analytics.getGeo(p).subscribe({ next: v => this.geo.set(v), error: () => {} });
-    this.analytics.getDevices(p).subscribe({ next: v => this.devices.set(v), error: () => {} });
-    this.analytics.getSources(p).subscribe({ next: v => this.sources.set(v), error: () => {} });
-    this.analytics.getActivity(p).subscribe({
-      next: v => {
-        this.activity.set(v);
+  private load(showBar = true): void {
+    if (showBar) this.loading.set(true);
+    const period = this.period();
+
+    forkJoin({
+      audience: this.analytics.getAudience(period),
+      mission: this.analytics.getMission(period),
+    }).subscribe({
+      next: ({ audience, mission }) => {
+        this.audience.set(audience);
+        this.mission.set(mission);
+        this.error.set(null);
         this.loading.set(false);
-        // Recalculer les ticks X après réception des données
-        this.computeXTicks(this.lineView()[0]);
       },
-      error: () => this.loading.set(false)
+      error: (err) => {
+        this.error.set(
+          err?.status === 401 || err?.status === 403
+            ? 'ANALYTICS.ERROR_ACCESS'
+            : 'ANALYTICS.ERROR_LOAD',
+        );
+        this.loading.set(false);
+      },
     });
   }
 
-  private loadOverview(): void {
-    this.analytics.getOverview(this.period()).subscribe({
-      next: v => this.overview.set(v), error: () => {}
-    });
+  // ── Formatage ─────────────────────────────────────────────────
+
+  get lang(): string {
+    return this.translate.currentLang || 'fr';
+  }
+
+  delta(current: number, previous: number | null | undefined): number | null {
+    if (previous === null || previous === undefined || previous === 0) return null;
+    return Math.round(((current - previous) / previous) * 100);
+  }
+
+  formatNumber(value: number | null | undefined): string {
+    return new Intl.NumberFormat(this.lang).format(value ?? 0);
+  }
+
+  formatDuration(ms: number | null | undefined): string {
+    if (!ms || ms < 1000) return '-';
+    const totalSeconds = Math.round(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    if (!minutes) return `${seconds} s`;
+    return `${minutes} min ${String(seconds).padStart(2, '0')} s`;
+  }
+
+  formatDate(iso: string | null | undefined): string {
+    if (!iso) return '-';
+    try {
+      return new Date(iso).toLocaleDateString(this.lang, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    } catch {
+      return '-';
+    }
+  }
+
+  chartLabel(date: string, granularity: 'day' | 'month'): string {
+    const [year, month, day] = date.split('-').map(Number);
+    try {
+      if (granularity === 'month') {
+        return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(this.lang, {
+          month: 'short',
+          year: '2-digit',
+          timeZone: 'UTC',
+        });
+      }
+      return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString(this.lang, {
+        day: '2-digit',
+        month: '2-digit',
+        timeZone: 'UTC',
+      });
+    } catch {
+      return date;
+    }
+  }
+
+  prettyUrl(url: string): string {
+    if (!url) return '-';
+    if (url === '/') return 'Accueil';
+    if (/^\/posts\/[a-f0-9]{24}$/i.test(url)) return '/posts/:id';
+    return url;
+  }
+
+  isTechnical(url: string): boolean {
+    return /^\/(admin|auth|dashboard|messages|sos|posts\/new)/.test(url || '');
+  }
+
+  deviceLabel(device: string): string {
+    const key = `ANALYTICS.DEVICE_${(device || 'other').toUpperCase()}`;
+    const translated = this.translate.instant(key);
+    return translated === key ? device : translated;
+  }
+
+  sourceLabel(source: string): string {
+    const map: Record<string, string> = {
+      Direct: 'ANALYTICS.SOURCE_DIRECT',
+      'Organic Search': 'ANALYTICS.SOURCE_SEARCH',
+      Social: 'ANALYTICS.SOURCE_SOCIAL',
+      Referral: 'ANALYTICS.SOURCE_REFERRAL',
+      Unknown: 'ANALYTICS.SOURCE_UNKNOWN',
+    };
+    const key = map[source];
+    return key ? this.translate.instant(key) : source;
+  }
+
+  typeLabel(type: string): string {
+    const map: Record<string, string> = {
+      Disparition: 'POST.TYPE_DISPARITION',
+      Abus: 'POST.TYPE_ABUS',
+      Prevention: 'POST.TYPE_PREVENTION',
+      "Appel à l'aide": 'POST.TYPE_APPEL',
+    };
+    const key = map[type];
+    return key ? this.translate.instant(key) : type;
+  }
+
+  percent(part: number, total: number): number {
+    if (!total) return 0;
+    return Math.round((part / total) * 100);
+  }
+
+  barPct(part: number, total: number): number {
+    return Math.min(100, this.percent(part, total));
+  }
+
+  get emptyLabel(): string {
+    return this.translate.instant('ANALYTICS.EMPTY_NO_DATA');
+  }
+
+  get noResultsLabel(): string {
+    return this.translate.instant('ANALYTICS.EMPTY_PERIOD');
   }
 }

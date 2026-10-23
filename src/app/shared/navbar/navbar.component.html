@@ -4,51 +4,52 @@
     <!-- Logo -->
     <a routerLink="/" class="logo" (click)="closeMenu()">
       <div class="logo-icon">
-        <img src="logo_alertProche.png" alt="">
+        <!-- <img src="logo_alertProche.png" alt=""> -->
+        <img src="/icons/favicon.svg" alt="">
       </div>
     </a>
 
     <!-- Nav Links - desktop -->
     <ul class="nav-links">
-      <li>
+      <li class="nav-essential"> 
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">
           {{ 'NAV.HOME' | translate }}
         </a>
       </li>
-      <li>
+      <li class="nav-essential">
         <a routerLink="/feed" routerLinkActive="active" class="nav-link">
           <i class="fas fa-rss"></i> {{ 'NAV.FEED' | translate }}
         </a>
       </li>
-      <li *ngIf="isAuth()">
-        <a routerLink="/sos/history" routerLinkActive="active" class="nav-link" *ngIf="isAuth()"><i
-            class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
-      </li>
-      <li *ngIf="isAuth()">
+      <li class="nav-essential" *ngIf="isAuth()">
         <a routerLink="/messages" routerLinkActive="active" class="nav-link nav-link-msg">
           <i class="fas fa-comment-dots"></i> {{ 'NAV.MESSAGES' | translate }}
           <span class="msg-badge" *ngIf="dm.unreadTotal() > 0">{{ dm.unreadTotal() > 99 ? '99+' : dm.unreadTotal() }}</span>
         </a>
       </li>
-      <li>
-        <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">{{ 'NAV.ABOUT' | translate }}</a>
-      </li>
-      <li>
-        <a routerLink="/avis" routerLinkActive="active" class="nav-link">{{ 'NAV.REVIEWS' | translate }}</a>
-      </li>
-      <li *ngIf="isAuth()">
+      <li class="nav-essential" *ngIf="isAuth()">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">{{ 'NAV.DASHBOARD' | translate }}</a>
       </li>
-      <li *ngIf="canModerate()">
+      <li class="nav-secondary" *ngIf="isAuth()">
+        <a routerLink="/sos/history" routerLinkActive="active" class="nav-link"><i
+            class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
+      </li>
+      <li class="nav-secondary">
+        <a routerLink="/a-propos" routerLinkActive="active" class="nav-link">{{ 'NAV.ABOUT' | translate }}</a>
+      </li>
+      <li class="nav-secondary">
+        <a routerLink="/avis" routerLinkActive="active" class="nav-link">{{ 'NAV.REVIEWS' | translate }}</a>
+      </li>
+      <li class="nav-staff" *ngIf="canModerate()">
         <a routerLink="/moderation" routerLinkActive="active" class="nav-link nav-link-mod">
           {{ 'NAV.MODERATION' | translate }} <span class="mod-dot"></span>
         </a>
       </li>
-      <li *ngIf="user()?.role === 'Admin'">
+      <li class="nav-staff" *ngIf="user()?.role === 'Admin'">
         <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"
           class="nav-link nav-link-admin">{{ 'NAV.ADMIN' | translate }}</a>
       </li>
-      <li *ngIf="user()?.role === 'Admin'">
+      <li class="nav-staff" *ngIf="user()?.role === 'Admin'">
         <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link nav-link-admin">{{ 'NAV.ANALYTICS' |
           translate }}</a>
       </li>
@@ -103,45 +104,75 @@
     </button>
   </div>
 
-  <!-- Menu mobile -->
+  <!-- Menu mobile : n'affiche que ce qui n'est PAS visible dans la barre -->
   <div class="mobile-menu" *ngIf="isOpen">
     <div class="mobile-menu-inner">
-      <a routerLink="/" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-house"></i> {{
-        'NAV.HOME' | translate }}</a>
-      <a routerLink="/feed" routerLinkActive="active" (click)="closeMenu()" class="m-link">
+
+      <!-- Accueil / Feed : toujours visibles, sauf quand la barre est réduite -->
+      <a routerLink="/" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="!showNavLinks">
+        <i class="fas fa-house"></i> {{ 'NAV.HOME' | translate }}
+      </a>
+      <a routerLink="/feed" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="!showNavLinks">
         <i class="fas fa-rss"></i> {{ 'NAV.FEED' | translate }}
       </a>
-      <a routerLink="/sos/history" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
-          class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}</a>
-      <a routerLink="/messages" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()">
+
+      <!-- Liens essentiels (masqués seulement quand la barre est réduite) -->
+      <a routerLink="/messages" routerLinkActive="active" (click)="closeMenu()" class="m-link"
+        *ngIf="isAuth() && !showNavLinks">
         <i class="fas fa-comment-dots"></i> {{ 'NAV.MESSAGES' | translate }}
         <span class="msg-badge" *ngIf="dm.unreadTotal() > 0">{{ dm.unreadTotal() > 99 ? '99+' : dm.unreadTotal() }}</span>
       </a>
-      <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i
-          class="fas fa-circle-info"></i> {{ 'NAV.ABOUT' | translate }}</a>
-      <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"><i class="fas fa-star"></i>
-        {{ 'NAV.REVIEWS' | translate }}</a>
-      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
-          class="fas fa-gauge"></i> {{ 'NAV.DASHBOARD' | translate }}</a>
-      <a routerLink="/moderation" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-mod"
-        *ngIf="canModerate()"><i class="fas fa-shield-halved"></i> {{ 'NAV.MODERATION' | translate }}</a>
-      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-admin"
-        *ngIf="user()?.role === 'Admin'"><i class="fas fa-crown"></i> {{ 'NAV.ADMIN' | translate }}</a>
-      <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMenu()"
-        class="m-link m-link-administration" *ngIf="user()?.role === 'Admin'"><i class="fa-solid fa-chart-line"></i> {{
-        'NAV.ANALYTICS' | translate }}</a>
-      <a routerLink="/posts/new" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="isAuth()"><i
-          class="fas fa-triangle-exclamation"></i> {{ 'NAV.PUBLISH' | translate }}
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()" class="m-link"
+        *ngIf="isAuth() && !showNavLinks">
+        <i class="fas fa-gauge"></i> {{ 'NAV.DASHBOARD' | translate }}
       </a>
-      <a routerLink="/auth" routerLinkActive="active" (click)="closeMenu()" class="m-link" *ngIf="!isAuth()"><i
-          class="fas fa-right-to-bracket"></i> {{ 'NAV.LOGIN' | translate }}</a>
-      <a href="javascript:void(0)" routerLinkActive="active" (click)="logout()" class="m-link" *ngIf="isAuth()"><i
-          class="fas fa-right-from-bracket"></i> {{ 'NAV.LOGOUT' | translate }}</a>
-      <a href="javascript:void(0)" (click)="theme.toggleTheme(); closeMenu()" class="m-link">
+
+      <!-- Liens secondaires : masqués dans la barre dès 1120 px -->
+      <a routerLink="/sos/history" routerLinkActive="active" (click)="closeMenu()" class="m-link"
+        *ngIf="isAuth() && !showSecondaryLinks">
+        <i class="fas fa-clock-rotate-left"></i> {{ 'NAV.HISTORY' | translate }}
+      </a>
+      <a routerLink="/a-propos" routerLinkActive="active" (click)="closeMenu()" class="m-link"
+        *ngIf="!showSecondaryLinks">
+        <i class="fas fa-circle-info"></i> {{ 'NAV.ABOUT' | translate }}
+      </a>
+      <a routerLink="/avis" routerLinkActive="active" (click)="closeMenu()" class="m-link"
+        *ngIf="!showSecondaryLinks">
+        <i class="fas fa-star"></i> {{ 'NAV.REVIEWS' | translate }}
+      </a>
+
+      <!-- Liens staff : masqués dans la barre dès 1360 px -->
+      <a routerLink="/moderation" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-mod"
+        *ngIf="canModerate() && !showStaffLinks">
+        <i class="fas fa-shield-halved"></i> {{ 'NAV.MODERATION' | translate }}
+      </a>
+      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()" class="m-link m-link-admin"
+        *ngIf="user()?.role === 'Admin' && !showStaffLinks">
+        <i class="fas fa-crown"></i> {{ 'NAV.ADMIN' | translate }}
+      </a>
+      <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMenu()"
+        class="m-link m-link-administration" *ngIf="user()?.role === 'Admin' && !showStaffLinks">
+        <i class="fa-solid fa-chart-line"></i> {{ 'NAV.ANALYTICS' | translate }}
+      </a>
+
+      <!-- Actions : présentes dans le burger seulement si la colonne droite est masquée -->
+      <a routerLink="/posts/new" routerLinkActive="active" (click)="closeMenu()" class="m-link"
+        *ngIf="isAuth() && !showNavActions">
+        <i class="fas fa-triangle-exclamation"></i> {{ 'NAV.PUBLISH' | translate }}
+      </a>
+      <a routerLink="/auth" routerLinkActive="active" (click)="closeMenu()" class="m-link"
+        *ngIf="!isAuth() && !showNavActions">
+        <i class="fas fa-right-to-bracket"></i> {{ 'NAV.LOGIN' | translate }}
+      </a>
+      <a href="javascript:void(0)" routerLinkActive="active" (click)="logout()" class="m-link"
+        *ngIf="isAuth() && !showNavActions">
+        <i class="fas fa-right-from-bracket"></i> {{ 'NAV.LOGOUT' | translate }}
+      </a>
+      <a href="javascript:void(0)" (click)="theme.toggleTheme(); closeMenu()" class="m-link" *ngIf="!showNavActions">
         <i class="fas" [ngClass]="isDark() ? 'fa-sun' : 'fa-moon'"></i>
         {{ isDark() ? ('NAV.THEME_LIGHT' | translate) : ('NAV.THEME_DARK' | translate) }}
       </a>
-      <a href="javascript:void(0)" (click)="toggleLang(); closeMenu()" class="m-link">
+      <a href="javascript:void(0)" (click)="toggleLang(); closeMenu()" class="m-link" *ngIf="!showNavActions">
         {{ lang.currentLang() === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN' }}
         &nbsp;{{ 'NAV.LANG_SWITCH' | translate }}
       </a>

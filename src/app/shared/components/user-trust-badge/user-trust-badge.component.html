@@ -1,0 +1,5 @@
+<span class="trust-badge" *ngIf="visible" [ngClass]="'badge-' + badge"
+      [title]="labelKey | translate">
+  <i class="fas" [ngClass]="icon"></i>
+  <span class="trust-badge-text">{{ labelKey | translate }}</span>
+</span>

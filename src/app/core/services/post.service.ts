@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { Post, CreatePostDto } from '../models/post.model';
+import { Post, CreatePostDto, ConfirmResponse } from '../models/post.model';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { ModerationService } from './moderation.service';
@@ -19,10 +19,12 @@ export class PostService {
   getAllPosts(filters?: {
     type?: string;
     location?: string;
+    sort?: 'reliability' | 'recent';
   }): Observable<Post[]> {
     let params = new HttpParams();
     if (filters?.type) params = params.set('type', filters.type);
     if (filters?.location) params = params.set('location', filters.location);
+    if (filters?.sort) params = params.set('sort', filters.sort);
     return this.http.get<Post[]>(this.API, { params });
   }
 
@@ -169,8 +171,26 @@ export class PostService {
     return this.http.patch<Post>(`${this.API}/${id}/toggle-active`, {});
   }
 
-  reportPost(id: string, reason: string): Observable<void> {
-    return this.http.post<void>(`${this.API}/${id}/report`, { reason });
+  reportPost(id: string, reason: string): Observable<any> {
+    return this.http.post<any>(`${this.API}/${id}/report`, { reason });
+  }
+
+  /**
+   * Vote de confirmation « Je confirme cette alerte ».
+   * Bascule on/off : un second appel retire le vote.
+   */
+  confirmPost(id: string): Observable<ConfirmResponse> {
+    return this.http.post<ConfirmResponse>(`${this.API}/${id}/confirm`, {});
+  }
+
+  /** Enregistre une vue de l'alerte (compteur de vues). */
+  registerView(id: string): Observable<void> {
+    return this.http.post<void>(`${this.API}/${id}/view`, {});
+  }
+
+  /** Décision du staff : l'alerte est confirmée fausse (1 avertissement). */
+  markFalseAlert(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.API}/${id}/false-alert`, {});
   }
 
   clearReport(id: string): Observable<void> {

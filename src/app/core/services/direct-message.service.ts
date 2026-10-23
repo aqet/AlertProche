@@ -65,7 +65,7 @@ export class DirectMessageService {
     return this.http.post<ConversationSummary>(`${this.API}/conversations`, { recipientId });
   }
 
-  /** Messages — avec `since` = polling delta, sans = chargement initial */
+  /** Messages - avec `since` = polling delta, sans = chargement initial */
   getMessages(conversationId: string, since?: string): Observable<MessagesPage> {
     const url = since
       ? `${this.API}/conversations/${conversationId}/messages?since=${encodeURIComponent(since)}`
@@ -87,7 +87,7 @@ export class DirectMessageService {
 
   // ── Badge navbar (polling léger) ────────────────────────────────────
 
-  /** Démarre le polling du badge — idempotent, appelé par la navbar. */
+  /** Démarre le polling du badge - idempotent, appelé par la navbar. */
   startBadgePolling(): void {
     if (this.badgeTimer !== null) return;
     this.fetchBadge();
