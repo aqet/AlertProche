@@ -413,11 +413,39 @@
   color: var(--green);
   font-weight: 600;
 }
+.img-search-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  color: #92400e;
+  font-weight: 500;
+  flex-wrap: wrap;
+}
+.img-search-notice-link {
+  margin-left: auto;
+  color: #92400e;
+  font-weight: 700;
+  text-decoration: underline;
+  white-space: nowrap;
+}
 .img-preview-thumb {
   width: 44px; height: 44px;
   object-fit: cover;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
+}
+.img-preview-hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 400;
+  opacity: 0.8;
 }
 .img-preview-del {
   margin-left: auto;
@@ -460,6 +488,32 @@
   color: var(--green);
   font-weight: 600;
 }
+
+/* Bascule de tri (fiabilité / chronologique) */
+.sort-toggle {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--color-bg-secondary);
+  color: var(--text-sub);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.sort-toggle:hover {
+  background: var(--color-bg-card-hover);
+  border-color: var(--green-border);
+  color: var(--text);
+}
+
+.sort-toggle i { font-size: 0.7rem; }
 
 /* Grille posts */
 .posts-grid {

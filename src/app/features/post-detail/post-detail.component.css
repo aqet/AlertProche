@@ -32,6 +32,33 @@
   align-items: center;
   gap: 16px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+/* Badge « Confirmée par la communauté » / « En vérification » */
+.detail-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.detail-trust-badge i { font-size: 0.7rem; }
+
+.detail-trust-badge:not(.review) {
+  background: var(--green-dim);
+  color: var(--green);
+  border-color: var(--green-border);
+}
+
+.detail-trust-badge.review {
+  background: var(--color-bg-secondary);
+  color: var(--text-muted);
+  border-color: var(--border);
 }
 
 .pulse-indicator {

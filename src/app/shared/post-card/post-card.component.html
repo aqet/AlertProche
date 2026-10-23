@@ -43,6 +43,22 @@
     <!-- Extrait -->
     <p class="card-excerpt">{{ post.content | slice:0:140 }}{{ post.content.length > 140 ? '…' : '' }}</p>
 
+    <!-- Bandeau de confiance communautaire -->
+    <div class="card-trust-row" *ngIf="post.communityConfirmed || post.underReview || (post.trustVoteCount || 0) > 0">
+      <span class="card-trust-badge confirmed" *ngIf="post.communityConfirmed">
+        <i class="fas fa-circle-check"></i>
+        {{ 'TRUST.COMMUNITY_CONFIRMED' | translate }}
+      </span>
+      <span class="card-trust-badge review" *ngIf="post.underReview">
+        <i class="fas fa-circle-exclamation"></i>
+        {{ 'TRUST.UNDER_REVIEW' | translate }}
+      </span>
+      <span class="card-trust-count" *ngIf="!post.communityConfirmed && (post.trustVoteCount || 0) > 0">
+        <i class="fas fa-thumbs-up"></i>
+        {{ post.trustVoteCount }}
+      </span>
+    </div>
+
     <!-- Footer -->
     <div class="card-foot">
       <div class="card-meta-row">
@@ -53,6 +69,7 @@
         <span class="card-meta-item">
           <i class="fas fa-user"></i>
           {{ post.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : (post.authorPseudo || ('COMMON.UNKNOWN' | translate)) }}
+          <app-user-trust-badge *ngIf="!post.isAnonymous" [badge]="post.authorBadge || 'none'"></app-user-trust-badge>
         </span>
       </div>
       <!-- Badge statut alerte (résolu / en cours) -->
@@ -61,6 +78,20 @@
         <i class="fas fa-comment"></i>
         {{ post.commentCount }}
       </div>
+    </div>
+
+    <!-- Bouton de confirmation (alertes de disparition et appels à l'aide) -->
+    <div class="card-confirm-row" *ngIf="canConfirm && !isOwnPost">
+      <button type="button"
+              class="btn-confirm"
+              [class.confirmed]="post.hasConfirmed"
+              [disabled]="voting"
+              [title]="'TRUST.CONFIRM_TOOLTIP' | translate"
+              (click)="confirm($event)">
+        <i class="fas fa-thumbs-up"></i>
+        <span>{{ (post.hasConfirmed ? 'TRUST.CONFIRMED' : 'TRUST.CONFIRM') | translate }}</span>
+        <b *ngIf="(post.trustVoteCount || 0) > 0">{{ post.trustVoteCount }}</b>
+      </button>
     </div>
 
   </div>

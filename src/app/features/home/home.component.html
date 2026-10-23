@@ -194,10 +194,20 @@
         </button>
       </div>
 
-      <!-- Aperçu image search -->
+      <div class="img-search-notice" *ngIf="imageSearchNotice()">
+        <i class="fas fa-circle-info"></i>
+        <span>{{ imageSearchNotice() }}</span>
+        <a class="img-search-notice-link" routerLink="/auth" *ngIf="!auth.isAuthenticated()">
+          {{ 'HOME.IMAGE_SEARCH_LOGIN_CTA' | translate }}
+        </a>
+      </div>
+
       <div class="img-preview-bar" *ngIf="imageSearchPreview()">
         <img [src]="imageSearchPreview()" alt="Aperçu" class="img-preview-thumb">
-        <span>{{ 'HOME.IMAGE_SEARCH_ACTIVE' | translate }}</span>
+        <span>
+          {{ 'HOME.IMAGE_SEARCH_ACTIVE' | translate }}
+          <small class="img-preview-hint">{{ 'HOME.IMAGE_SEARCH_FACE_HINT' | translate }}</small>
+        </span>
         <button class="img-preview-del" (click)="removeImageSearch()">
           <i class="fas fa-trash"></i>
         </button>
@@ -220,6 +230,12 @@
           <span class="rtag" *ngIf="filterType()">{{ filterType() }}</span>
           <span class="rtag" *ngIf="filterLocation()">{{ filterLocation() }}</span>
         </div>
+        <!-- Tri : fiabilité (par défaut) ou chronologique -->
+        <button type="button" class="sort-toggle" (click)="toggleSort()"
+          [title]="(sortMode() === 'reliability' ? 'HOME.SORT_RELIABILITY_TOOLTIP' : 'HOME.SORT_RECENT_TOOLTIP') | translate">
+          <i class="fas" [ngClass]="sortMode() === 'reliability' ? 'fa-shield-halved' : 'fa-clock'"></i>
+          {{ (sortMode() === 'reliability' ? 'HOME.SORT_RELIABILITY' : 'HOME.SORT_RECENT') | translate }}
+        </button>
       </div>
 
       <!-- Skeletons -->

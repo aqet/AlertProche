@@ -163,6 +163,42 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  /**
+   * Badge de confiance d'un compte, avec la même règle que l'API :
+   * le staff non sanctionné est traité comme « Référence » (plancher 70).
+   */
+  trustBadge(user: AdminUser): 'none' | 'new' | 'confirmed' | 'reference' {
+    const isStaff = user.role === 'Admin' || user.role === 'Moderateur';
+    const score = isStaff && (user.strikes ?? 0) === 0
+      ? Math.max(user.credibility ?? 0, 70)
+      : user.credibility ?? 0;
+    if (score >= 70) return 'reference';
+    if (score >= 30) return 'confirmed';
+    return 'none';
+  }
+
+  trustKey(user: AdminUser): string {
+    return `TRUST.BADGE_${this.trustBadge(user).toUpperCase()}`;
+  }
+
+  /** Nomme un membre « compte de confiance » (+30 de crédibilité, plafonné à 100). */
+  makeTrusted(user: AdminUser): void {
+    this.actionLoading.set(true);
+    this.adminService.adjustCredibility(user._id, 30).subscribe({
+      next: (res) => {
+        this.users.update(arr => arr.map(u =>
+          u._id === user._id ? { ...u, credibility: res.credibility, strikes: res.strikes } : u
+        ));
+        this.actionLoading.set(false);
+        this.showSuccess(this.translate.instant('ADMIN.MSG_TRUSTED'));
+      },
+      error: (err) => {
+        this.actionLoading.set(false);
+        this.showError(err?.error?.message || this.translate.instant('ADMIN.ERR_TRUST_UPDATE'));
+      }
+    });
+  }
+
   confirmDeleteUser(id: string): void {
     this.confirmDeleteUserId.set(id);
     this.clearAction();

@@ -32,6 +32,12 @@ export interface AdminUser {
   createdAt: string;
   postCount: number;
   commentCount: number;
+  /** Score de confiance (0-100), public sous forme de badge. */
+  credibility?: number;
+  /** Avertissements privés (staff uniquement). */
+  strikes?: number;
+  /** Points déjà gagnés via les confirmations d'alertes. */
+  voteCredibilityPoints?: number;
 }
 
 export interface AdminPost {
@@ -87,6 +93,17 @@ export class AdminService {
 
   deleteUser(userId: string): Observable<void> {
     return this.http.delete<void>(`${this.API}/users/${userId}`);
+  }
+
+  /** Ajuste la crédibilité d'un compte (nomination « compte de confiance » = +30). */
+  adjustCredibility(userId: string, delta: number): Observable<{
+    success: boolean;
+    _id: string;
+    pseudo: string;
+    credibility: number;
+    strikes: number;
+  }> {
+    return this.http.patch<any>(`${this.API}/users/${userId}/credibility`, { delta });
   }
 
   getPosts(page = 1, limit = 20, filter?: string): Observable<PaginatedPosts> {

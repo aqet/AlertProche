@@ -124,9 +124,9 @@
   border-color: #FFE0B2;
 }
 .badge-prevention {
-  background: #E8F5E9;
-  color: #2E7D32;
-  border-color: #C8E6C9;
+  background: var(--green-pale);
+  color: var(--green-dark);
+  border-color: var(--green-border);
 }
 .badge-appel {
   background: #FCE4EC;
@@ -259,3 +259,101 @@
 }
 .save-offline-btn:hover { color: var(--color-accent, var(--green)); }
 .save-offline-btn .fa-bookmark.saved { color: var(--color-accent, var(--green)); }
+
+/* ── Confiance communautaire ──────────────────────────────────── */
+
+/* Bandeau de badges (confirmée / en vérification) */
+.card-trust-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.card-trust-badge i { font-size: 0.66rem; }
+
+/* « Confirmée par la communauté » : le vert reste un ACCENT discret */
+.card-trust-badge.confirmed {
+  background: var(--green-dim);
+  color: var(--green);
+  border-color: var(--green-border);
+}
+
+/* « En vérification » : neutre, jamais alarmant */
+.card-trust-badge.review {
+  background: var(--color-bg-secondary);
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.card-trust-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.card-trust-count i { font-size: 0.68rem; }
+
+/* Bouton « Je confirme » */
+.card-confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--color-bg-secondary);
+  color: var(--text-sub);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  font-family: inherit;
+}
+
+.btn-confirm i { font-size: 0.72rem; }
+
+.btn-confirm:hover:not(:disabled) {
+  background: var(--green-dim);
+  border-color: var(--green-border);
+  color: var(--green);
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Vote déjà posé : le pouce devient un accent discret */
+.btn-confirm.confirmed {
+  background: var(--green-dim);
+  border-color: var(--green-border);
+  color: var(--green);
+}
+
+.btn-confirm b {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding-left: 2px;
+}
+

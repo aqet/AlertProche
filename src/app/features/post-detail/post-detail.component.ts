@@ -19,12 +19,13 @@ import { environment } from '../../../environments/environment';
 import { TrackingService } from '../../core/services/tracking.service';
 import { DonationModalComponent } from '../../shared/components/donation-modal/donation-modal.component';
 import { AlertStatusBadgeComponent } from '../../shared/components/alert-status-badge/alert-status-badge.component';
+import { UserTrustBadgeComponent } from '../../shared/components/user-trust-badge/user-trust-badge.component';
 import { TimeAgoService } from '../../core/services/time-ago.service';
 
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe, DonationModalComponent, AlertStatusBadgeComponent, DatePipe, TranslateModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, MediaUrlPipe, DonationModalComponent, AlertStatusBadgeComponent, UserTrustBadgeComponent, DatePipe, TranslateModule],
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.css'],
 })
@@ -117,8 +118,12 @@ export class PostDetailComponent implements OnInit, OnDestroy {
       next: (p) => {
         this.post.set(p);
         this.loading.set(false);
-        this.isAlreadyReported.set(!!(p as any).isReported);
+        // Le blocage dépend uniquement de CE membre : une alerte signalée
+        // par quelqu'un d'autre reste signalable par les autres.
+        this.isAlreadyReported.set(!!(p as any).hasReported);
         this.updateMetaTags(p);
+        // Comptage des vues (une seule fois par ouverture de la fiche).
+        this.postService.registerView(id).subscribe({ error: () => {} });
       },
       error: () => {
         this.error.set(this.translate.instant('FEED.DETAIL_NOT_FOUND'));
@@ -367,8 +372,13 @@ export class PostDetailComponent implements OnInit, OnDestroy {
         setTimeout(() => this.reportModalOpen.set(false), 7000);
         this.aiResult = res;
       },
-      error: () => {
+      error: (err: any) => {
         this.reportLoading.set(false);
+        // 409 : ce membre a déjà signalé cette alerte.
+        if (err?.status === 409) {
+          this.isAlreadyReported.set(true);
+          this.reportModalOpen.set(false);
+        }
       },
     });
   }

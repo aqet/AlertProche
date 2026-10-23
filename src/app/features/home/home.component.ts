@@ -13,6 +13,24 @@ import { TrackingService } from '../../core/services/tracking.service';
 import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { InstallModalComponent } from '../../shared/components/install-modal/install-modal.component';
 
+/** Correspondance renvoyée par la recherche par visage. */
+interface ImageSearchItem {
+  _id: string;
+  title?: string;
+  location?: string;
+  image_url?: string | null;
+  score: number;
+}
+
+/** Réponse de `POST /posts/search-by-image`. */
+interface ImageSearchResponse {
+  matchType: 'face' | 'none';
+  reason?: 'no_face' | 'no_match' | 'unavailable';
+  faceCount: number;
+  durationMs: number;
+  results: ImageSearchItem[];
+}
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -27,15 +45,24 @@ export class HomeComponent implements OnInit, OnDestroy {
   error = signal('');
   appDownloadCount = signal(0);
   appDownloadLoading = signal(false);
-  findSimilar = signal<any>(null);
+  findSimilar = signal<ImageSearchResponse | null>(null);
 
   filterType = signal<string>('');
   filterLocation = signal('');
   searchQuery = signal('');
   imageSearchFile = signal<File | null>(null);
   imageSearchPreview = signal<string | null>(null);
+  imageSearchNotice = signal<string | null>(null);
   searching = signal(false);
   showResolved = signal<boolean>(false);
+  /**
+   * Tri de la liste :
+   * - 'reliability' : les alertes cautionnées par la communauté remontent,
+   * - 'recent'      : ordre chronologique pur.
+   */
+  sortMode = signal<'reliability' | 'recent'>('reliability');
+  /** Identifie la recherche d'image en cours (ignore les réponses obsolètes). */
+  private imageSearchRequestId = 0;
   private searchTimeout: any;
 
   isAuth = computed(() => this.auth.isAuthenticated());
@@ -148,9 +175,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           p.content.toLowerCase().includes(this.searchQuery().toLowerCase()),
       );
     if (this.findSimilar()) {
-      const similarItems = this.findSimilar();
+      const similarItems = this.findSimilar()?.results ?? [];
       const scoreById = new Map<string, number>();
-      similarItems.forEach((similar: any) => scoreById.set(similar._id, similar.score ?? 0));
+      similarItems.forEach((similar) => scoreById.set(similar._id, similar.score ?? 0));
 
       result = result
         .filter((p) => scoreById.has(p._id))
@@ -260,7 +287,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadPosts(): void {
     this.loading.set(true);
-    this.postService.getAllPosts().subscribe({
+    this.postService.getAllPosts({ sort: this.sortMode() }).subscribe({
       next: (posts) => {
         this.posts.set(posts);
         this.loading.set(false);
@@ -269,6 +296,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
     });
+  }
+
+  /** Bascule entre le tri par fiabilité et le tri chronologique. */
+  toggleSort(): void {
+    this.sortMode.update((m) => (m === 'reliability' ? 'recent' : 'reliability'));
+    this.loadPosts();
   }
 
   ngOnDestroy(): void {
@@ -286,6 +319,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.searchQuery.set('');
     this.imageSearchFile.set(null);
     this.imageSearchPreview.set(null);
+    this.imageSearchNotice.set(null);
+    this.imageSearchRequestId++;
     this.findSimilar.set(null);
     this.showResolved.set(false);
     this.startSearch();
@@ -328,42 +363,139 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.pwa.closeIosModal();
   }
 
-  onImageSearchUpload(event: Event) {
+  async onImageSearchUpload(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
     if (!file) {
-      this.imageSearchFile.set(null);
-      this.imageSearchPreview.set(null);
-      this.findSimilar.set(null);
+      this.resetImageSearch();
       return;
     }
 
+    // La recherche par visage est réservée aux comptes connectés : on évite
+    // un aller-retour réseau inutile et on explique pourquoi.
+    if (!this.auth.isAuthenticated()) {
+      input.value = '';
+      this.imageSearchNotice.set(
+        this.translate.instant('HOME.IMAGE_SEARCH_LOGIN_REQUIRED'),
+      );
+      return;
+    }
+
+    this.imageSearchNotice.set(null);
     this.imageSearchFile.set(file);
-    this.tracking.trackEvent('image_search_performed');
     this.searching.set(true);
-    const formData = new FormData();
-    formData.append('image', file);
+    this.tracking.trackEvent('image_search_performed');
 
-    this.http.post(`${this.API}/search-by-image`, formData).subscribe({
-      next: (result) => {
-        this.findSimilar.set(result);
-        this.searching.set(false);
-      },
-      error: (err) => {
-        console.error('Erreur lors de la recherche par image:', err);
-        this.findSimilar.set(null);
-        this.searching.set(false);
-      }
-    });
-
+    // Aperçu immédiat : l'utilisateur voit sa photo pendant l'analyse.
     const reader = new FileReader();
     reader.onload = () => this.imageSearchPreview.set(reader.result as string);
     reader.readAsDataURL(file);
+
+    // Numéro de requête : si l'utilisateur choisit une autre photo entre
+    // temps, la réponse précédente est ignorée (plus de résultats qui
+    // « changent tout seuls »).
+    const requestId = ++this.imageSearchRequestId;
+
+    const payload = await this.prepareImage(file);
+    if (requestId !== this.imageSearchRequestId) return;
+
+    const formData = new FormData();
+    formData.append('image', payload);
+
+    this.http
+      .post<ImageSearchResponse>(`${this.API}/search-by-image`, formData)
+      .subscribe({
+        next: (result) => {
+          if (requestId !== this.imageSearchRequestId) return;
+          this.findSimilar.set(result);
+          this.searching.set(false);
+          this.applyImageSearchOutcome(result);
+        },
+        error: (err) => {
+          if (requestId !== this.imageSearchRequestId) return;
+          console.error('Erreur lors de la recherche par image:', err);
+          this.findSimilar.set(null);
+          this.searching.set(false);
+
+          if (err?.status === 401) {
+            input.value = '';
+            this.imageSearchFile.set(null);
+            this.imageSearchPreview.set(null);
+            this.imageSearchNotice.set(
+              this.translate.instant('HOME.IMAGE_SEARCH_LOGIN_REQUIRED'),
+            );
+          } else if (err?.status === 429) {
+            this.imageSearchNotice.set(
+              this.translate.instant('HOME.IMAGE_SEARCH_TOO_MANY'),
+            );
+          } else {
+            this.imageSearchNotice.set(
+              this.translate.instant('HOME.IMAGE_SEARCH_ERROR'),
+            );
+          }
+        },
+      });
+  }
+
+  /**
+   * Réduit la photo avant l'envoi. Une photo de téléphone pèse souvent 3–5 Mo :
+   * l'envoi et le décodage prennent plusieurs secondes, alors que 1080 px
+   * suffisent à la détection de visage.
+   */
+  private async prepareImage(file: File): Promise<File> {
+    try {
+      const mod = await import('browser-image-compression' as any).catch(
+        () => null,
+      );
+      const compress = mod?.default ?? mod;
+      if (!compress) return file;
+
+      const compressed = await compress(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1080,
+        useWebWorker: true,
+        fileType: 'image/jpeg',
+      });
+      return new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), {
+        type: 'image/jpeg',
+      });
+    } catch {
+      return file;
+    }
+  }
+
+  /** Explique un résultat vide (pas de visage, pas de correspondance, panne). */
+  private applyImageSearchOutcome(result: ImageSearchResponse) {
+    if ((result?.results?.length ?? 0) > 0) {
+      this.imageSearchNotice.set(null);
+      return;
+    }
+
+    const key =
+      result?.reason === 'no_face'
+        ? 'HOME.IMAGE_SEARCH_NO_FACE'
+        : result?.reason === 'unavailable'
+          ? 'HOME.IMAGE_SEARCH_UNAVAILABLE'
+          : 'HOME.IMAGE_SEARCH_NO_MATCH';
+
+    this.imageSearchNotice.set(this.translate.instant(key));
+  }
+
+  private resetImageSearch() {
+    this.imageSearchRequestId++;
+    this.imageSearchFile.set(null);
+    this.imageSearchPreview.set(null);
+    this.imageSearchNotice.set(null);
+    this.findSimilar.set(null);
+    this.searching.set(false);
   }
 
   removeImageSearch() {
-    this.imageSearchFile.set(null);
-    this.imageSearchPreview.set(null);
+    this.resetImageSearch();
+
+    // Réinitialise l'input pour pouvoir re-sélectionner le même fichier.
+    const input = document.getElementById('img-input') as HTMLInputElement | null;
+    if (input) input.value = '';
   }
 
   trackByPost(_: number, post: Post) {

@@ -66,6 +66,15 @@
           </span>
           <!-- Badge statut résolution -->
           <app-alert-status-badge [post]="post()!" [showDate]="true"></app-alert-status-badge>
+          <!-- Badge « Confirmée par la communauté » -->
+          <span class="detail-trust-badge" *ngIf="post()!.communityConfirmed">
+            <i class="fas fa-circle-check"></i>
+            {{ 'TRUST.COMMUNITY_CONFIRMED' | translate }}
+          </span>
+          <span class="detail-trust-badge review" *ngIf="post()!.underReview">
+            <i class="fas fa-circle-exclamation"></i>
+            {{ 'TRUST.UNDER_REVIEW' | translate }}
+          </span>
           <span class="text-muted small ms-2" *ngIf="post()!.isResolved && post()!.resolvedBy">
             <i class="fas fa-user-check"></i> {{ 'POST.RESOLVED_BY' | translate }} {{ post()!.resolvedBy }}
           </span>
@@ -82,6 +91,7 @@
           <span class="info-item">
             <i class="fas fa-user"></i>
             {{ post()!.isAnonymous ? ('COMMON.ANONYMOUS' | translate) : post()!.authorPseudo }}
+            <app-user-trust-badge *ngIf="!post()!.isAnonymous" [badge]="post()!.authorBadge || 'none'"></app-user-trust-badge>
           </span>
           <span class="info-item">
             <i class="fas fa-location-dot"></i> {{ post()!.location }}
@@ -91,6 +101,9 @@
           </span>
           <span class="info-item">
             <i class="fas fa-comment"></i> {{ post()!.commentCount || comments().length }} {{ 'COMMON.COMMENTS_COUNT' | translate }}
+          </span>
+          <span class="info-item" *ngIf="(post()!.trustVoteCount || 0) > 0">
+            <i class="fas fa-thumbs-up"></i> {{ post()!.trustVoteCount }} {{ 'TRUST.CONFIRMATIONS' | translate }}
           </span>
         </div>
 

@@ -1,290 +1,562 @@
 <div class="page-wrapper">
   <div class="container analytics-container">
 
-  <!-- Header -->
-  <div class="analytics-header">
-    <h1><i class="fa-solid fa-chart-line"></i> {{ 'ANALYTICS.TITLE' | translate }}</h1>
-    <div class="period-filter">
-      <button [class.active]="period() === '7d'" (click)="setPeriod('7d')">{{ 'ANALYTICS.PERIOD_7D' | translate }}</button>
-      <button [class.active]="period() === '30d'" (click)="setPeriod('30d')">{{ 'ANALYTICS.PERIOD_30D' | translate }}</button>
-      <button [class.active]="period() === '90d'" (click)="setPeriod('90d')">{{ 'ANALYTICS.PERIOD_90D' | translate }}</button>
+    <!-- ══ En-tête ══════════════════════════════════════════════════ -->
+    <header class="analytics-header">
+      <div class="header-title">
+        <h1><i class="fa-solid fa-chart-line"></i> {{ 'ANALYTICS.TITLE' | translate }}</h1>
+        <p class="subtitle">{{ 'ANALYTICS.SUBTITLE' | translate }}</p>
+      </div>
+
+      <div class="period-filter">
+        <button
+          *ngFor="let p of periods"
+          [class.active]="period() === p.value"
+          (click)="setPeriod(p.value)">
+          {{ p.label | translate }}
+        </button>
+      </div>
+    </header>
+
+    <div class="loading-bar" *ngIf="loading()"></div>
+
+    <div class="error-card" *ngIf="error()">
+      <i class="fas fa-triangle-exclamation"></i>
+      <span>{{ (error() || '') | translate }}</span>
     </div>
-  </div>
 
-  <!-- Barre de chargement -->
-  <div class="loading-bar" *ngIf="loading()"></div>
-
-  <!-- Onglets -->
-  <div class="tab-nav">
-    <button [class.active]="activeTab() === 'overview'" (click)="setTab('overview')">
-      <i class="fas fa-gauge"></i> <span class="tab-label">{{ 'ANALYTICS.TAB_OVERVIEW' | translate }}</span>
-    </button>
-    <button [class.active]="activeTab() === 'pages'" (click)="setTab('pages')">
-      <i class="fas fa-file-lines"></i> <span class="tab-label">{{ 'ANALYTICS.TAB_PAGES' | translate }}</span>
-    </button>
-    <button [class.active]="activeTab() === 'geo'" (click)="setTab('geo')">
-      <i class="fas fa-earth-africa"></i> <span class="tab-label">{{ 'ANALYTICS.TAB_GEOGRAPHY' | translate }}</span>
-    </button>
-    <button [class.active]="activeTab() === 'sources'" (click)="setTab('sources')">
-      <i class="fas fa-arrow-right-to-bracket"></i> <span class="tab-label">{{ 'ANALYTICS.TAB_SOURCES' | translate }}</span>
-    </button>
-    <button [class.active]="activeTab() === 'devices'" (click)="setTab('devices')">
-      <i class="fas fa-mobile-screen"></i> <span class="tab-label">{{ 'ANALYTICS.TAB_DEVICES' | translate }}</span>
-    </button>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <!-- VUE GLOBALE                                                   -->
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <div *ngIf="activeTab() === 'overview'">
-
-    <!-- Métriques -->
-    <div class="metrics-grid" *ngIf="overview() as o">
-      <div class="metric-card">
-        <i class="fas fa-users metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.totalSessions | number }}</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_SESSIONS' | translate }}</span>
-        </div>
+    <!-- ══ Bandeau « en direct » ════════════════════════════════════ -->
+    <div class="live-strip" *ngIf="mission() as m">
+      <div class="live-item" title="{{ 'ANALYTICS.LIVE_ACTIVE_ALERTS' | translate }}">
+        <span class="live-dot"></span>
+        <strong>{{ m.live.activeAlerts | number }}</strong>
+        <span>{{ 'ANALYTICS.LIVE_ACTIVE_ALERTS' | translate }}</span>
       </div>
-      <div class="metric-card">
-        <i class="fas fa-eye metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.totalPageviews | number }}</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_PAGEVIEWS' | translate }}</span>
-        </div>
+      <div class="live-item">
+        <i class="fas fa-person-circle-question"></i>
+        <strong>{{ m.live.disappearances | number }}</strong>
+        <span>{{ 'ANALYTICS.LIVE_DISAPPEARANCES' | translate }}</span>
       </div>
-      <div class="metric-card">
-        <i class="fas fa-fingerprint metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.uniqueVisitors | number }}</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_UNIQUE_VISITORS' | translate }}</span>
-        </div>
+      <div class="live-item">
+        <i class="fas fa-circle-check"></i>
+        <strong>{{ m.live.resolvedTotal | number }}</strong>
+        <span>{{ 'ANALYTICS.LIVE_RESOLVED' | translate }}</span>
       </div>
-      <div class="metric-card">
-        <i class="fas fa-user-plus metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.newVisitors | number }}</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_NEW_VISITORS' | translate }}</span>
-        </div>
+      <div class="live-item">
+        <i class="fas fa-eye"></i>
+        <strong>{{ m.live.activeNow | number }}</strong>
+        <span>{{ 'ANALYTICS.LIVE_ONLINE' | translate }}</span>
       </div>
-      <div class="metric-card">
-        <i class="fas fa-rotate metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.returningVisitors | number }}</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_RETURNING_VISITORS' | translate }}</span>
-        </div>
-      </div>
-      <div class="metric-card highlight">
-        <i class="fas fa-circle-dot metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.activeSessions }}</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_ACTIVE_NOW' | translate }}</span>
-        </div>
-      </div>
-      <div class="metric-card">
-        <i class="fas fa-calendar-day metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.todaySessions | number }}</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_TODAY' | translate }}</span>
-        </div>
-      </div>
-      <div class="metric-card">
-        <i class="fas fa-arrow-trend-up metric-icon"></i>
-        <div>
-          <span class="metric-value">{{ o.conversionRate | number:'1.1-1' }}%</span>
-          <span class="metric-label">{{ 'ANALYTICS.KPI_CONVERSION_RATE' | translate }}</span>
-        </div>
+      <div class="live-item">
+        <i class="fas fa-face-smile"></i>
+        <strong>{{ m.live.imageSearches24h | number }}</strong>
+        <span>{{ 'ANALYTICS.LIVE_FACE_SEARCHES' | translate }}</span>
       </div>
     </div>
 
-    <!-- Graphique courbe ngx-charts -->
-    <div class="chart-card" *ngIf="activity().length > 0">
-      <div class="chart-card-header">
-        <h3>{{ 'ANALYTICS.CHART_SITE_TRAFFIC' | translate }}</h3>
-        <div class="chart-filters">
-          <button [class.active]="chartSerie() === 'sessions'" (click)="chartSerie.set('sessions')">
-            <span class="dot" style="background:#e53935"></span> {{ 'ANALYTICS.KPI_SESSIONS' | translate }}
-          </button>
-          <button [class.active]="chartSerie() === 'pageviews'" (click)="chartSerie.set('pageviews')">
-            <span class="dot" style="background:#1976d2"></span> {{ 'ANALYTICS.KPI_PAGEVIEWS' | translate }}
-          </button>
-          <button [class.active]="chartSerie() === 'both'" (click)="chartSerie.set('both')">
-            {{ 'ANALYTICS.SERIES_BOTH' | translate }}
-          </button>
-        </div>
-      </div>
-      <ngx-charts-line-chart class="chart-legend"
-        [view]="lineView()"
-        [results]="lineChartData()"
-        [scheme]="lineColors"
-        [xAxis]="true"
-        [yAxis]="true"
-        [showXAxisLabel]="false"
-        [showYAxisLabel]="false"
-        [autoScale]="false"
-        [yScaleMin]="0"
-        [xAxisTicks]="xTicks()"
-        [gradient]="false"
-        [legend]="chartSerie() === 'both'"
-        [legendPosition]=LegendPosition.Below
-        [animations]="true"
-        [timeline]="false"
-        [curve]=curveMonotoneX >
-      </ngx-charts-line-chart>
+    <!-- ══ Note de transparence ═════════════════════════════════════ -->
+    <div class="reality-note" *ngIf="audience() as a">
+      <i class="fas fa-circle-info"></i>
+      <span>
+        {{ 'ANALYTICS.REALITY_NOTE' | translate:{
+          staff: (a.kpis.staffSessions | number),
+          bots: (a.kpis.botsExcluded | number)
+        } }}
+      </span>
     </div>
 
-    <div class="empty chart-card" *ngIf="!activity().length && !loading()">
-      <i class="fas fa-chart-line"></i>
-      <p>{{ 'ANALYTICS.EMPTY_ACTIVITY' | translate }}</p>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <!-- PAGES                                                         -->
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <div *ngIf="activeTab() === 'pages'">
-
-    <div class="chart-card" *ngIf="pages().length > 0">
-      <div class="chart-card-header">
-        <h3>{{ 'ANALYTICS.CHART_TOP_PAGES' | translate }}</h3>
-      </div>
-      <ngx-charts-bar-horizontal class="chart-legend"
-        [view]="barView()"
-        [results]="pagesChartData()"
-        [scheme]="lineColors"
-        [xAxis]="true"
-        [yAxis]="false"
-        [showXAxisLabel]="false"
-        [showYAxisLabel]="false"
-        [animations]="true"
-        [gradient]="false">
-      </ngx-charts-bar-horizontal>
+    <!-- ══ Onglets ══════════════════════════════════════════════════ -->
+    <div class="tab-nav">
+      <button [class.active]="tab() === 'audience'" (click)="setTab('audience')">
+        <i class="fas fa-users"></i>
+        <span>{{ 'ANALYTICS.TAB_AUDIENCE' | translate }}</span>
+      </button>
+      <button [class.active]="tab() === 'alerts'" (click)="setTab('alerts')">
+        <i class="fas fa-bullhorn"></i>
+        <span>{{ 'ANALYTICS.TAB_ALERTS' | translate }}</span>
+      </button>
     </div>
 
-    <div class="chart-card" *ngIf="topPosts().length > 0">
-      <div class="chart-card-header">
-        <h3>{{ 'ANALYTICS.CHART_TOP_POSTS' | translate }}</h3>
-      </div>
-      <ngx-charts-bar-horizontal class="chart-legend"
-        [view]="barView()"
-        [results]="postsChartData()"
-        [scheme]="lineColors"
-        [xAxis]="true"
-        [yAxis]="true"
-        [showXAxisLabel]="false"
-        [showYAxisLabel]="false"
-        [animations]="true"
-        [gradient]="false">
-      </ngx-charts-bar-horizontal>
-    </div>
+    <!-- ══════════════════════════════════════════════════════════════
+         ONGLET AUDIENCE
+         ══════════════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="tab() === 'audience'">
 
-    <div class="empty chart-card" *ngIf="!pages().length && !loading()">
-      {{ 'ANALYTICS.EMPTY_PAGES' | translate }}
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <!-- GÉOGRAPHIE                                                    -->
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <div *ngIf="activeTab() === 'geo'">
-    <div class="chart-card">
-      <div class="chart-card-header">
-        <h3>{{ 'ANALYTICS.CHART_VISITORS_BY_COUNTRY' | translate }}</h3>
-      </div>
-      <div class="stat-list">
-        <div class="stat-row" *ngFor="let g of geo()">
-          <span class="stat-label">
-            {{ g.country }}<span *ngIf="g.city" class="stat-city"> - {{ g.city }}</span>
-          </span>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar-fill"
-              [style.width.%]="geo().length ? (g.count / geo()[0].count * 100) : 0">
-            </div>
-          </div>
-          <span class="stat-count">{{ g.count | number }}</span>
-        </div>
-        <div class="empty" *ngIf="!geo().length">{{ 'ANALYTICS.EMPTY_GEO' | translate }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <!-- SOURCES                                                       -->
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <div *ngIf="activeTab() === 'sources'">
-    <div class="chart-row">
-      <div class="chart-card chart-half">
-        <div class="chart-card-header"><h3>{{ 'ANALYTICS.CHART_TRAFFIC_SOURCES' | translate }}</h3></div>
-        <ngx-charts-pie-chart class="chart-legend"
-          [view]="pieView()"
-          [results]="sourcesChartData()"
-          [scheme]="sourceColors"
-          [legend]="true"
-          [legendPosition]=LegendPosition.Below
-          [labels]="true"
-          [doughnut]="true"
-          [animations]="true"
-          *ngIf="sourcesChartData().length > 0">
-        </ngx-charts-pie-chart>
-        <div class="empty" *ngIf="!sourcesChartData().length">{{ 'ANALYTICS.EMPTY_NO_DATA' | translate }}</div>
-      </div>
-
-      <div class="chart-card chart-half">
-        <div class="chart-card-header"><h3>{{ 'ANALYTICS.CHART_DETAIL' | translate }}</h3></div>
-        <div class="stat-list">
-          <div class="stat-row" *ngFor="let s of sources()">
-            <span class="stat-label">{{ s.source }}</span>
-            <div class="stat-bar-wrap">
-              <div class="stat-bar-fill" [style.width.%]="s.percentage"></div>
-            </div>
-            <span class="stat-count">{{ s.percentage }}%</span>
-          </div>
-          <div class="empty" *ngIf="!sources().length">{{ 'ANALYTICS.EMPTY_NO_DATA' | translate }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <!-- APPAREILS                                                     -->
-  <!-- ══════════════════════════════════════════════════════════════ -->
-  <div *ngIf="activeTab() === 'devices'">
-    <div class="chart-row">
-      <div class="chart-card chart-half">
-        <div class="chart-card-header"><h3>{{ 'ANALYTICS.CHART_DEVICES_BREAKDOWN' | translate }}</h3></div>
-        <ngx-charts-pie-chart class="chart-legend"
-          [view]="pieView()"
-          [results]="devicesChartData()"
-          [scheme]="deviceColors"
-          [legend]="true"
-          [legendPosition]=LegendPosition.Below
-          [labels]="true"
-          [doughnut]="false"
-          [animations]="true"
-          *ngIf="devicesChartData().length > 0">
-        </ngx-charts-pie-chart>
-        <div class="empty" *ngIf="!devicesChartData().length">{{ 'ANALYTICS.EMPTY_NO_DATA' | translate }}</div>
-      </div>
-
-      <div class="chart-card chart-half">
-        <div class="chart-card-header"><h3>{{ 'ANALYTICS.CHART_DETAIL' | translate }}</h3></div>
-        <div class="stat-list">
-          <div class="stat-row" *ngFor="let d of devices()">
-            <span class="stat-label">
-              <i [class]="d.device === 'mobile' ? 'fas fa-mobile-screen' : d.device === 'tablet' ? 'fas fa-tablet-screen-button' : 'fas fa-desktop'"></i>
-              {{ d.device }}
+      <div class="metrics-grid" *ngIf="audience() as a">
+        <div class="metric-card">
+          <i class="fas fa-fingerprint metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ a.kpis.visitors | number }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_VISITORS' | translate }}</span>
+            <span class="delta" *ngIf="delta(a.kpis.visitors, a.previous?.visitors) as d"
+                  [class.up]="d > 0" [class.down]="d < 0">
+              <i class="fas" [class.fa-arrow-trend-up]="d > 0" [class.fa-arrow-trend-down]="d < 0"></i>
+              {{ d > 0 ? '+' : '' }}{{ d }} %
             </span>
-            <div class="stat-bar-wrap">
-              <div class="stat-bar-fill" [style.width.%]="d.percentage"></div>
-            </div>
-            <span class="stat-count">{{ d.percentage }}%</span>
           </div>
-          <div class="empty" *ngIf="!devices().length">{{ 'ANALYTICS.EMPTY_NO_DATA' | translate }}</div>
+        </div>
+
+        <div class="metric-card">
+          <i class="fas fa-right-to-bracket metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ a.kpis.sessions | number }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_SESSIONS' | translate }}</span>
+            <span class="delta" *ngIf="delta(a.kpis.sessions, a.previous?.sessions) as d"
+                  [class.up]="d > 0" [class.down]="d < 0">
+              <i class="fas" [class.fa-arrow-trend-up]="d > 0" [class.fa-arrow-trend-down]="d < 0"></i>
+              {{ d > 0 ? '+' : '' }}{{ d }} %
+            </span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <i class="fas fa-file-lines metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ a.kpis.pageviews | number }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_PAGEVIEWS' | translate }}</span>
+            <span class="delta" *ngIf="delta(a.kpis.pageviews, a.previous?.pageviews) as d"
+                  [class.up]="d > 0" [class.down]="d < 0">
+              <i class="fas" [class.fa-arrow-trend-up]="d > 0" [class.fa-arrow-trend-down]="d < 0"></i>
+              {{ d > 0 ? '+' : '' }}{{ d }} %
+            </span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <i class="fas fa-stopwatch metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ formatDuration(a.kpis.avgDurationMs) }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_AVG_DURATION' | translate }}</span>
+            <span class="metric-hint">
+              {{ a.kpis.pagesPerSession }} {{ 'ANALYTICS.PAGES_PER_SESSION' | translate }}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  </div><!-- /.container -->
-</div><!-- /.page-wrapper -->
+      <!-- Graphique principal -->
+      <div class="card" *ngIf="audience() as a">
+        <div class="card-head">
+          <h3>{{ 'ANALYTICS.CHART_AUDIENCE' | translate }}</h3>
+          <div class="segmented">
+            <button [class.active]="metric() === 'visitors'" (click)="metric.set('visitors')">
+              {{ 'ANALYTICS.METRIC_VISITORS' | translate }}
+            </button>
+            <button [class.active]="metric() === 'sessions'" (click)="metric.set('sessions')">
+              {{ 'ANALYTICS.METRIC_SESSIONS' | translate }}
+            </button>
+            <button [class.active]="metric() === 'pageviews'" (click)="metric.set('pageviews')">
+              {{ 'ANALYTICS.METRIC_PAGEVIEWS' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <app-mini-chart
+          [points]="audienceChartPoints()"
+          [emptyLabel]="emptyLabel"
+          [height]="210">
+        </app-mini-chart>
+
+        <p class="footnote" *ngIf="a.granularity === 'month'">
+          {{ 'ANALYTICS.CHART_MONTHLY_NOTE' | translate }}
+        </p>
+      </div>
+
+      <!-- Pays + villes -->
+      <div class="grid-2" *ngIf="audience() as a">
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.CARD_COUNTRIES' | translate }}</h3>
+            <span class="pill">{{ 'ANALYTICS.LOCALIZED_RATE' | translate:{ rate: a.localization.rate } }}</span>
+          </div>
+
+          <div class="stat-list">
+            <div class="stat-row" *ngFor="let c of a.countries">
+              <span class="stat-label" [title]="c.country">{{ c.country }}</span>
+              <div class="stat-bar"><div class="fill" [style.width.%]="c.percentage"></div></div>
+              <span class="stat-value">{{ c.count | number }}</span>
+            </div>
+            <div class="empty" *ngIf="!a.countries.length">{{ noResultsLabel }}</div>
+          </div>
+
+          <p class="footnote">
+            {{ 'ANALYTICS.GEO_NOTE' | translate:{ localized: (a.localization.localized | number), total: (a.localization.total | number) } }}
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.CARD_CITIES' | translate }}</h3>
+          </div>
+
+          <div class="stat-list">
+            <div class="stat-row" *ngFor="let c of a.cities">
+              <span class="stat-label">
+                {{ c.city }}
+                <small *ngIf="c.country && c.country !== 'Non localisé'">· {{ c.country }}</small>
+              </span>
+              <div class="stat-bar">
+                <div class="fill" [style.width.%]="percent(c.count, (a.cities.length ? a.cities[0].count : 1))"></div>
+              </div>
+              <span class="stat-value">{{ c.count | number }}</span>
+            </div>
+            <div class="empty" *ngIf="!a.cities.length">{{ noResultsLabel }}</div>
+          </div>
+
+          <p class="footnote">{{ 'ANALYTICS.CITY_NOTE' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- Appareils / sources -->
+      <div class="grid-2" *ngIf="audience() as a">
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.CARD_DEVICES' | translate }}</h3>
+          </div>
+          <div class="stat-list">
+            <div class="stat-row" *ngFor="let d of a.devices">
+              <span class="stat-label">
+                <i class="fas"
+                   [class.fa-mobile-screen]="d.label === 'mobile'"
+                   [class.fa-tablet-screen-button]="d.label === 'tablet'"
+                   [class.fa-desktop]="d.label === 'desktop'"></i>
+                {{ deviceLabel(d.label) }}
+              </span>
+              <div class="stat-bar"><div class="fill" [style.width.%]="d.percentage"></div></div>
+              <span class="stat-value">{{ d.percentage }} %</span>
+            </div>
+            <div class="empty" *ngIf="!a.devices.length">{{ noResultsLabel }}</div>
+          </div>
+
+          <div class="sub-title">{{ 'ANALYTICS.CARD_BROWSERS' | translate }}</div>
+          <div class="stat-list">
+            <div class="stat-row" *ngFor="let b of a.browsers">
+              <span class="stat-label">{{ b.label }}</span>
+              <div class="stat-bar"><div class="fill" [style.width.%]="b.percentage"></div></div>
+              <span class="stat-value">{{ b.percentage }} %</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.CARD_SOURCES' | translate }}</h3>
+          </div>
+          <div class="stat-list">
+            <div class="stat-row" *ngFor="let s of a.sources">
+              <span class="stat-label">{{ sourceLabel(s.label) }}</span>
+              <div class="stat-bar"><div class="fill" [style.width.%]="s.percentage"></div></div>
+              <span class="stat-value">{{ s.percentage }} %</span>
+            </div>
+            <div class="empty" *ngIf="!a.sources.length">{{ noResultsLabel }}</div>
+          </div>
+
+          <div class="sub-title">{{ 'ANALYTICS.CARD_NEW_RETURNING' | translate }}</div>
+          <div class="split-stats">
+            <div class="split-item">
+              <span class="split-value">{{ a.kpis.newVisitors | number }}</span>
+              <span class="split-label">{{ 'ANALYTICS.NEW_VISITORS' | translate }}</span>
+            </div>
+            <div class="split-item">
+              <span class="split-value">{{ a.kpis.returningVisitors | number }}</span>
+              <span class="split-label">{{ 'ANALYTICS.RETURNING_VISITORS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pages -->
+      <div class="card" *ngIf="audience() as a">
+        <div class="card-head">
+          <h3>{{ 'ANALYTICS.CARD_PAGES' | translate }}</h3>
+        </div>
+
+        <div class="stat-list">
+          <div class="stat-row" *ngFor="let p of pagesMain()">
+            <span class="stat-label" [title]="p.url">{{ prettyUrl(p.url) }}</span>
+            <div class="stat-bar">
+              <div class="fill" [style.width.%]="percent(p.views, (pagesMain().length ? pagesMain()[0].views : 1))"></div>
+            </div>
+            <span class="stat-value">{{ p.views | number }}</span>
+          </div>
+          <div class="empty" *ngIf="!pagesMain().length">{{ noResultsLabel }}</div>
+        </div>
+
+        <details class="tech-pages" *ngIf="pagesTechnical().length">
+          <summary>{{ 'ANALYTICS.TECHNICAL_PAGES' | translate }} ({{ pagesTechnical().length }})</summary>
+          <div class="stat-list">
+            <div class="stat-row" *ngFor="let p of pagesTechnical()">
+              <span class="stat-label" [title]="p.url">{{ prettyUrl(p.url) }}</span>
+              <div class="stat-bar">
+                <div class="fill" [style.width.%]="percent(p.views, (pagesTechnical().length ? pagesTechnical()[0].views : 1))"></div>
+              </div>
+              <span class="stat-value">{{ p.views | number }}</span>
+            </div>
+          </div>
+        </details>
+      </div>
+
+    </ng-container>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         ONGLET ALERTES
+         ══════════════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="tab() === 'alerts'">
+
+      <div class="metrics-grid" *ngIf="mission() as m">
+        <div class="metric-card">
+          <i class="fas fa-bullhorn metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ m.kpis.published | number }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_PUBLISHED' | translate }}</span>
+            <span class="delta" *ngIf="delta(m.kpis.published, m.previous?.published) as d"
+                  [class.up]="d > 0" [class.down]="d < 0">
+              <i class="fas" [class.fa-arrow-trend-up]="d > 0" [class.fa-arrow-trend-down]="d < 0"></i>
+              {{ d > 0 ? '+' : '' }}{{ d }} %
+            </span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <i class="fas fa-eye metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ m.kpis.views | number }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_ALERT_VIEWS' | translate }}</span>
+            <span class="delta" *ngIf="delta(m.kpis.views, m.previous?.views) as d"
+                  [class.up]="d > 0" [class.down]="d < 0">
+              <i class="fas" [class.fa-arrow-trend-up]="d > 0" [class.fa-arrow-trend-down]="d < 0"></i>
+              {{ d > 0 ? '+' : '' }}{{ d }} %
+            </span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <i class="fas fa-comments metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ m.kpis.contacts | number }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_CONTACTS' | translate }}</span>
+            <span class="metric-hint">
+              {{ m.kpis.comments | number }} {{ 'ANALYTICS.CONTACT_COMMENTS' | translate }} ·
+              {{ m.kpis.conversations | number }} {{ 'ANALYTICS.CONTACT_CONVERSATIONS' | translate }}
+            </span>
+          </div>
+        </div>
+
+        <div class="metric-card highlight">
+          <i class="fas fa-circle-check metric-icon"></i>
+          <div class="metric-body">
+            <span class="metric-value">{{ m.kpis.resolved | number }}</span>
+            <span class="metric-label">{{ 'ANALYTICS.KPI_RESOLVED' | translate }}</span>
+            <span class="metric-hint" *ngIf="m.kpis.medianResolutionHours !== null">
+              {{ 'ANALYTICS.MEDIAN_RESOLUTION' | translate:{ hours: m.kpis.medianResolutionHours } }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entonnoir -->
+      <div class="card" *ngIf="mission() as m">
+        <div class="card-head">
+          <h3>{{ 'ANALYTICS.FUNNEL_TITLE' | translate }}</h3>
+        </div>
+
+        <div class="funnel">
+          <div class="funnel-step">
+            <div class="funnel-head">
+              <span>{{ 'ANALYTICS.FUNNEL_ACTIVE' | translate }}</span>
+              <strong>{{ m.funnel.active | number }}</strong>
+            </div>
+            <div class="stat-bar"><div class="fill" [style.width.%]="100"></div></div>
+            <span class="funnel-rate">100 %</span>
+          </div>
+
+          <div class="funnel-step">
+            <div class="funnel-head">
+              <span>{{ 'ANALYTICS.FUNNEL_VIEWED' | translate }}</span>
+              <strong>{{ m.funnel.viewed | number }}</strong>
+            </div>
+            <div class="stat-bar">
+              <div class="fill" [style.width.%]="barPct(m.funnel.viewed, m.funnel.active)"></div>
+            </div>
+            <span class="funnel-rate">{{ percent(m.funnel.viewed, m.funnel.active) }} %</span>
+          </div>
+
+          <div class="funnel-step">
+            <div class="funnel-head">
+              <span>{{ 'ANALYTICS.FUNNEL_CONTACTED' | translate }}</span>
+              <strong>{{ m.funnel.contacted | number }}</strong>
+            </div>
+            <div class="stat-bar">
+              <div class="fill" [style.width.%]="barPct(m.funnel.contacted, m.funnel.active)"></div>
+            </div>
+            <span class="funnel-rate">{{ percent(m.funnel.contacted, m.funnel.active) }} %</span>
+          </div>
+
+          <div class="funnel-step">
+            <div class="funnel-head">
+              <span>{{ 'ANALYTICS.FUNNEL_RESOLVED' | translate }}</span>
+              <strong>{{ m.funnel.resolved | number }}</strong>
+            </div>
+            <div class="stat-bar">
+              <div class="fill resolved" [style.width.%]="barPct(m.funnel.resolved, m.funnel.active)"></div>
+            </div>
+            <span class="funnel-rate">{{ percent(m.funnel.resolved, m.funnel.active) }} %</span>
+          </div>
+        </div>
+
+        <p class="footnote">{{ 'ANALYTICS.FUNNEL_NOTE' | translate }}</p>
+      </div>
+
+      <div class="grid-2" *ngIf="mission() as m">
+        <!-- Activité mensuelle -->
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.CHART_ALERT_ACTIVITY' | translate }}</h3>
+            <div class="segmented">
+              <button [class.active]="alertMetric() === 'published'" (click)="alertMetric.set('published')">
+                {{ 'ANALYTICS.METRIC_PUBLISHED' | translate }}
+              </button>
+              <button [class.active]="alertMetric() === 'resolved'" (click)="alertMetric.set('resolved')">
+                {{ 'ANALYTICS.METRIC_RESOLVED' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <app-mini-chart
+            [points]="missionChartPoints()"
+            [emptyLabel]="emptyLabel"
+            [height]="180"
+            color="var(--color-alert, #e53935)">
+          </app-mini-chart>
+        </div>
+
+        <!-- Sans vue -->
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.NO_VIEWS_TITLE' | translate }}</h3>
+            <span class="pill warn">{{ m.noViews.length | number }}</span>
+          </div>
+
+          <p class="card-intro">{{ 'ANALYTICS.NO_VIEWS_HINT' | translate }}</p>
+
+          <div class="post-list" *ngIf="m.noViews.length; else noViewsEmpty">
+            <a class="post-row" *ngFor="let p of m.noViews" [routerLink]="['/posts', p.id]">
+              <div class="post-thumb placeholder"><i class="fas fa-user"></i></div>
+              <div class="post-info">
+                <span class="post-title">{{ p.title }}</span>
+                <span class="post-meta">
+                  {{ typeLabel(p.type) }} · {{ p.location }} · {{ formatDate(p.createdAt) }}
+                </span>
+              </div>
+              <i class="fas fa-chevron-right row-arrow"></i>
+            </a>
+          </div>
+
+          <ng-template #noViewsEmpty>
+            <div class="empty">
+              <i class="fas fa-circle-check"></i>
+              {{ 'ANALYTICS.NO_VIEWS_EMPTY' | translate }}
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="grid-2" *ngIf="mission() as m">
+        <!-- Top annonces -->
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.TOP_POSTS_TITLE' | translate }}</h3>
+          </div>
+
+          <div class="post-list" *ngIf="m.topPosts.length; else topEmpty">
+            <a class="post-row" *ngFor="let p of m.topPosts" [routerLink]="['/posts', p.id]">
+              <img *ngIf="p.imageUrl; else thumbPlaceholder"
+                   [src]="p.imageUrl | mediaUrl" alt="" loading="lazy" class="post-thumb">
+              <ng-template #thumbPlaceholder>
+                <div class="post-thumb placeholder"><i class="fas fa-user"></i></div>
+              </ng-template>
+
+              <div class="post-info">
+                <span class="post-title">{{ p.title }}</span>
+                <span class="post-meta">
+                  {{ typeLabel(p.type) }} · {{ p.location }} · {{ formatDate(p.createdAt) }}
+                </span>
+              </div>
+
+              <span class="views"><i class="fas fa-eye"></i> {{ p.views | number }}</span>
+            </a>
+          </div>
+
+          <ng-template #topEmpty>
+            <div class="empty">
+              <i class="fas fa-chart-simple"></i>
+              {{ 'ANALYTICS.EMPTY_TOP_POSTS' | translate }}
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Villes des annonces -->
+        <div class="card">
+          <div class="card-head">
+            <h3>{{ 'ANALYTICS.ALERT_CITIES' | translate }}</h3>
+          </div>
+
+          <div class="stat-list">
+            <div class="stat-row" *ngFor="let c of m.cities">
+              <span class="stat-label">{{ c.city }}</span>
+              <div class="stat-bar">
+                <div class="fill" [style.width.%]="percent(c.count, (m.cities.length ? m.cities[0].count : 1))"></div>
+              </div>
+              <span class="stat-value">{{ c.count | number }}</span>
+            </div>
+            <div class="empty" *ngIf="!m.cities.length">{{ noResultsLabel }}</div>
+          </div>
+
+          <p class="footnote">{{ 'ANALYTICS.ALERT_CITIES_NOTE' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- Communauté -->
+      <div class="card" *ngIf="mission() as m">
+        <div class="card-head">
+          <h3>{{ 'ANALYTICS.CARD_COMMUNITY' | translate }}</h3>
+        </div>
+
+        <div class="community-grid">
+          <div class="community-item">
+            <i class="fas fa-user-plus"></i>
+            <strong>{{ m.community.registrations | number }}</strong>
+            <span>{{ 'ANALYTICS.COMMUNITY_REGISTRATIONS' | translate }}</span>
+          </div>
+          <div class="community-item">
+            <i class="fas fa-users"></i>
+            <strong>{{ m.community.activeMembers | number }}</strong>
+            <span>{{ 'ANALYTICS.COMMUNITY_ACTIVE' | translate }}</span>
+          </div>
+          <div class="community-item">
+            <i class="fas fa-comment-dots"></i>
+            <strong>{{ m.community.messages | number }}</strong>
+            <span>{{ 'ANALYTICS.COMMUNITY_MESSAGES' | translate }}</span>
+          </div>
+          <div class="community-item">
+            <i class="fas fa-comments"></i>
+            <strong>{{ m.community.comments | number }}</strong>
+            <span>{{ 'ANALYTICS.COMMUNITY_COMMENTS' | translate }}</span>
+          </div>
+          <div class="community-item">
+            <i class="fas fa-face-smile"></i>
+            <strong>{{ m.community.imageSearches | number }}</strong>
+            <span>{{ 'ANALYTICS.COMMUNITY_FACE_SEARCHES' | translate }}</span>
+          </div>
+          <div class="community-item">
+            <i class="fas fa-flag"></i>
+            <strong>{{ m.community.reports | number }}</strong>
+            <span>{{ 'ANALYTICS.COMMUNITY_REPORTS' | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>
