@@ -53,6 +53,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
   dragOver = signal(false);
   imageError = signal('');
   analysisStatus = signal<'idle' | 'analyzing' | 'done'>('idle');
+  analysisHint = signal(''); // message discret quand l'image n'a pas assez de données
 
   // ── Audio recorder state ────────────────────────────────────────
   recordingState = signal<RecordingState>('idle');
@@ -192,25 +193,6 @@ export class PostFormComponent implements OnInit, OnDestroy {
     'ébolowa',
   ];
 
-  // [
-  //   'Yaoundé',
-  //   'Douala',
-  //   'Bamenda',
-  //   'Bafoussam',
-  //   'Garoua',
-  //   'Maroua',
-  //   'Ngaoundéré',
-  //   'Bertoua',
-  //   'Ebolowa',
-  //   'Kribi',
-  //   'Limbe',
-  //   'Kumba',
-  //   'Edéa',
-  //   'Loum',
-  //   'Nkongsamba',
-  //   'National',
-  // ];
-
   constructor(
     private fb: FormBuilder,
     private postService: PostService,
@@ -266,44 +248,69 @@ export class PostFormComponent implements OnInit, OnDestroy {
       this.imageError.set(
         this.translateSvc.instant('POST.IMAGE_SIZE'),
       );
-      return;
-    }
+      return;}
     this.selectedFile.set(file);
     this.analysisStatus.set('analyzing');
+    this.analysisHint.set('');
     const reader = new FileReader();
     reader.onload = () => this.previewUrl.set(reader.result as string);
     reader.readAsDataURL(file);
 
     try {
-      const airesponse = await this.postService.analyzeImage(file);      
-      this.form.patchValue({
-        publicationType: airesponse.completion.publicationType,
-        title: airesponse.completion.alertTitle,
-        content: airesponse.completion.detailedDescription,
-        location: airesponse.completion.cityName,
-        type: airesponse.completion.publicationType,
-      });
+      const airesponse = await this.postService.analyzeImage(file);
+      const completion = airesponse.completion;
 
-      // Synchroniser le signal locationInput qui pilote l'input affiché
-      if (airesponse.completion.cityName) {
-        const city = airesponse.completion.cityName;
+      // L'image ne contient pas assez d'infos : message discret, formulaire intact
+      if (completion.insufficientData || completion.confidence < 0.3) {
+        this.analysisHint.set(
+          "Pas assez d'informations sur l'image. Complétez les champs ou dictez-les via le micro ci-dessous."
+        );
+        this.analysisStatus.set('done');
+        return;
+      }
+
+      // Remplir uniquement les champs qui ont une vraie valeur
+      const patch: any = {};
+      if (completion.publicationType && completion.publicationType !== 'UNKNOWN') {
+        patch['type'] = completion.publicationType;
+      }
+      if (completion.alertTitle?.trim()) {
+        patch['title'] = completion.alertTitle;
+      }
+      if (completion.detailedDescription?.trim()) {
+        patch['content'] = completion.detailedDescription;
+      }
+      if (Object.keys(patch).length > 0) {
+        this.form.patchValue(patch);
+      }
+
+      // Localisation uniquement si detectee
+      if (completion.cityName?.trim()) {
+        const city = completion.cityName;
         this.locationInput.set(city);
-        // Vérifier si la ville est dans la liste locale
         const inList = this.camerounCities.some(
-          c => c.toLowerCase() === city.toLowerCase()
+          (c: string) => c.toLowerCase() === city.toLowerCase()
         );
         if (inList) {
           this.form.get('location')?.setValue(city.toLowerCase());
           this.locationValid.set(true);
         } else {
-          // Lancer la validation IA en arrière-plan
           this.validateFreeCity();
         }
       }
-      // console.log(this.form);
+
+      // Message discret si remplissage partiel
+      const filledCount = Object.keys(patch).length + (completion.cityName?.trim() ? 1 : 0);
+      if (filledCount > 0 && filledCount < 4) {
+        this.analysisHint.set(
+          "Certaines informations ont ete extraites. Verifiez et completez les champs manquants."
+        );
+      }
+
       this.analysisStatus.set('done');
     } catch (error) {
-      console.error('Erreur pendant l’analyse IA de l’image :', error);
+      console.error('Erreur pendant l analyse IA de l image :', error);
+      this.analysisHint.set("L'analyse automatique n'a pas pu aboutir. Remplissez le formulaire manuellement.");
       this.analysisStatus.set('idle');
     }
   }
@@ -312,6 +319,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
     this.selectedFile.set(null);
     this.previewUrl.set(null);
     this.imageError.set('');
+    this.analysisHint.set('');
     this.analysisStatus.set('idle');
   }
 
@@ -322,7 +330,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
       : `${Math.round(size / 1024)} Ko`;
   }
 
-  // ── Méthodes localisation ───────────────────────────────────────
+  // Methodes localisation
 
   onLocationInput(value: string): void {
     this.locationInput.set(value);
