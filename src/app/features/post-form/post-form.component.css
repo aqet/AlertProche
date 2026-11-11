@@ -784,3 +784,19 @@
   line-height: 1.5;
 }
 .location-ai-error i { flex-shrink: 0; margin-top: 1px; }
+
+/* Message discret autocompletion IA */
+.ai-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  background: var(--green-pale, #E9F2EC);
+  border: 1px solid var(--green-border, rgba(46,139,74,0.27));
+  border-radius: 8px;
+  color: var(--text-sub, #5A615C);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}

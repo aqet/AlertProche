@@ -1,4 +1,4 @@
-<div class="post-form-page page-wrapper">
+﻿<div class="post-form-page page-wrapper">
   <div class="container">
     <div class="form-layout">
 
@@ -50,6 +50,7 @@
           <div class="form-grid">
             <!-- LEFT COLUMN -->
             <div class="form-col-main">
+
 
               <!-- ── ENREGISTREMENT VOCAL (en haut, bien visible) ── -->
               <div class="voice-recorder-block voice-recorder-top">
@@ -281,6 +282,14 @@
                 </div>
 
                 <!-- Preview -->
+                <!-- Message IA : photo sans assez de donnees -->
+                <div class="ai-hint" *ngIf="analysisHint()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-top:2px">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <span>{{ analysisHint() }} Remplissez le formulaire manuellement ou utilisez le micro, l'IA s'en chargera pour vous.</span>
+                </div>
                 <div class="image-preview" *ngIf="previewUrl()">
                   <img [src]="previewUrl()" alt="Aperçu" class="preview-img">
                   <div class="preview-overlay">
@@ -314,7 +323,6 @@
                 <div class="alert-banner error" *ngIf="imageError()">
                   <i class="fas fa-circle-exclamation"></i> {{ imageError() }}
                 </div>
-              </div>
 
               <!-- Moderation Info -->
               <div class="moderation-card">
@@ -345,6 +353,7 @@
                 </a>
               </ng-container>
             </div>
+          </div>
           </div>
         </form>
       </div>
